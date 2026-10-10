@@ -34,10 +34,10 @@ research = ["numpy==2.5.2"]
 dev = ["pytest==9.1.1", "pytest-cov==7.1.0", "mypy==2.3.1", "ruff==0.16.3", "pytest-asyncio==1.4.0"]
 
 [project.urls]
-Homepage = "https://github.com/Alejandrehl/krmaazha-binance-mcp"
-Repository = "https://github.com/Alejandrehl/krmaazha-binance-mcp"
-Issues = "https://github.com/Alejandrehl/krmaazha-binance-mcp/issues"
-Security = "https://github.com/Alejandrehl/krmaazha-binance-mcp/blob/main/SECURITY.md"
+Homepage = "https://github.com/KumailQazi/krmaazha-binance-mcp"
+Repository = "https://github.com/KumailQazi/krmaazha-binance-mcp"
+Issues = "https://github.com/KumailQazi/krmaazha-binance-mcp/issues"
+Security = "https://github.com/KumailQazi/krmaazha-binance-mcp/blob/main/SECURITY.md"
 
 [project.scripts]
 krmaazha-binance-mcp = "krmaazha_binance_mcp.server:main"

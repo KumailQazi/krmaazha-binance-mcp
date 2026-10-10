@@ -1,12 +1,15 @@
 # krmaazha-binance-mcp
 
-[![CI](https://github.com/Alejandrehl/krmaazha-binance-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/Alejandrehl/krmaazha-binance-mcp/actions/workflows/ci.yml)
+[![CI](https://github.com/KumailQazi/krmaazha-binance-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/KumailQazi/krmaazha-binance-mcp/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Python 3.12+](https://img.shields.io/badge/python-3.12%2B-blue.svg)](https://www.python.org/)
 [![MCP](https://img.shields.io/badge/MCP-server-7c3aed)](https://modelcontextprotocol.io/)
 [![PyPI](https://img.shields.io/pypi/v/krmaazha-binance-mcp.svg)](https://pypi.org/project/krmaazha-binance-mcp/)
 [![Downloads](https://img.shields.io/pypi/dm/krmaazha-binance-mcp.svg)](https://pypi.org/project/krmaazha-binance-mcp/)
 [![Typed: mypy strict](https://img.shields.io/badge/typed-mypy%20strict-blue.svg)](pyproject.toml)
+
+> **About**: Security-first Binance MCP server and multi-agent intelligence platform. Read market data, perform quantitative analysis, and propose spot orders behind human confirmation.  
+> **Tags**: `#mcp` `#model-context-protocol` `#binance` `#crypto` `#trading` `#multi-agent` `#quantitative-finance` `#spot-trading` `#futures` `#backtesting` `#ai-agents` `#claude` `#llm` `#fastmcp` `#algorithmic-trading`
 
 > **Let an AI assistant read Binance markets, analyze them, and *propose* real-money
 > trades — while a separate, human-gated process is the only thing that can ever execute.
@@ -254,7 +257,7 @@ Go to Binance → **API Management**. The design uses two keys for least privile
 server aborts with a clear message — export the variables before launching your client.
 
 Installing from git instead of PyPI? Use `"args": ["--from",
-"git+https://github.com/Alejandrehl/krmaazha-binance-mcp@v1.2.1", "krmaazha-binance-mcp"]`
+"git+https://github.com/KumailQazi/krmaazha-binance-mcp@v1.2.1", "krmaazha-binance-mcp"]`
 (pin a tag; `git+https` works without any GitHub credentials).
 
 ### 4. Run the confirmer (required to execute)
@@ -266,7 +269,7 @@ export BINANCE_ENV=testnet
 export BINANCE_TRADE_API_KEY="...your trade key..."
 export BINANCE_TRADE_API_SECRET="...your trade secret..."
 
-uvx krmaazha-binance-mcp-confirmer  # or: uvx --from "git+https://github.com/Alejandrehl/krmaazha-binance-mcp@v1.2.1" krmaazha-binance-mcp-confirmer
+uvx krmaazha-binance-mcp-confirmer  # or: uvx --from "git+https://github.com/KumailQazi/krmaazha-binance-mcp@v1.2.1" krmaazha-binance-mcp-confirmer
 ```
 
 It listens on a local Unix socket. When the AI proposes an order, a **native dialog** appears
@@ -385,4 +388,4 @@ Built by **[Alejandro Exequiel Hernández Lara](https://github.com/Alejandrehl)*
 
 ---
 
-<sub>mcp-name: io.github.Alejandrehl/krmaazha-binance-mcp</sub>
+<sub>mcp-name: io.github.KumailQazi/krmaazha-binance-mcp</sub>
