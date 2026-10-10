@@ -12,8 +12,8 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from kainext_binance_mcp.futures.data import BinanceArchive
-from kainext_binance_mcp.futures.universe import (
+from krmaazha_binance_mcp.futures.data import BinanceArchive
+from krmaazha_binance_mcp.futures.universe import (
     Universe,
     has_denomination_multiplier,
     list_archive_symbols,

@@ -3,7 +3,7 @@ from decimal import Decimal
 import pytest
 from pydantic import ValidationError
 
-from kainext_binance_mcp.models import CanonicalOrder
+from krmaazha_binance_mcp.models import CanonicalOrder
 
 
 def test_limit_requires_price():
@@ -61,7 +61,7 @@ def test_market_rejects_time_in_force_alone():
 def test_cancel_result_status_constrained_and_status_round_trips():
     """B3: CancelResult según contrato §3.3 (order_id, status Literal, detail). El
     OrderStatus.result acepta CancelResult y lo distingue de OrderResult por su forma."""
-    from kainext_binance_mcp.models import CancelResult, OrderResult, OrderStatus
+    from krmaazha_binance_mcp.models import CancelResult, OrderResult, OrderStatus
     cr = CancelResult(order_id=7, status="CANCELED", detail="orden 7 CANCELED", env="testnet")
     assert cr.status == "CANCELED"
     with pytest.raises(ValidationError):
@@ -86,7 +86,7 @@ def test_canonical_order_symbol_pattern():
     import pytest
     from pydantic import ValidationError
 
-    from kainext_binance_mcp.models import CanonicalOrder
+    from krmaazha_binance_mcp.models import CanonicalOrder
     ok = CanonicalOrder(symbol="BTCUSDT", side="BUY", type="MARKET",
                         quote_quantity=Decimal("10"), env="testnet")
     assert ok.symbol == "BTCUSDT"

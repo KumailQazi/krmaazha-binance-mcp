@@ -16,8 +16,8 @@ from __future__ import annotations
 import numpy as np
 import pandas as pd
 
-from kainext_binance_mcp.models import BacktestResult
-from kainext_binance_mcp.signals.backtest_signal import (
+from krmaazha_binance_mcp.models import BacktestResult
+from krmaazha_binance_mcp.signals.backtest_signal import (
     backtest_signal,
     signal_positions,
 )

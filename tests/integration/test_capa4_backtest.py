@@ -26,7 +26,7 @@ import os
 
 import pytest
 
-from kainext_binance_mcp.models import BacktestResult
+from krmaazha_binance_mcp.models import BacktestResult
 
 _HAS_KEYS = bool(os.environ.get("BINANCE_READ_API_KEY"))
 
@@ -41,8 +41,8 @@ _SYMBOL = "BTCUSDT"
 @pytest.fixture
 def read_client():
     """Client real (read key de testnet) construido desde el entorno."""
-    from kainext_binance_mcp.client import make_client
-    from kainext_binance_mcp.config import load_server_settings
+    from krmaazha_binance_mcp.client import make_client
+    from krmaazha_binance_mcp.config import load_server_settings
 
     settings = load_server_settings(os.environ)
     return make_client(settings)
@@ -65,7 +65,7 @@ def _report(res: BacktestResult) -> None:
 @pytest.mark.parametrize("interval", ["1h", "4h"])
 def test_capa4_backtest_real(read_client, interval: str) -> None:
     """Backtest real de BTCUSDT en 1h y 4h sobre 1000 velas: reporta métricas e invariantes."""
-    from kainext_binance_mcp.tools import signals as sig
+    from krmaazha_binance_mcp.tools import signals as sig
 
     try:
         res = sig.binance_backtest_signal(read_client, _SYMBOL, interval, limit=1000)

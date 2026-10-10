@@ -6,13 +6,13 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from kainext_binance_mcp.models import (
+from krmaazha_binance_mcp.models import (
     BacktestResult,
     IndicatorResult,
     Kline,
     Ticker24h,
 )
-from kainext_binance_mcp.tools import marketdata as md
+from krmaazha_binance_mcp.tools import marketdata as md
 
 
 def _binance_klines(n: int = 40) -> list[list[object]]:

@@ -1,0 +1,57 @@
+graph TB
+    subgraph CLIENT_LAYER["PRESENTATION & WORKSPACE TIER"]
+        UI_HERO["Unified Decision Terminal<br/>(Above-the-Fold Fact Matrix)"]
+        UI_CANVAS["HTML5 Dynamic Canvas Engine<br/>(Dual EMA Curves + Volume + Overlays)"]
+        UI_SCAN["Responsive Scanner Grid<br/>(1-Col Phone | 2-Col Tablet | 4-Col Desktop)"]
+        UI_MACRO["Collapsible Macro Accordion<br/>(Cycle / Mayer / Thesis / DCA)"]
+    end
+
+    subgraph API_TIER["API & DISPATCHING TIER (Starlette Async Gateway)"]
+        HTTP_ROUTER["Starlette Async Router<br/>(Event Loop / Starlette ASGI)"]
+        CACHE_STATE["In-Memory State & Polling Loop<br/>(5s Tickers | 15s Charts | 30s Signals | 60s Macro)"]
+        DATA_SYNC["Relative Temporal Tracker<br/>(Per-Feed Age & Candle Close Countdown)"]
+    end
+
+    subgraph ORCHESTRATION_TIER["AGENT GOVERNANCE & DOCTRINE ENFORCEMENT TIER"]
+        direction TB
+        APEX_ORCH["Master Orchestrator Agent (kb://discipline Enforcement)"]
+        
+        subgraph SPECIALISTS["Specialized Sub-Agent Directory"]
+            DATA_GUARD["🏗️ Data Engineering Agent<br/>(Ingestion Health, Cadence & Provenance)"]
+            SEC_GUARD["🛡️ Security Guard Agent<br/>(Key Segregation & Zero-Trust Audit)"]
+            PROTO_GUARD["⚡ MCP Protocol Agent<br/>(Pydantic FastMCP Contracts & Decimal Typing)"]
+            QUANT_GUARD["📊 Quant & Risk Agent<br/>(Net R:R Math, Closed-Bar Audit, Depth Gate)"]
+            UX_GUARD["🖥️ UX & Epistemic Agent<br/>(High-Density Design & Micro-Cap Formatting)"]
+        end
+    end
+
+    subgraph COMPUTATION_TIER["QUANTITATIVE ENGINE & MODEL TIER"]
+        SIG_ENGINE["Layer 4 Multi-Factor Engine<br/>(Trend, Momentum, MACD, %B, Lexicon)"]
+        LIQ_AUDIT["Layer 2 Order Book Depth Engine<br/>(Touch Spread bps, ±1% Depth USDT, Thin Filter)"]
+        DCA_SIM["DCA Backtester Engine<br/>(Historical Tranche Simulation & Fee Deductions)"]
+        THESIS_EVAL["Layer 5 Token Value Framework<br/>(kb://frameworks/token-value 5 Questions)"]
+    end
+
+    subgraph BOUNDARY_TIER["SECURITY & REVERSIBLE PHYSICAL EXECUTION GATE"]
+        MCP_SERVER["krmaazha-binance-mcp Process<br/>(Loads strictly BINANCE_READ_* keys)"]
+        IPC_BRIDGE["Unix Domain Socket / Windows Named Pipe<br/>(Zero-Memory Shared IPC Socket)"]
+        CONFIRMER["krmaazha-binance-mcp-confirmer Process<br/>(Loads strictly BINANCE_TRADE_* keys)"]
+        HUMAN_OPERATOR{{"🧑‍💻 Physical Human Confirmation Gate<br/>(Manual Enter / Keypress Required)"}}
+    end
+
+    subgraph EXTERNAL_TIER["EXTERNAL SOURCES & PUBLIC EXCHANGES"]
+        BINANCE_SPOT["Binance Spot Engine (REST/WS)"]
+        BINANCE_FUTURES["Binance USD-M Futures Engine"]
+        RSS_NEWS["Crypto News RSS Feeds"]
+        MACRO_APIS["Macro Index Aggregators"]
+    end
+
+    %% Tier Connections
+    CLIENT_LAYER <--> API_TIER
+    API_TIER <--> ORCHESTRATION_TIER
+    ORCHESTRATION_TIER <--> COMPUTATION_TIER
+    ORCHESTRATION_TIER <--> BOUNDARY_TIER
+    
+    COMPUTATION_TIER <--> EXTERNAL_TIER
+    BOUNDARY_TIER <--> BINANCE_SPOT
+    BOUNDARY_TIER <--> HUMAN_OPERATOR

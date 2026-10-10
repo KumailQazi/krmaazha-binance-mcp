@@ -6,7 +6,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from kainext_binance_mcp.derivatives import get_derivatives
+from krmaazha_binance_mcp.derivatives import get_derivatives
 
 
 def _client() -> MagicMock:

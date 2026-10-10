@@ -6,7 +6,7 @@ import asyncio
 import pytest
 from mcp.server.mcpserver import MCPServer
 
-from kainext_binance_mcp.knowledge import _RESOURCES, read_content, register_knowledge
+from krmaazha_binance_mcp.knowledge import _RESOURCES, read_content, register_knowledge
 
 
 def _fresh() -> MCPServer:
@@ -27,7 +27,7 @@ def test_all_resources_register_and_read_markdown() -> None:
 
 def test_resource_content_has_no_personal_data() -> None:
     """Salvaguarda de privacidad: el conocimiento es genérico, sin datos del operador."""
-    banned = ["alejandro", "kainext-hq", "clp", "$5.000.000", "106.661", "106661",
+    banned = ["alejandro", "krmaazha-hq", "clp", "$5.000.000", "106.661", "106661",
               "vault", "obsidian"]
     for _, (fname, _t) in _RESOURCES.items():
         text = read_content(fname).lower()

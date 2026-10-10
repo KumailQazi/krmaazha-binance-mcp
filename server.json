@@ -1,14 +1,14 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
-  "name": "io.github.Alejandrehl/kainext-binance-mcp",
+  "name": "io.github.Alejandrehl/krmaazha-binance-mcp",
   "title": "Binance (security-first) + crypto analyst",
-  "description": "Security-first Binance MCP + honest crypto analyst. 25 tools, 5 prompts, human-gated spot orders, offline futures research.",
+  "description": "Security-first Binance MCP + honest crypto analyst. 26 tools, 5 prompts, human-gated spot orders, offline futures research.",
   "version": "1.2.1",
-  "websiteUrl": "https://github.com/Alejandrehl/kainext-binance-mcp",
+  "websiteUrl": "https://github.com/Alejandrehl/krmaazha-binance-mcp",
   "packages": [
     {
       "registryType": "pypi",
-      "identifier": "kainext-binance-mcp",
+      "identifier": "krmaazha-binance-mcp",
       "version": "1.2.1",
       "transport": {
         "type": "stdio"

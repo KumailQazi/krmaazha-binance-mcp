@@ -31,7 +31,7 @@ class Server:
 
     def __init__(self) -> None:
         self.proc = subprocess.Popen(
-            [sys.executable, "-m", "kainext_binance_mcp.server"],
+            [sys.executable, "-m", "krmaazha_binance_mcp.server"],
             stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
             text=True, bufsize=1, cwd=ROOT, env=os.environ.copy(),
         )

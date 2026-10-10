@@ -2,8 +2,8 @@ from decimal import Decimal
 
 import pytest
 
-from kainext_binance_mcp.intents import IntentStateError, IntentStore
-from kainext_binance_mcp.models import CanonicalOrder, OrderResult
+from krmaazha_binance_mcp.intents import IntentStateError, IntentStore
+from krmaazha_binance_mcp.models import CanonicalOrder, OrderResult
 
 
 def _order():

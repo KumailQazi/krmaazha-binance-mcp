@@ -1,0 +1,80 @@
+flowchart TD
+    subgraph S1["1. INGESTION & DATA SOURCING"]
+        direction TB
+        B_REST["Binance Public REST API<br/>• /api/v3/klines (15m, 1h, 4h, 1d)<br/>• /api/v3/depth (Order Book L2)<br/>• /api/v3/ticker/24hr (Tickers)"]
+        F_HIST["Binance USD-M Futures Archive<br/>• 986 USD-M Instrument History<br/>• Delisted Token Audit Database"]
+        RSS_EXT["External News Feeds (RSS)<br/>• CoinDesk, Decrypt, The Block<br/>• Bitcoin Magazine Lexicon"]
+        MACRO_EXT["Macro Providers<br/>• Alternative.me (Fear & Greed)<br/>• Blockchain.info / Mempool (Hashrate)"]
+    end
+
+    subgraph S2["2. NORMALIZATION & INTEGRITY ENFORCEMENT"]
+        direction TB
+        VAL_SCHEMA["FastMCP & Pydantic Data Contracts<br/>• Strict Decimal Typing (No Float Drift)<br/>• ISO 8601 UTC Temporal Normalization<br/>• Missing Metric Safeguards (Null ATR/SMA)"]
+        BIAS_GUARD["Quantitative Integrity Gates<br/>• Closed-Bar Windowing (Bar t close, exec t+1)<br/>• Survivorship Bias Elimination Filter<br/>• Unvalidated Sentiment Tagging ([UNVALIDATED])"]
+    end
+
+    subgraph S3["3. ANALYTIC COMPUTATION & SIGNAL ENGINE"]
+        direction TB
+        IND_ENGINE["Technical Indicator Engine<br/>• EMA 12/26 (Trend, 30%)<br/>• RSI 14 (Momentum, 20%)<br/>• MACD 12/26/9 Hist (Velocity, 20%)<br/>• Bollinger %B 20,2 (Compression, 15%)<br/>• Lexicon Sentiment (15%)"]
+        LIQ_ENGINE["Liquidity & Depth Engine<br/>• Touch Spread (bps) Calculation<br/>• ±1% and ±2% Bid/Ask Depth (USDT)<br/>• Thin Book Fragility Classifier"]
+        RR_ENGINE["Trigger-Anchored Risk Engine<br/>• Entry Trigger (T) Anchoring<br/>• Gross R:R = |Target-T| / |T-Stop|<br/>• Friction = 20 bps fee + spread + 5 bps slip<br/>• Net R:R = (Gross Rew - Fric) / (Gross Risk + Fric)"]
+        DCA_ENGINE["Historical DCA Simulator<br/>• Multi-Month Cadence Backtest<br/>• 0.1% Modeled Taker Friction<br/>• DCA vs Lump-Sum Yield Differential"]
+    end
+
+    subgraph S4["4. MULTI-AGENT GOVERNANCE & ORCHESTRATION"]
+        direction TB
+        ORCH["🧠 Master Orchestrator Agent<br/>(Apex Triage & Institutional Synthesis)"]
+        
+        DATA_A["🏗️ Data Engineering Agent<br/>• Ingestion Health Audit<br/>• Pipeline Freshness Guard"]
+        SEC_A["🛡️ Security Guard Agent<br/>• Key Isolation Check<br/>• Zero-Trust Verifier"]
+        PROTO_A["⚡ Protocol Agent<br/>• CanonicalOrder Schema<br/>• Error Nonce Scrubbing"]
+        QUANT_A["📊 Quantitative Agent<br/>• Telemetry Audit Gate<br/>• Trade Authorization Gate"]
+        UX_A["🖥️ UX Agent<br/>• Epistemic Tagging<br/>• Micro-Cap Formatter"]
+    end
+
+    subgraph S5["5. SERVING & SECURE EXECUTION GATEWAY"]
+        direction TB
+        API_SRV["Fast Starlette REST Server<br/>(Uvicorn Async Runtime, Port 8999)<br/>• /api/tickers • /api/klines<br/>• /api/signals-scan • /api/orchestrator"]
+        MCP_PIPE["FastMCP Stdio Server<br/>(Read-Only Tools for LLM/Claude)"]
+        IPC_GATE["Physical Confirmer IPC Socket<br/>(Unix Domain Socket / Named Pipe)<br/>Strictly Isolated Process (BINANCE_TRADE_*)"]
+    end
+
+    subgraph S6["6. CLIENT DASHBOARD & TERMINAL V2"]
+        direction TB
+        D_HERO["Above-the-Fold Decision Terminal<br/>• Canonical State (WAITING / READY / AVOID)<br/>• Execution Bounds (Trigger, Stop, Target)<br/>• Trigger-Anchored Net R:R & Formula<br/>• Interactive USDT Sizing Calculator"]
+        D_CHART["Active Candlestick Canvas<br/>• EMA 12/26 & Volume Profile<br/>• Dynamic Trigger/Stop Overlays"]
+        D_SCANNER["Responsive 1/2/4-Col Signal Scanner<br/>• Non-Color Cues (🛑, ⏳, 📈)<br/>• Factor Decomposition Drawers"]
+        D_ACCORDION["Collapsible Macro Dossier<br/>• Fear & Greed • Mayer Cycle • Token Thesis"]
+    end
+
+    %% Pipeline Data Flows
+    B_REST --> VAL_SCHEMA
+    F_HIST --> BIAS_GUARD
+    RSS_EXT --> VAL_SCHEMA
+    MACRO_EXT --> VAL_SCHEMA
+
+    VAL_SCHEMA --> BIAS_GUARD
+    BIAS_GUARD --> IND_ENGINE
+    BIAS_GUARD --> LIQ_ENGINE
+    
+    IND_ENGINE --> RR_ENGINE
+    LIQ_ENGINE --> RR_ENGINE
+    IND_ENGINE --> DCA_ENGINE
+
+    RR_ENGINE --> ORCH
+    LIQ_ENGINE --> ORCH
+
+    ORCH <--> DATA_A
+    ORCH <--> SEC_A
+    ORCH <--> PROTO_A
+    ORCH <--> QUANT_A
+    ORCH <--> UX_A
+
+    ORCH --> API_SRV
+    ORCH --> MCP_PIPE
+    ORCH -.->|"Signed Trade Intent (IPC)"| IPC_GATE
+
+    API_SRV --> D_HERO
+    API_SRV --> D_CHART
+    API_SRV --> D_SCANNER
+    API_SRV --> D_ACCORDION

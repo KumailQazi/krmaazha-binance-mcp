@@ -2,8 +2,8 @@ from decimal import Decimal
 
 import pytest
 
-from kainext_binance_mcp.ipc import IpcProtocolError, decode_msg, encode_msg
-from kainext_binance_mcp.models import CanonicalOrder
+from krmaazha_binance_mcp.ipc import IpcProtocolError, decode_msg, encode_msg
+from krmaazha_binance_mcp.models import CanonicalOrder
 
 
 def test_register_roundtrip():

@@ -1,7 +1,7 @@
 """Tests de construcción de los modelos de capa 3 (plan Task 2, spec §4)."""
 from __future__ import annotations
 
-from kainext_binance_mcp.models import NewsItem, SentimentResult
+from krmaazha_binance_mcp.models import NewsItem, SentimentResult
 
 
 def test_news_item_construct() -> None:

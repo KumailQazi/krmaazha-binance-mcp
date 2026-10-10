@@ -16,9 +16,9 @@ import os
 
 import pytest
 
-from kainext_binance_mcp.models import NewsItem
-from kainext_binance_mcp.news.fetch import NewsCache, fetch_all
-from kainext_binance_mcp.news.sources import CoinDeskRSS, CryptoNewsRSS, NewsSource
+from krmaazha_binance_mcp.models import NewsItem
+from krmaazha_binance_mcp.news.fetch import NewsCache, fetch_all
+from krmaazha_binance_mcp.news.sources import CoinDeskRSS, CryptoNewsRSS, NewsSource
 
 pytestmark = [
     pytest.mark.integration,

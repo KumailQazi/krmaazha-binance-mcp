@@ -48,8 +48,8 @@ import numpy as np
 import pandas as pd
 from binance.client import Client
 
-from kainext_binance_mcp import indicators
-from kainext_binance_mcp.backtest import COMMISSION_TAKER, ema_cross, rsi_threshold, simulate
+from krmaazha_binance_mcp import indicators
+from krmaazha_binance_mcp.backtest import COMMISSION_TAKER, ema_cross, rsi_threshold, simulate
 
 DATA_SOURCE = "mainnet_public"
 

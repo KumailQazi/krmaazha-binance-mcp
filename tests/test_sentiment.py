@@ -5,7 +5,7 @@ frases conocidas bull→>0, bear→<0, neutra→0; alias case-insensitive.
 """
 from __future__ import annotations
 
-from kainext_binance_mcp.news.sentiment import detect_assets, score_text
+from krmaazha_binance_mcp.news.sentiment import detect_assets, score_text
 
 # --- score_text: rango y signo ---
 

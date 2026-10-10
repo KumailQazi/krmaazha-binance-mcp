@@ -3,7 +3,7 @@
 Este repo es **dos cosas a la vez**, y confundirlas es el error caro:
 
 1. **Un servidor MCP de Binance spot, en producción, con dinero real.** Publicado en PyPI
-   (`kainext-binance-mcp`) y en el MCP Registry. Lo usa el operador a diario. 25 tools,
+   (`krmaazha-binance-mcp`) y en el MCP Registry. Lo usa el operador a diario. 25 tools,
    5 prompts, 8 recursos `kb://`.
 2. **Un motor de research de futuros USD-M**, offline y sin keys, detrás del extra
    `[research]`. No expone ninguna tool. Es la Fase 0 de **Alpha**, el programa de trading sistemático del operador.
@@ -50,7 +50,7 @@ uv pip install -e ".[dev,research]"       # sin `research`, futures/ no importa 
 ruff check src/ tests/ examples/ && mypy && pytest -q
 ```
 
-- **Cobertura ≥ 90%**, medida sobre todo `kainext_binance_mcp` (incluye `futures/`).
+- **Cobertura ≥ 90%**, medida sobre todo `krmaazha_binance_mcp` (incluye `futures/`).
 - **Cero warnings.** `filterwarnings = ["error"]`: un warning nuevo rompe el build. Los
   ignores existentes nombran su causa upstream — no agregues uno sin explicar por qué.
 - **`tests/test_consistency.py`** falla cuando la documentación deja de describir el
@@ -74,7 +74,7 @@ DSR y PBO son lo que separa una de la otra. El rigor protege la plata, no la ree
 
 ## Nunca complaciente: la autoridad es la evidencia
 
-Regla del operador (`kainext-hq/CLAUDE.md` §4.5.11), y acá pesa más que en ningún otro repo
+Regla del operador (`krmaazha-hq/CLAUDE.md` §4.5.11), y acá pesa más que en ningún otro repo
 porque hay dinero real en juego:
 
 - **No asumas que el operador tiene razón por ser el operador.** Su input es contexto, no
@@ -106,7 +106,7 @@ La arquitectura y los gotchas de datos, en
 - **Decisiones y hallazgos (no to-dos):** el vault Obsidian del operador,
   `06-finanzas/inversiones/trading-journal/`. **Linear = accionable, vault = segundo
   cerebro.** No mezclar.
-- **Centro de mando:** `~/Sites/kainext-workspace/kainext-hq` — reglas transversales del
+- **Centro de mando:** `~/Sites/krmaazha-workspace/krmaazha-hq` — reglas transversales del
   operador (`CLAUDE.md` §4): plan→revisión→aprobación antes de ejecutar, barra 10/10,
   fechas `DD-MM-YYYY`, verificar la hora real antes de escribir un timestamp.
 

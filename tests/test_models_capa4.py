@@ -7,7 +7,7 @@ from __future__ import annotations
 
 from decimal import Decimal
 
-from kainext_binance_mcp.models import Signal, SignalFactor
+from krmaazha_binance_mcp.models import Signal, SignalFactor
 
 
 def test_signal_factor_construct() -> None:

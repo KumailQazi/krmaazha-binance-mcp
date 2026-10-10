@@ -7,8 +7,8 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from kainext_binance_mcp.klines import fetch_klines_range
-from kainext_binance_mcp.plans import backtest_dca, backtest_harvest
+from krmaazha_binance_mcp.klines import fetch_klines_range
+from krmaazha_binance_mcp.plans import backtest_dca, backtest_harvest
 
 _DAY_MS = 86_400_000
 

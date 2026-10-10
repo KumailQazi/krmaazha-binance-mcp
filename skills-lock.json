@@ -1,0 +1,173 @@
+{
+  "version": 1,
+  "skills": {
+    "ai-debt-detector": {
+      "source": "wshobson/agents",
+      "sourceType": "github",
+      "skillPath": "plugins/skill-forge-essentials/skills/ai-debt-detector/SKILL.md",
+      "computedHash": "c39efa23167f8977ff6c9e4a0e51ed4ec1b14937a45179b5a1eb20d52e81f934"
+    },
+    "airflow-dag-patterns": {
+      "source": "wshobson/agents",
+      "sourceType": "github",
+      "skillPath": "plugins/data-engineering/skills/airflow-dag-patterns/SKILL.md",
+      "computedHash": "6ecd0e3792f5296027cfcce6fbdfa5ff76be2fc7c7e59b28ac1252a278031344"
+    },
+    "async-python-patterns": {
+      "source": "wshobson/agents",
+      "sourceType": "github",
+      "skillPath": "plugins/python-development/skills/async-python-patterns/SKILL.md",
+      "computedHash": "15eb61c8d5c4870d57044cfb199d0aa028d8e1e73e9bb8cb6122da32c76efb77"
+    },
+    "backtesting-frameworks": {
+      "source": "wshobson/agents",
+      "sourceType": "github",
+      "skillPath": "plugins/quantitative-trading/skills/backtesting-frameworks/SKILL.md",
+      "computedHash": "792069fc176d944805f2136a8f98aa7c77ef138c25678baa03d282c5fe18159a"
+    },
+    "data-quality-frameworks": {
+      "source": "wshobson/agents",
+      "sourceType": "github",
+      "skillPath": "plugins/data-engineering/skills/data-quality-frameworks/SKILL.md",
+      "computedHash": "7ed3e07244c980c858c91906356f8d4bb34058833952d2841db8da881f7ec85b"
+    },
+    "dataset-curation": {
+      "source": "wshobson/agents",
+      "sourceType": "github",
+      "skillPath": "plugins/llm-finetuning/skills/dataset-curation/SKILL.md",
+      "computedHash": "981fbe1f7f6aeef893e3615e290a9adef8f1c3828d4b83cdfe2eaa8c004a9da8"
+    },
+    "dbt-transformation-patterns": {
+      "source": "wshobson/agents",
+      "sourceType": "github",
+      "skillPath": "plugins/data-engineering/skills/dbt-transformation-patterns/SKILL.md",
+      "computedHash": "79f3271827f7a29be343a25136dc10778a07435b319c8b45b374c95871785bb3"
+    },
+    "design-doc-mermaid": {
+      "source": "spillwavesolutions/design-doc-mermaid",
+      "sourceType": "github",
+      "skillPath": "SKILL.md",
+      "computedHash": "cee2494adc2d3bdbedbf2a4b1a87c7eda12482c0de1ec690d8c3c19b9a0c3ebc"
+    },
+    "embedding-strategies": {
+      "source": "wshobson/agents",
+      "sourceType": "github",
+      "skillPath": "plugins/llm-application-dev/skills/embedding-strategies/SKILL.md",
+      "computedHash": "33db81aeef54d8229e34f7b9975c304d3ec3b93a8fa901d8d41daa8b36e7bba7"
+    },
+    "eval-harness-first": {
+      "source": "wshobson/agents",
+      "sourceType": "github",
+      "skillPath": "plugins/llm-finetuning/skills/eval-harness-first/SKILL.md",
+      "computedHash": "03484cd9dec34d72f6f19aa634ac28d93e47fe4b8b351d3e7330179f96b89bdb"
+    },
+    "excalidraw-diagram": {
+      "source": "coleam00/excalidraw-diagram-skill",
+      "sourceType": "github",
+      "skillPath": "SKILL.md",
+      "computedHash": "1518f2b4ae190b4ea039e82327d42cd012d6d3f14623b87e7a30c2485e608f1b"
+    },
+    "external-diagram-mermaid-generate": {
+      "source": "forcedotcom/sf-skills",
+      "sourceType": "github",
+      "skillPath": "skills/external-diagram-mermaid-generate/SKILL.md",
+      "computedHash": "4dfdefe4511ee01ae2c5be1ca61ae2c8455c7fb0b6c3316f2df504d469f96185"
+    },
+    "frontend-design": {
+      "source": "anthropics/skills",
+      "sourceType": "github",
+      "skillPath": "skills/frontend-design/SKILL.md",
+      "computedHash": "106acf230014cbb43ca34e6410371321b56ca742f9ee0442e8ec05bf02eb0384"
+    },
+    "hybrid-search-implementation": {
+      "source": "wshobson/agents",
+      "sourceType": "github",
+      "skillPath": "plugins/llm-application-dev/skills/hybrid-search-implementation/SKILL.md",
+      "computedHash": "72d40cbc68219b3c404fe0a18c1bd15fb4d7b0aecd2b6f34d40d7bce9db187a2"
+    },
+    "improve-codebase-architecture": {
+      "source": "mattpocock/skills",
+      "sourceType": "github",
+      "skillPath": "skills/engineering/improve-codebase-architecture/SKILL.md",
+      "computedHash": "f74b0bf1be26220dd615523fc1c0562567f9c463d9e9b255d4031345ffb37cd3"
+    },
+    "llm-evaluation": {
+      "source": "wshobson/agents",
+      "sourceType": "github",
+      "skillPath": "plugins/llm-application-dev/skills/llm-evaluation/SKILL.md",
+      "computedHash": "332a4e3b14710a7ebb4555b79ad83c0581ab7cdeed15899b5009efc7912d5c4c"
+    },
+    "mcp-builder": {
+      "source": "anthropics/skills",
+      "sourceType": "github",
+      "skillPath": "skills/mcp-builder/SKILL.md",
+      "computedHash": "6498a736a8dc5c645047c8a875b8ea7417e2ad97146f005200e50d20a9337ada"
+    },
+    "mermaid-diagrams": {
+      "source": "softaworks/agent-toolkit",
+      "sourceType": "github",
+      "skillPath": "skills/mermaid-diagrams/SKILL.md",
+      "computedHash": "b6c206a3cab0333a1d3d3cf27114099d0d5f25eb07d86c8f12472b7aa7d59a4c"
+    },
+    "ml-pipeline-workflow": {
+      "source": "wshobson/agents",
+      "sourceType": "github",
+      "skillPath": "plugins/machine-learning-ops/skills/ml-pipeline-workflow/SKILL.md",
+      "computedHash": "f72d6581a0d4422211378315b58096b6782976f29247be787abbe44f5f49e97c"
+    },
+    "postgresql-table-design": {
+      "source": "wshobson/agents",
+      "sourceType": "github",
+      "skillPath": "plugins/database-design/skills/postgresql-table-design/SKILL.md",
+      "computedHash": "d9832627098bddf570aef2219092625faf6b2a14aeeb0f6fb96ed691a020100a"
+    },
+    "prompt-engineering-patterns": {
+      "source": "wshobson/agents",
+      "sourceType": "github",
+      "skillPath": "plugins/llm-application-dev/skills/prompt-engineering-patterns/SKILL.md",
+      "computedHash": "3cfeff53f7cbc7b33a5ea1624c1d38563f22c6f7e52ad00b5c9a8b822a763a44"
+    },
+    "python-testing-patterns": {
+      "source": "wshobson/agents",
+      "sourceType": "github",
+      "skillPath": "plugins/python-development/skills/python-testing-patterns/SKILL.md",
+      "computedHash": "66b0f13c33ca5689ce6d59dfc6c441bacf3d017299d8ee3c30a028299e5d28e9"
+    },
+    "rag-implementation": {
+      "source": "wshobson/agents",
+      "sourceType": "github",
+      "skillPath": "plugins/llm-application-dev/skills/rag-implementation/SKILL.md",
+      "computedHash": "305766e72769b5531ec77e3653f9546d04e4be7d6e170580f1fb32ba6b843743"
+    },
+    "risk-metrics-calculation": {
+      "source": "wshobson/agents",
+      "sourceType": "github",
+      "skillPath": "plugins/quantitative-trading/skills/risk-metrics-calculation/SKILL.md",
+      "computedHash": "40015a8745324f5d73b7354d94c937efea424c94fd2c96702e7258c96bf2e5a9"
+    },
+    "security-review": {
+      "source": "getsentry/skills",
+      "sourceType": "github",
+      "skillPath": "skills/security-review/SKILL.md",
+      "computedHash": "57e404df6c743ec59b82ed5c1454a4a5234f5012e644ff7ffaa8beccfb1aba43"
+    },
+    "spark-optimization": {
+      "source": "wshobson/agents",
+      "sourceType": "github",
+      "skillPath": "plugins/data-engineering/skills/spark-optimization/SKILL.md",
+      "computedHash": "e3e17902d2f6dd98f37a2d0c5758c4f4447a9a076dd5e18856f35871f0811cb2"
+    },
+    "sql-optimization-patterns": {
+      "source": "wshobson/agents",
+      "sourceType": "github",
+      "skillPath": "plugins/developer-essentials/skills/sql-optimization-patterns/SKILL.md",
+      "computedHash": "6f9779817c6f1b077347687c2b16e884506a519d0c2a3eaa2c320709bf273139"
+    },
+    "vector-index-tuning": {
+      "source": "wshobson/agents",
+      "sourceType": "github",
+      "skillPath": "plugins/llm-application-dev/skills/vector-index-tuning/SKILL.md",
+      "computedHash": "21d96bd22adb823b78a4f12a191049d322980ec7a38f1bba0471956763cf1450"
+    }
+  }
+}

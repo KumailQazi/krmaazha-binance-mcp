@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Krmaazha Binance Intelligence Terminal V2</title>
+  <meta name="description" content="Institutional-grade crypto intelligence, zero-lookahead indicators, trigger-anchored Net R:R, epistemic provenance, and physical execution gates.">
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+  <!-- Top Navigation & Tickers -->
+  <header>
+    <div class="header-top">
+      <div class="logo-area">
+        <div class="logo-badge">KRMAAZHA V2</div>
+        <div class="logo-title">Binance MCP Decision Terminal</div>
+      </div>
+      <div class="system-status">
+        <span class="status-pill"><span class="pulse-dot"></span> LIVE ENGINE</span>
+        <span class="env-tag" id="lastSyncTag" style="font-family: var(--font-mono); color: var(--accent-gold); border-color: var(--accent-gold-glow);">
+          🕒 Synced: <span id="syncTime">Connecting...</span> <span id="syncAgo" style="color: var(--text-muted); font-size: 10px;"></span>
+        </span>
+        <button class="btn-chip" id="manualRefreshBtn" title="Refresh all market data now" style="display: flex; align-items: center; gap: 5px;">
+          <span id="refreshIcon">🔄</span> Refresh
+        </button>
+        <span class="env-tag">MAINNET (READ-ONLY)</span>
+        <button class="btn-chip" id="openTestOrderBtn" style="border-color: var(--accent-gold); color: var(--accent-gold);">
+          ⚡ Test Order Gate
+        </button>
+      </div>
+    </div>
+
+    <!-- Ticker Tape Ribbon -->
+    <div class="ticker-tape" id="tickerTape">
+      <div class="ticker-item"><span class="ticker-sym">LOADING TICKERS...</span></div>
+    </div>
+  </header>
+
+  <!-- Main Content Dashboard -->
+  <main>
+
+    <!-- ================================================================= -->
+    <!-- ABOVE-THE-FOLD: DECISION-CRITICAL TERMINAL & CANONICAL HERO CARD  -->
+    <!-- ================================================================= -->
+    <section class="decision-terminal-section" id="decisionTerminalSection">
+      
+      <!-- Symbol Selector Bar & Time Horizon -->
+      <div class="terminal-selector-bar">
+        <div class="symbol-selector-group">
+          <span class="selector-label">Target Asset:</span>
+          <div class="symbol-selector" id="symbolButtons">
+            <button class="btn-chip active" data-symbol="BTCUSDT">BTC/USDT</button>
+            <button class="btn-chip" data-symbol="ETHUSDT">ETH/USDT</button>
+            <button class="btn-chip" data-symbol="SOLUSDT">SOL/USDT</button>
+            <button class="btn-chip" data-symbol="BNBUSDT">BNB/USDT</button>
+            <button class="btn-chip" data-symbol="DOGEUSDT">DOGE/USDT</button>
+            <button class="btn-chip" data-symbol="NOMUSDT">NOM/USDT</button>
+            <button class="btn-chip" data-symbol="RESOLVUSDT">RESOLV/USDT</button>
+            <button class="btn-chip" data-symbol="XVGUSDT">XVG/USDT</button>
+          </div>
+          <div class="custom-pair-wrap">
+            <input type="text" id="customPairInput" placeholder="Custom Pair" class="btn-chip" style="background:#0b0f19; width:120px; text-transform:uppercase;">
+            <button id="customPairBtn" class="btn-chip" style="background:rgba(240,185,11,0.15); color:var(--accent-gold); border-color:rgba(240,185,11,0.3); font-weight:700;">Go</button>
+          </div>
+        </div>
+        <div class="execution-mode-tag">
+          <span class="mode-pill spot">SPOT ONLY • CASH DISCIPLINE</span>
+          <span class="mode-pill tf">1H CLOSED BAR</span>
+        </div>
+      </div>
+
+      <!-- Telemetry & Epistemic Provenance Ribbon -->
+      <div class="telemetry-provenance-ribbon" id="telemetryRibbon">
+        <div class="tel-item">
+          <span class="tel-lbl">Venue & Market <span class="epistemic-badge epistemic-fact">[OBSERVED]</span></span>
+          <span class="tel-val" id="telVenue">Binance Spot (USDT)</span>
+        </div>
+        <div class="tel-item">
+          <span class="tel-lbl">Last Price / 24h</span>
+          <span class="tel-val" id="telPriceRow">
+            <span id="telLastPrice" class="price-val">$--</span>
+            <span id="telChange24h" class="delta-val">--%</span>
+          </span>
+        </div>
+        <div class="tel-item">
+          <span class="tel-lbl">Touch Spread <span class="epistemic-badge epistemic-fact">[OBSERVED]</span></span>
+          <span class="tel-val" id="telSpread" style="color:var(--accent-gold);">-- bps</span>
+        </div>
+        <div class="tel-item">
+          <span class="tel-lbl">±1% Depth <span class="epistemic-badge epistemic-fact">[OBSERVED]</span></span>
+          <span class="tel-val" id="telDepth" style="color:var(--accent-green);">$0 USDT</span>
+        </div>
+        <div class="tel-item">
+          <span class="tel-lbl">Execution Status</span>
+          <span class="tel-val" id="telBookStatus">● Liquid Depth</span>
+        </div>
+        <div class="tel-item">
+          <span class="tel-lbl">Data Provenance</span>
+          <span class="tel-val" id="telFreshness">Updated: just now</span>
+        </div>
+        <div class="tel-item">
+          <span class="tel-lbl">Candle Close Timer</span>
+          <span class="tel-val" id="telBarTimer" style="color:#38bdf8;">Next 1h bar in --m</span>
+        </div>
+      </div>
+
+      <!-- Canonical Decision Hero Card -->
+      <div class="glass decision-hero-card" id="decisionHeroCard">
+        
+        <!-- Top Status Row: Plain-Language Decision State -->
+        <div class="decision-hero-header" id="decisionHeroHeader">
+          <div class="decision-primary-state" id="decisionPrimaryState">
+            <span class="state-icon" id="stateIcon">⏳</span>
+            <div class="state-text-wrap">
+              <div class="state-sub-title">CANONICAL SYSTEM DECISION STATE</div>
+              <div class="state-main-title" id="stateMainTitle">
+                WAITING — Long only if a completed 1h candle closes above trigger price
+              </div>
+            </div>
+          </div>
+          <div class="decision-action-badge" id="decisionActionBadge">
+            <span class="action-tag action-wait" id="actionTag">HOLD / WAIT</span>
+          </div>
+        </div>
+
+        <!-- Strategy Stance Disambiguation Strip (Long vs Cash-Hedge vs Short) -->
+        <div class="action-disambiguation-strip">
+          <div class="action-col" id="colActionLong">
+            <div class="act-col-head">
+              <span class="act-dot green"></span>
+              <span class="act-title">LONG ENTRY</span>
+            </div>
+            <div class="act-desc" id="actLongDesc">Only valid if 1h candle confirms close above trigger price.</div>
+          </div>
+          <div class="action-col" id="colActionHedge">
+            <div class="act-col-head">
+              <span class="act-dot red"></span>
+              <span class="act-title">SPOT DEFENSE / EXIT</span>
+            </div>
+            <div class="act-desc" id="actHedgeDesc">Preserves cash capital. Invalidation cut-loss for existing inventory. <b>NOT A SHORT.</b></div>
+          </div>
+          <div class="action-col" id="colActionShort">
+            <div class="act-col-head">
+              <span class="act-dot gray"></span>
+              <span class="act-title">SHORT SELL (DISABLED)</span>
+            </div>
+            <div class="act-desc">Spot market only. Under <code>kb://discipline</code> Rule 3, no shorting thin alts.</div>
+          </div>
+        </div>
+
+        <!-- Execution Bounds Grid: Trigger / Stop / Target / Net R:R -->
+        <div class="execution-bounds-grid">
+          
+          <div class="bound-card trigger-card">
+            <div class="bound-head">
+              <span>Observable Entry Trigger</span>
+              <span class="epistemic-badge epistemic-calc">[CALCULATED]</span>
+            </div>
+            <div class="bound-price" id="boundTriggerPrice">$--</div>
+            <div class="bound-sub" id="boundTriggerSub">Requires confirmed 1h close to eliminate intra-bar wicks</div>
+          </div>
+
+          <div class="bound-card stop-card">
+            <div class="bound-head">
+              <span>Invalidation Stop Loss</span>
+              <span class="epistemic-badge epistemic-calc">[CALCULATED]</span>
+            </div>
+            <div class="bound-price" id="boundStopPrice" style="color:var(--accent-red);">$--</div>
+            <div class="bound-sub" id="boundStopSub">Setup invalidated if price touches this boundary</div>
+          </div>
+
+          <div class="bound-card target-card">
+            <div class="bound-head">
+              <span>Profit Objective Target</span>
+              <span class="epistemic-badge epistemic-calc">[CALCULATED]</span>
+            </div>
+            <div class="bound-price" id="boundTargetPrice" style="color:var(--accent-green);">$--</div>
+            <div class="bound-sub" id="boundTargetSub">Conservative ATR-based projection</div>
+          </div>
+
+          <div class="bound-card net-rr-card">
+            <div class="bound-head">
+              <span>Trigger-Anchored Net R:R</span>
+              <span class="epistemic-badge epistemic-calc">[POST-FRICTION]</span>
+            </div>
+            <div class="bound-price" id="boundNetRR" style="color:#6ee7b7; font-family:var(--font-mono);">-- : 1</div>
+            <div class="bound-sub" id="boundNetRRSub">Computed from Trigger Price, not Quote</div>
+          </div>
+
+        </div>
+
+        <!-- Formula & Friction Assumptions Box -->
+        <div class="friction-assumptions-box">
+          <div class="formula-line">
+            <span class="formula-label">📐 Institutional Net R:R Formula:</span>
+            <code class="formula-code">Net R:R = (Gross Reward % - Total Friction %) / (Gross Risk % + Total Friction %)</code>
+          </div>
+          <div class="assumptions-line" id="assumptionsLine">
+            <span><b>Deducted Friction:</b> Taker Fee: 20.0 bps (0.20%) | Touch Spread: <span id="assumpSpread">--</span> bps | Est. Slippage: 5.0 bps | Total: <span id="assumpTotal">--</span> bps</span>
+          </div>
+        </div>
+
+        <!-- Interactive Position Sizing & USDT Max Loss Calculator -->
+        <div class="position-sizer-box">
+          <div class="sizer-input-group">
+            <label for="posSizeUsdt"><b>💼 Sizing Simulation (USDT Allocation):</b></label>
+            <div class="sizer-input-wrap">
+              <span class="sizer-curr">$</span>
+              <input type="number" id="posSizeUsdt" value="1000" min="10" max="1000000" step="50">
+              <span class="sizer-unit">USDT</span>
+            </div>
+          </div>
+          <div class="sizer-results-row">
+            <div class="sizer-kpi loss">
+              <span class="sizer-kpi-lbl">Est. Invalidation Loss at Stop:</span>
+              <span class="sizer-kpi-val" id="sizerLossVal">-$0.00 USDT (-0.00%)</span>
+            </div>
+            <div class="sizer-kpi gain">
+              <span class="sizer-kpi-lbl">Est. Net Gain at Target:</span>
+              <span class="sizer-kpi-val" id="sizerGainVal">+$0.00 USDT (+0.00%)</span>
+            </div>
+            <div class="sizer-kpi cost">
+              <span class="sizer-kpi-lbl">Round-Trip Friction Cost:</span>
+              <span class="sizer-kpi-val" id="sizerCostVal">-$0.00 USDT</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dual-Tier Audit Gates: Telemetry Verification vs Trade Authorization -->
+        <div class="dual-gates-row">
+          
+          <!-- Tier 1: Technical & Telemetry Checks -->
+          <div class="gate-card tier-technical">
+            <div class="gate-head">
+              <span class="gate-tier-tag">TIER 1 CHECKS</span>
+              <span class="gate-title">Telemetry & Mathematical Audits</span>
+              <span class="epistemic-badge epistemic-fact">[OBSERVED FACT]</span>
+            </div>
+            <div class="gate-checklist" id="tier1Checklist">
+              <div class="check-item"><span class="check-icon">✓</span> Order Book Depth: <span id="chkDepth" class="chk-val">PASS ($0 ±1%)</span></div>
+              <div class="check-item"><span class="check-icon">✓</span> Touch Spread: <span id="chkSpread" class="chk-val">PASS (0.00 bps)</span></div>
+              <div class="check-item"><span class="check-icon">✓</span> Zero-Lookahead Bar: <span class="chk-val">PASS (Bar t confirmed, open t+1)</span></div>
+              <div class="check-item"><span class="check-icon">✓</span> FastMCP Decimals: <span class="chk-val">PASS (Exact Decimal precision)</span></div>
+            </div>
+          </div>
+
+          <!-- Tier 2: Trade Authorization Gate -->
+          <div class="gate-card tier-auth">
+            <div class="gate-head">
+              <span class="gate-tier-tag" style="background:rgba(240,185,11,0.2); color:var(--accent-gold);">TIER 2 GATE</span>
+              <span class="gate-title">Physical Confirmer Authorization Gate</span>
+              <span class="epistemic-badge epistemic-auth">[AUTHORIZATION]</span>
+            </div>
+            <div class="auth-gate-status" id="authGateStatus">
+              <div class="auth-badge-row">
+                <span class="auth-status-pill standby" id="authPill">STANDBY / GATE LOCKED</span>
+                <span class="auth-keys-note">Read-Key Isolated • Trade-Key Confirmer Offline</span>
+              </div>
+              <p class="auth-explanation" id="authExplanation">
+                All telemetry audits passed, but trade authorization requires a physical signature through the standalone confirmer process. No automated path can trigger real capital orders.
+              </p>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Single-Sentence Institutional Bottom Line Synthesis -->
+        <div class="institutional-bottom-line-wrap">
+          <div class="bottom-line-header">
+            <div class="bl-title-grp">
+              <span>🧠</span>
+              <span class="bl-title-text">Master Orchestrator Institutional Bottom Line</span>
+              <span class="epistemic-badge epistemic-verified">[IMPROVEMENTS.MD STANDARD]</span>
+            </div>
+            <button class="copy-verdict-btn" id="copyVerdictBtn">📋 Copy Verdict</button>
+          </div>
+          <div class="bottom-line-callout-text" id="canonicalBottomLine">
+            "At [timestamp], [instrument] is [state]. The setup is valid only if [condition]; it is invalidated by [condition]. Costs/risks are [items]. Otherwise, no trade."
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ================================================================= -->
+    <!-- SECTION 2: CANONICAL CANDLESTICK CHART & EXECUTION OVERLAYS      -->
+    <!-- ================================================================= -->
+    <section class="chart-section" id="chartSection">
+      <div class="glass chart-card">
+        <div class="chart-toolbar">
+          <div class="chart-title-area">
+            <span class="chart-title" id="chartSymbolTitle">BTC/USDT 1h Candlestick Structure</span>
+            <span class="chart-sub-note">EMA 12/26 Overlays • Volume Profile • Zero-Lookahead</span>
+          </div>
+          <div class="timeframe-group" id="tfButtons">
+            <button class="tf-btn" data-tf="15m">15m</button>
+            <button class="tf-btn active" data-tf="1h">1h</button>
+            <button class="tf-btn" data-tf="4h">4h</button>
+            <button class="tf-btn" data-tf="1d">1d</button>
+          </div>
+          <div class="liquidity-pill" id="chartLiquidityPill">
+            <span style="color: var(--text-muted);">Liquidity:</span>
+            <span id="chartSpreadBps" style="color: var(--accent-gold); font-family: var(--font-mono); font-weight: 700;">-- bps</span>
+            <span style="color: var(--border-subtle);">|</span>
+            <span id="chartDepth1pct" style="color: var(--accent-green); font-family: var(--font-mono); font-weight: 600;">$0 USDT</span>
+            <span id="chartThinBadge" style="display:none; color: #f6465d; font-weight: 700;">⚠️ Thin</span>
+          </div>
+        </div>
+
+        <div class="canvas-wrapper">
+          <canvas id="candleChart"></canvas>
+        </div>
+
+        <div class="chart-legend">
+          <div class="legend-item"><span class="legend-color" style="background: #0ecb81;"></span> Bullish Bar</div>
+          <div class="legend-item"><span class="legend-color" style="background: #f6465d;"></span> Bearish Bar</div>
+          <div class="legend-item"><span class="legend-color" style="background: #f0b90b;"></span> EMA 12</div>
+          <div class="legend-item"><span class="legend-color" style="background: #00f0ff;"></span> EMA 26</div>
+          <div class="legend-item" style="margin-left: auto;" id="chartCursorPrice">Price: --</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================= -->
+    <!-- SECTION 3: SYSTEMATIC MULTI-ASSET SIGNAL SCANNER (LAYER 4)        -->
+    <!-- Responsive Hierarchy: 1-col mobile, 2-col tablet, 4-col desktop   -->
+    <!-- ================================================================= -->
+    <section class="scanner-section" id="scannerSection">
+      <div class="section-header">
+        <div>
+          <h2 class="section-title"><span class="title-icon">⚡</span> Systematic Signal Scanner (Layer 4)</h2>
+          <div class="section-subtitle">Zero-Lookahead Indicators • Closed 1h Bars • Click Card to Focus Decision Terminal Above</div>
+        </div>
+        <div class="scanner-legend-pills">
+          <span class="legend-pill" title="Cash capital defense; do not accumulate. NOT a short sell.">🛑 AVOID (Cash Defense)</span>
+          <span class="legend-pill" title="Range-bound / Unconfirmed; waiting for close above trigger.">⏳ WAITING / NEUTRAL</span>
+          <span class="legend-pill" title="Systematic spot dip accumulation setup.">📈 ACCUMULATE (Long)</span>
+        </div>
+      </div>
+
+      <!-- Responsive Grid: 1 col on mobile (<768px), 2 col tablet (<1200px), 4 col desktop -->
+      <div class="scanner-grid" id="scannerGrid">
+        <div class="glass signal-card">Scanning multi-factor market signals...</div>
+      </div>
+    </section>
+
+    <!-- ================================================================= -->
+    <!-- SECTION 4: COLLAPSIBLE MACRO CONTEXT & LONG-TERM DOSSIER          -->
+    <!-- Background reference that does NOT compete with entry conditions  -->
+    <!-- ================================================================= -->
+    <details class="macro-context-accordion" id="macroAccordion">
+      <summary class="macro-accordion-summary">
+        <div class="summary-left">
+          <span class="summary-icon">🧭</span>
+          <div>
+            <div class="summary-title">Market Macro Context, Cycle Analytics & Long-Term Investment Thesis</div>
+            <div class="summary-subtitle">Collapsible background reference: Fear & Greed, Halving Cycles, Mayer Multiple, Token Value Capture & DCA Simulator</div>
+          </div>
+        </div>
+        <div class="summary-right">
+          <span class="accordion-badge">CLICK TO EXPAND / COLLAPSE</span>
+          <span class="accordion-arrow">▼</span>
+        </div>
+      </summary>
+
+      <div class="accordion-content">
+        
+        <!-- 4-Card Macro Grid -->
+        <div class="macro-grid">
+          <div class="glass macro-card">
+            <div class="macro-header">
+              <span>Fear & Greed Index <span class="epistemic-badge epistemic-fact">[OBSERVED]</span></span>
+              <span id="fgLabelBadge" class="signal-badge neutral">...</span>
+            </div>
+            <div class="macro-val" id="macroFgVal">--</div>
+            <div class="macro-sub" id="macroFgSub">7-day trend loading...</div>
+          </div>
+
+          <div class="glass macro-card">
+            <div class="macro-header">
+              <span>BTC Dominance</span>
+              <span>Market Weight</span>
+            </div>
+            <div class="macro-val" id="macroBtcDom">--%</div>
+            <div class="macro-sub">Total Market Cap: <span id="macroTotalMcap" style="color: #fff;">$--</span></div>
+          </div>
+
+          <div class="glass macro-card">
+            <div class="macro-header">
+              <span>Cycle Drawdown</span>
+              <span>From ATH</span>
+            </div>
+            <div class="macro-val" id="macroAthDrawdown" style="color: var(--accent-red);">--%</div>
+            <div class="macro-sub">All-time High: <span id="macroAthPrice" style="color: #fff;">$126,080</span></div>
+          </div>
+
+          <div class="glass macro-card">
+            <div class="macro-header">
+              <span>Bitcoin Hashrate</span>
+              <span>Network Security</span>
+            </div>
+            <div class="macro-val" id="macroHashrate">-- EH/s</div>
+            <div class="macro-sub">Next Halving: <span id="macroHalving" style="color: var(--accent-gold);">~April 2028</span></div>
+          </div>
+        </div>
+
+        <!-- Sentiment Thermometer & Mayer Cycle Panel -->
+        <div class="macro-gauges-row">
+          <div class="glass gauge-panel">
+            <div class="section-title" style="font-size: 15px;">
+              <span class="title-icon">🧭</span> Sentiment Thermometer (Layer 3 Raw Feed)
+            </div>
+            <div class="gauge-wrapper">
+              <svg class="gauge-svg" viewBox="0 0 220 120">
+                <path d="M 20 110 A 90 90 0 0 1 200 110" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="16" stroke-linecap="round"/>
+                <path d="M 20 110 A 90 90 0 0 1 65 42" fill="none" stroke="#f6465d" stroke-width="16" stroke-linecap="round"/>
+                <path d="M 65 42 A 90 90 0 0 1 110 20" fill="none" stroke="#f97316" stroke-width="16"/>
+                <path d="M 110 20 A 90 90 0 0 1 155 42" fill="none" stroke="#eab308" stroke-width="16"/>
+                <path d="M 155 42 A 90 90 0 0 1 200 110" fill="none" stroke="#0ecb81" stroke-width="16" stroke-linecap="round"/>
+                <line id="gaugeNeedle" class="gauge-needle" x1="110" y1="110" x2="110" y2="35" stroke="#fff" stroke-width="3" stroke-linecap="round"/>
+                <circle cx="110" cy="110" r="6" fill="#f0b90b"/>
+              </svg>
+            </div>
+            <div class="gauge-score" id="gaugeScoreVal">--</div>
+            <div class="gauge-label" id="gaugeLabelText">NEUTRAL</div>
+          </div>
+
+          <div class="glass cycle-panel">
+            <div class="section-title" style="font-size: 15px; margin-bottom: 12px;">
+              <span class="title-icon">🔄</span> Mayer Multiple & Cycle Valuation
+            </div>
+            <div class="cycle-stat">
+              <span class="cycle-lbl">Mayer Multiple</span>
+              <span class="cycle-val" id="cycleMayer">1.19</span>
+            </div>
+            <div class="cycle-stat">
+              <span class="cycle-lbl">200-day SMA</span>
+              <span class="cycle-val" id="cycleSma">$71,615</span>
+            </div>
+            <div class="cycle-stat">
+              <span class="cycle-lbl">Cycle Regime</span>
+              <span class="cycle-val" style="color: var(--accent-gold);">Accumulation / Fair</span>
+            </div>
+            <div class="cycle-stat">
+              <span class="cycle-lbl">Next Halving Est.</span>
+              <span class="cycle-val">~April 2028</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dedicated Asset Thesis Dossier Section (/asset_thesis) -->
+        <div class="thesis-section" id="thesisSection" style="margin-top: 24px;">
+          <div class="section-header">
+            <h2 class="section-title"><span class="title-icon">🎯</span> Asset Investment Thesis & Value Capture (kb://frameworks/token-value)</h2>
+            <span class="env-tag">Objective Evaluation • No Hype</span>
+          </div>
+
+          <div class="glass" style="padding: 24px;">
+            <div class="thesis-toolbar">
+              <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+                <span style="font-size: 13px; font-weight: 600; color: var(--text-secondary);">Target Asset:</span>
+                <div class="symbol-selector" id="thesisSymbolButtons">
+                  <button class="btn-chip active" data-symbol="SOLUSDT">SOL/USDT</button>
+                  <button class="btn-chip" data-symbol="BTCUSDT">BTC/USDT</button>
+                  <button class="btn-chip" data-symbol="ETHUSDT">ETH/USDT</button>
+                  <button class="btn-chip" data-symbol="BNBUSDT">BNB/USDT</button>
+                  <button class="btn-chip" data-symbol="DOGEUSDT">DOGE/USDT</button>
+                  <button class="btn-chip" data-symbol="NOMUSDT">NOM/USDT</button>
+                  <button class="btn-chip" data-symbol="RESOLVUSDT">RESOLV/USDT</button>
+                  <button class="btn-chip" data-symbol="XVGUSDT">XVG/USDT</button>
+                </div>
+                <div style="display: flex; gap: 8px; margin-left: auto; flex-wrap: wrap;">
+                  <input type="text" id="customThesisInput" placeholder="Custom Symbol" class="btn-chip" style="background:#0b0f19; width:140px; text-transform:uppercase;">
+                  <button id="runThesisBtn" class="btn-chip active" style="background: linear-gradient(135deg, var(--accent-gold), #e0a300); color:#000; font-weight:700;">
+                    ⚡ Generate Thesis Dossier
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div id="thesisOutputContainer" style="margin-top: 20px;">
+              <div style="text-align: center; padding: 40px; color: var(--text-muted);">
+                Click <b>Generate Thesis Dossier</b> to evaluate the asset under the 5 value-capture questions.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Interactive DCA Backtest Simulator -->
+        <div class="dca-container" style="margin-top: 24px;">
+          <div class="section-header">
+            <h2 class="section-title"><span class="title-icon">📈</span> Interactive DCA vs Lump Sum Backtest</h2>
+            <span class="env-tag">Zero-Lookahead • 0.1% Fee Modeled</span>
+          </div>
+          <div class="dca-section">
+            <div class="glass dca-controls">
+              <div class="control-group">
+                <div class="control-label">
+                  <span>Target Asset</span>
+                  <span class="control-val" id="dcaAssetLbl">BTC/USDT</span>
+                </div>
+                <select id="dcaAssetSelect" class="btn-chip" style="background:#111827; width:100%; padding:10px;">
+                  <option value="BTCUSDT">BTC/USDT (Bitcoin)</option>
+                  <option value="ETHUSDT">ETH/USDT (Ethereum)</option>
+                  <option value="SOLUSDT">SOL/USDT (Solana)</option>
+                  <option value="NOMUSDT">NOM/USDT (Onomy)</option>
+                  <option value="RESOLVUSDT">RESOLV/USDT (Resolv)</option>
+                  <option value="XVGUSDT">XVG/USDT (Verge)</option>
+                </select>
+              </div>
+
+              <div class="control-group">
+                <div class="control-label">
+                  <span>Monthly Allocation</span>
+                  <span class="control-val" id="dcaMonthlyVal">$500</span>
+                </div>
+                <input type="range" id="dcaMonthlyInput" min="50" max="2500" step="50" value="500">
+              </div>
+
+              <div class="control-group">
+                <div class="control-label">
+                  <span>Time Horizon (Months)</span>
+                  <span class="control-val" id="dcaMonthsVal">12 Months</span>
+                </div>
+                <input type="range" id="dcaMonthsInput" min="3" max="36" step="1" value="12">
+              </div>
+
+              <button id="runDcaBtn" class="btn-chip active" style="margin-top: 10px; padding: 12px; font-weight:700;">
+                Re-simulate Historical DCA
+              </button>
+            </div>
+
+            <div class="glass dca-results-card">
+              <div class="dca-kpis">
+                <div class="dca-kpi-item">
+                  <div class="dca-kpi-lbl">Total Invested</div>
+                  <div class="dca-kpi-val" id="dcaKpiInvested">$6,000</div>
+                </div>
+                <div class="dca-kpi-item">
+                  <div class="dca-kpi-lbl">Current DCA Value</div>
+                  <div class="dca-kpi-val" id="dcaKpiValue" style="color: var(--accent-green);">$6,824</div>
+                </div>
+                <div class="dca-kpi-item">
+                  <div class="dca-kpi-lbl">DCA Net Return</div>
+                  <div class="dca-kpi-val" id="dcaKpiPnl" style="color: var(--accent-green);">+13.7%</div>
+                </div>
+                <div class="dca-kpi-item">
+                  <div class="dca-kpi-lbl">Lump Sum Value</div>
+                  <div class="dca-kpi-val" id="dcaKpiLump" style="color: var(--accent-red);">$4,922</div>
+                </div>
+              </div>
+
+              <svg class="dca-chart-svg" id="dcaChartSvg" viewBox="0 0 700 240"></svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- Autonomous Multi-Agent Directory -->
+        <div class="glass" style="padding: 20px; margin-top: 24px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 14px;">
+            <div style="font-size: 13px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;">
+              Active Multi-Agent System Registry (5 Autonomous Roles)
+            </div>
+            <span style="font-size: 11px; background: rgba(14, 203, 129, 0.12); color: var(--accent-green); padding: 3px 8px; border-radius: 4px; font-weight: 600;">
+              ● 5 AGENTS OPERATIONAL
+            </span>
+          </div>
+          <div class="orchestrator-agents-grid" id="orchestratorAgentsGrid">
+            <div style="color:var(--text-muted); padding:10px;">Loading multi-agent registry...</div>
+          </div>
+        </div>
+
+        <!-- Curated News Feed & Knowledge Base -->
+        <div class="intel-grid" style="margin-top: 24px;">
+          <div class="glass news-card">
+            <div class="section-header">
+              <h3 class="section-title"><span class="title-icon">📰</span> Curated News & Sentiment (Layer 3)</h3>
+              <span class="signal-badge neutral" id="newsSentimentBadge" title="Raw news lexicon score without predictive regression validation.">
+                [UNVALIDATED RAW FEED]
+              </span>
+            </div>
+            <div class="news-list" id="newsList">
+              <div class="news-item">Loading live RSS headlines from CoinDesk, Decrypt, The Block...</div>
+            </div>
+          </div>
+
+          <div class="glass doctrine-card">
+            <div class="section-header">
+              <h3 class="section-title"><span class="title-icon">📚</span> MCP Knowledge Doctrine</h3>
+            </div>
+            <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 14px;">
+              Operating discipline injected into the Master Orchestrator:
+            </p>
+            <div id="doctrineList">
+              <!-- Loaded dynamically -->
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </details>
+
+  </main>
+
+  <!-- Physical Order Gate Modal Demo -->
+  <div class="modal-overlay" id="orderModal">
+    <div class="modal-content">
+      <div class="modal-banner">
+        ⚠️ REAL MONEY (MAINNET) EXECUTION GATE
+      </div>
+      <p style="font-size: 14px; color: #cbd5e1; margin-bottom: 12px;">
+        The AI has proposed an order intent. In the actual system, the MCP server cannot execute; it passes canonical fields to the human confirmer process.
+      </p>
+      <pre class="modal-pre" id="modalOrderDetails">
+BUY LIMIT  BTCUSDT
+Effective quantity: 0.05 BTC
+Price: $84,500.00  (GTC)
+Estimated notional: $4,225.00 USDT
+Estimated fee: $4.23 USDT (0.10% taker)
+Validation: LOT_SIZE, MIN_NOTIONAL passed
+      </pre>
+      <div class="modal-actions">
+        <button class="btn-cancel" id="modalCancelBtn" autofocus>Cancel (Default)</button>
+        <button class="btn-confirm" id="modalConfirmBtn">Approve Order</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/static/dashboard.js"></script>
+</body>
+</html>

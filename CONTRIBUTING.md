@@ -1,6 +1,6 @@
 # Contributing
 
-Thanks for your interest in `kainext-binance-mcp`. This is a small, security-sensitive
+Thanks for your interest in `krmaazha-binance-mcp`. This is a small, security-sensitive
 codebase that handles real money, so the bar for changes is deliberately high.
 
 ## Ground rules
@@ -12,7 +12,7 @@ codebase that handles real money, so the bar for changes is deliberately high.
 - **Never commit secrets.** `.env` is git-ignored; credentials live in your shell, never in
   the repo. `.mcp.json` **is** versioned but may only declare remote OAuth servers —
   `tests/test_consistency.py` fails the build if anything credential-shaped appears in it.
-- **The futures package stays keyless.** `kainext_binance_mcp.futures` must never import a
+- **The futures package stays keyless.** `krmaazha_binance_mcp.futures` must never import a
   client or read an API key: it reads public archives only, and the server never imports it.
 
 ## Development setup
@@ -20,8 +20,8 @@ codebase that handles real money, so the bar for changes is deliberately high.
 Requires Python 3.12+ and [uv](https://docs.astral.sh/uv/).
 
 ```bash
-git clone git@github.com:Alejandrehl/kainext-binance-mcp.git
-cd kainext-binance-mcp
+git clone git@github.com:Alejandrehl/krmaazha-binance-mcp.git
+cd krmaazha-binance-mcp
 uv venv --python 3.12
 uv pip install -e ".[dev,research]"
 ```

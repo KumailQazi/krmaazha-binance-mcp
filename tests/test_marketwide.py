@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from decimal import Decimal
 
-from kainext_binance_mcp.marketwide import (
+from krmaazha_binance_mcp.marketwide import (
     CACHE_TTL_SECONDS,
     TtlCache,
     get_market_structure,

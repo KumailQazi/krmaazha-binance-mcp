@@ -5,8 +5,8 @@ from unittest.mock import MagicMock
 from binance.client import Client
 from binance.exceptions import BinanceAPIException
 
-from kainext_binance_mcp.models import CanonicalOrder
-from kainext_binance_mcp_confirmer.executor import handle_cancel_intent, handle_intent
+from krmaazha_binance_mcp.models import CanonicalOrder
+from krmaazha_binance_mcp_confirmer.executor import handle_cancel_intent, handle_intent
 
 
 def _order():

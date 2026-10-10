@@ -6,8 +6,8 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from kainext_binance_mcp.models import MarketStructure
-from kainext_binance_mcp.tools.analytics import (
+from krmaazha_binance_mcp.models import MarketStructure
+from krmaazha_binance_mcp.tools.analytics import (
     _ann_vol_pct,
     _corr,
     _max_drawdown_pct,
@@ -41,7 +41,7 @@ def _ms(**overrides) -> MarketStructure:
 def test_cycle_computes_mayer_and_uses_ath() -> None:
     c = MagicMock()
     c.get_klines.return_value = _klines([100.0] * 199 + [120.0])
-    with patch("kainext_binance_mcp.tools.analytics.marketwide") as mw:
+    with patch("krmaazha_binance_mcp.tools.analytics.marketwide") as mw:
         mw.get_market_structure.return_value = _ms()
         res = analyze_cycle(c, "BTCUSDT")
     assert res.price == Decimal("120.0")

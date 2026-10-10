@@ -6,7 +6,7 @@ from __future__ import annotations
 
 from decimal import Decimal
 
-from kainext_binance_mcp.models import (
+from krmaazha_binance_mcp.models import (
     BacktestResult,
     IndicatorResult,
     Kline,

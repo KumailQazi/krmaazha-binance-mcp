@@ -1,7 +1,7 @@
 from decimal import Decimal
 
-from kainext_binance_mcp.models import CanonicalOrder, OrderPreview
-from kainext_binance_mcp_confirmer.dialog import (
+from krmaazha_binance_mcp.models import CanonicalOrder, OrderPreview
+from krmaazha_binance_mcp_confirmer.dialog import (
     escape_applescript,
     parse_osascript_result,
     render_dialog_text,

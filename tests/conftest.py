@@ -5,7 +5,7 @@ import pytest
 
 @pytest.fixture
 def symbol_filters_btcusdt():
-    from kainext_binance_mcp.market import SymbolFilters
+    from krmaazha_binance_mcp.market import SymbolFilters
     return SymbolFilters(
         symbol="BTCUSDT",
         tick_size=Decimal("0.01"),

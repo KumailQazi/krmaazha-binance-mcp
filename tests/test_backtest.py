@@ -10,7 +10,7 @@ from __future__ import annotations
 import pandas as pd
 import pytest
 
-from kainext_binance_mcp.backtest import (
+from krmaazha_binance_mcp.backtest import (
     COMMISSION_TAKER,
     STRATEGIES,
     backtest_df,
@@ -18,7 +18,7 @@ from kainext_binance_mcp.backtest import (
     rsi_threshold,
     simulate,
 )
-from kainext_binance_mcp.models import BacktestResult
+from krmaazha_binance_mcp.models import BacktestResult
 
 
 def _df(rows: list[dict[str, float]]) -> pd.DataFrame:

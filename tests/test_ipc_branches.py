@@ -17,8 +17,8 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from kainext_binance_mcp.intents import IntentStore
-from kainext_binance_mcp.ipc import (
+from krmaazha_binance_mcp.intents import IntentStore
+from krmaazha_binance_mcp.ipc import (
     IpcClient,
     IpcProtocolError,
     IpcUnavailableError,
@@ -27,7 +27,7 @@ from kainext_binance_mcp.ipc import (
     encode_msg,
     serve,
 )
-from kainext_binance_mcp.models import CanonicalOrder, OrderPreview
+from krmaazha_binance_mcp.models import CanonicalOrder, OrderPreview
 
 # --- decode_msg / _read_line: ramas unitarias --------------------------------
 
@@ -129,7 +129,7 @@ def running_server(monkeypatch):
     tmpdir = tempfile.mkdtemp(prefix="kbm-ipc-br-")
     sock_path = os.path.join(tmpdir, "confirmer.sock")
 
-    import kainext_binance_mcp_confirmer.dialog as dialog
+    import krmaazha_binance_mcp_confirmer.dialog as dialog
     monkeypatch.setattr(dialog, "ask_confirmation", lambda text: False)
 
     store = IntentStore(ttl_seconds=300, now=lambda: int(time.time()))
@@ -195,7 +195,7 @@ def test_serve_breaks_loop_and_cleans_up_on_socket_close(monkeypatch):
     cierra+unlinkea el socket. Determinista y portable: forzamos el OSError en accept() en
     vez de cerrar el socket desde otro hilo (en Linux, cerrar un fd NO interrumpe de forma
     fiable un accept() bloqueado en otro hilo → sería flaky en CI)."""
-    import kainext_binance_mcp.ipc as ipc_mod
+    import krmaazha_binance_mcp.ipc as ipc_mod
 
     tmpdir = tempfile.mkdtemp(prefix="kbm-shut-", dir="/tmp")
     sock_path = os.path.join(tmpdir, "confirmer.sock")
@@ -211,7 +211,7 @@ def test_serve_breaks_loop_and_cleans_up_on_socket_close(monkeypatch):
             return super().accept()
 
     monkeypatch.setattr(ipc_mod.socket, "socket", _AcceptRaisesOnce)
-    import kainext_binance_mcp_confirmer.dialog as dialog
+    import krmaazha_binance_mcp_confirmer.dialog as dialog
     monkeypatch.setattr(dialog, "ask_confirmation", lambda text: False)
 
     store = IntentStore(ttl_seconds=300, now=lambda: int(time.time()))
@@ -234,7 +234,7 @@ def test_serve_unlinks_stale_socket_path(monkeypatch):
     sock_path = os.path.join(tmpdir, "confirmer.sock")
     open(sock_path, "w").close()  # archivo stale ocupando el path
 
-    import kainext_binance_mcp_confirmer.dialog as dialog
+    import krmaazha_binance_mcp_confirmer.dialog as dialog
     monkeypatch.setattr(dialog, "ask_confirmation", lambda text: False)
     store = IntentStore(ttl_seconds=300, now=lambda: int(time.time()))
     client = MagicMock()

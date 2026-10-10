@@ -13,8 +13,8 @@ from decimal import Decimal
 import pytest
 from pydantic import BaseModel
 
-from kainext_binance_mcp import models
-from kainext_binance_mcp.models import (
+from krmaazha_binance_mcp import models
+from krmaazha_binance_mcp.models import (
     AssetBalance,
     DerivativesSnapshot,
     Kline,

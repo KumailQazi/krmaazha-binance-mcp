@@ -4,8 +4,8 @@ from unittest.mock import MagicMock
 
 from binance.exceptions import BinanceAPIException
 
-from kainext_binance_mcp.models import OrderPreview
-from kainext_binance_mcp.tools.write import spot_order_propose, spot_order_status
+from krmaazha_binance_mcp.models import OrderPreview
+from krmaazha_binance_mcp.tools.write import spot_order_propose, spot_order_status
 
 
 def test_propose_registers_canonical_and_returns_intent():
@@ -33,7 +33,7 @@ def test_status_relays():
 def test_cancel_propose_skips_if_not_cancelable():
     ipc = MagicMock(); client = MagicMock()
     client.get_order.return_value = {"status": "FILLED"}
-    from kainext_binance_mcp.tools.write import cancel_order_propose
+    from krmaazha_binance_mcp.tools.write import cancel_order_propose
     out = cancel_order_propose(ipc=ipc, client=client, symbol="BTCUSDT", order_id=1, env="testnet")
     assert out.error is not None and "cancelable" in out.error.message.lower()
     ipc.register_cancel.assert_not_called()
@@ -43,7 +43,7 @@ def test_cancel_propose_registers_when_cancelable():
     ipc = MagicMock(); client = MagicMock()
     client.get_order.return_value = {"status": "NEW"}
     ipc.register_cancel.return_value = ("intent-c1", 1700000000)
-    from kainext_binance_mcp.tools.write import cancel_order_propose
+    from krmaazha_binance_mcp.tools.write import cancel_order_propose
     out = cancel_order_propose(ipc=ipc, client=client, symbol="BTCUSDT", order_id=1, env="testnet")
     assert out.error is None and out.intent_id == "intent-c1"
     ipc.register_cancel.assert_called_once()
@@ -63,7 +63,7 @@ def test_cancel_propose_handles_get_order_raising_without_traceback():
     client.API_KEY = "READ_KEY_LEAK_abc"; client.API_SECRET = "READ_SECRET_def"
     raw = json.dumps({"code": -2013, "msg": "Order does not exist for key READ_KEY_LEAK_abc"})
     client.get_order.side_effect = BinanceAPIException(_Resp(raw), 400, raw)  # tipo real
-    from kainext_binance_mcp.tools.write import cancel_order_propose
+    from krmaazha_binance_mcp.tools.write import cancel_order_propose
     out = cancel_order_propose(ipc=ipc, client=client, symbol="BTCUSDT", order_id=1, env="testnet")
     assert out.intent_id is None
     assert out.error is not None and out.error.code == -2013
@@ -75,7 +75,7 @@ def test_cancel_propose_handles_get_order_raising_without_traceback():
 def test_cancel_status_relays():
     ipc = MagicMock()
     ipc.status.return_value = {"intent_id": "ic1", "state": "pending"}
-    from kainext_binance_mcp.tools.write import cancel_order_status
+    from krmaazha_binance_mcp.tools.write import cancel_order_status
     out = cancel_order_status(ipc=ipc, intent_id="ic1")
     assert out.state == "pending"
 
@@ -86,8 +86,8 @@ def test_propose_returns_tool_error_when_confirmer_down():
     from decimal import Decimal
     from unittest.mock import MagicMock
 
-    from kainext_binance_mcp.ipc import IpcUnavailableError
-    from kainext_binance_mcp.tools.write import cancel_order_propose, spot_order_propose
+    from krmaazha_binance_mcp.ipc import IpcUnavailableError
+    from krmaazha_binance_mcp.tools.write import cancel_order_propose, spot_order_propose
 
     ipc = MagicMock()
     ipc.register.side_effect = IpcUnavailableError("confirmer not running")

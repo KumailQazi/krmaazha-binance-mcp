@@ -1,13 +1,13 @@
 from decimal import Decimal
 
-from kainext_binance_mcp.market import (
+from krmaazha_binance_mcp.market import (
     MarketEstimator,
     parse_symbol_filters,
     round_to_step,
     round_to_tick,
     validate_notional,
 )
-from kainext_binance_mcp.models import CanonicalOrder
+from krmaazha_binance_mcp.models import CanonicalOrder
 
 
 def test_round_qty_floor_to_step():

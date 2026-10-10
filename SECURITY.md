@@ -16,7 +16,7 @@ a fully-compromised model **cannot move funds on its own**.
   (`BINANCE_READ_*`). It can read balances/markets and *propose* orders, but it has no
   credential capable of executing a trade.
 - **Execution lives in a separate process.** The confirmer
-  (`kainext-binance-mcp-confirmer`) is the *only* component with the **trade** key
+  (`krmaazha-binance-mcp-confirmer`) is the *only* component with the **trade** key
   (`BINANCE_TRADE_*`), and you launch it yourself in your own shell. The trade key is never
   passed to the MCP server or to the AI client's environment.
 - **Human-in-the-loop for every irreversible action.** No order or cancellation executes
@@ -46,7 +46,7 @@ confirmer process) **and** your physical click. The model has neither.
 
 If you find a security issue, **please do not open a public issue.** Report it privately:
 
-- GitHub: open a [private security advisory](https://github.com/Alejandrehl/kainext-binance-mcp/security/advisories/new)
+- GitHub: open a [private security advisory](https://github.com/Alejandrehl/krmaazha-binance-mcp/security/advisories/new)
 - Or email the maintainer (see the GitHub profile of [@Alejandrehl](https://github.com/Alejandrehl)).
 
 You'll get an acknowledgement as soon as possible. Please include reproduction steps and the
@@ -58,13 +58,13 @@ This project is pre-1.0 and evolving. Security fixes target the latest `main`.
 
 ## Note on the futures research engine
 
-`kainext_binance_mcp.futures` is **keyless by construction**. It reads Binance's public
+`krmaazha_binance_mcp.futures` is **keyless by construction**. It reads Binance's public
 archives (`data.binance.vision`) over plain HTTP with **no API key header at all** — strictly
 less exposed than the signed spot path below. It has **no code path that could place,
 cancel, or propose an order**, exposes no MCP tools, and the server never imports it.
 
 One footprint worth naming: it **caches downloaded archives to disk**, by default under
-`~/.cache/kainext-futures/` (override with `KAINEXT_FUTURES_DATA_DIR`). The cache holds
+`~/.cache/krmaazha-futures/` (override with `KRMAAZHA_FUTURES_DATA_DIR`). The cache holds
 public market data only — no account data, no credentials.
 
 ## Note on public futures endpoints (v1.1+)
@@ -85,5 +85,5 @@ exactly and audited in CI (`pip-audit`); CodeQL runs on every push.
 
 ## The watch process (v1.2)
 
-`kainext-binance-mcp-watch` holds **no credentials** and talks only to public endpoints;
+`krmaazha-binance-mcp-watch` holds **no credentials** and talks only to public endpoints;
 it can notify but has no code path that could place, cancel, or propose an order.

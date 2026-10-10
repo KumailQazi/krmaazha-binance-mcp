@@ -9,7 +9,7 @@ from __future__ import annotations
 from decimal import Decimal
 from unittest.mock import MagicMock
 
-from kainext_binance_mcp import server as srv
+from krmaazha_binance_mcp import server as srv
 
 
 def _register(client, ipc, market, *, is_testnet=True):
@@ -71,7 +71,7 @@ def test_write_tools_delegate_to_ipc_and_never_execute():
     ipc.status.return_value = {"intent_id": "iid-1", "state": "pending",
                                "result": None, "error": None}
     client.get_order.return_value = {"status": "NEW"}
-    from kainext_binance_mcp.models import OrderPreview
+    from krmaazha_binance_mcp.models import OrderPreview
     market = MagicMock()
     market.estimate.return_value = OrderPreview(
         effective_qty=Decimal("0.0002"), price=None, est_notional=Decimal("10"),
@@ -116,7 +116,7 @@ def test_capa2_marketdata_tools_delegate_to_client():
         "lowPrice": "49000", "volume": "1234.5", "lastPrice": "50500"}
     tm = _register(client, MagicMock(), MagicMock(), is_testnet=True)
 
-    from kainext_binance_mcp.models import (
+    from krmaazha_binance_mcp.models import (
         BacktestResult,
         IndicatorResult,
         Kline,
@@ -145,9 +145,9 @@ def test_capa3_news_tools_delegate_without_client(monkeypatch):
 
     No reciben client (RSS público). Mockeamos el registro de fuentes para no tocar red.
     """
-    from kainext_binance_mcp.models import NewsItem, SentimentResult
-    from kainext_binance_mcp.news import fetch as fetchmod
-    from kainext_binance_mcp.tools import news as news_tools
+    from krmaazha_binance_mcp.models import NewsItem, SentimentResult
+    from krmaazha_binance_mcp.news import fetch as fetchmod
+    from krmaazha_binance_mcp.tools import news as news_tools
 
     class _FakeSource:
         name = "coindesk"
@@ -184,8 +184,8 @@ def test_capa3_news_tools_delegate_without_client(monkeypatch):
 def test_capa4_signal_tools_delegate_to_client(monkeypatch):
     """Las 2 tools de capa 4 quedan registradas, delegan en el client read (capa 2) y el
     sentiment (capa 3, mockeado para no tocar red), y NUNCA ejecutan."""
-    from kainext_binance_mcp.models import SentimentResult, Signal
-    from kainext_binance_mcp.tools import signals as signals_tools
+    from krmaazha_binance_mcp.models import SentimentResult, Signal
+    from krmaazha_binance_mcp.tools import signals as signals_tools
 
     def _fake_sentiment(asset, **_):
         return SentimentResult(asset=asset, window_hours=24, score=0.4,
@@ -224,12 +224,12 @@ def test_analyst_tools_delegate_and_never_execute():
             "binance_analyze_cycle", "binance_analyze_portfolio",
             "binance_assess_risk", "binance_backtest_dca",
             "binance_backtest_harvest"} <= names
-    assert len(names) == 25  # el conteo del producto: si cambia, actualizar docs/README
+    assert len(names) == 26  # el conteo del producto (25 base + binance_get_order_book_depth)
 
     rep = _fn(tm, "binance_analyze_portfolio")()
     assert rep.total_value_usdt == Decimal("0")
 
-    with patch("kainext_binance_mcp.server._get_market_structure") as gm:
+    with patch("krmaazha_binance_mcp.server._get_market_structure") as gm:
         gm.return_value = MagicMock()
         _fn(tm, "binance_get_market_structure")()
         gm.assert_called_once()

@@ -8,8 +8,8 @@ import urllib.request
 
 import pytest
 
-import kainext_binance_mcp_confirmer.confirm_backends as cb
-from kainext_binance_mcp.config import ConfigError, load_confirm_mode
+import krmaazha_binance_mcp_confirmer.confirm_backends as cb
+from krmaazha_binance_mcp.config import ConfigError, load_confirm_mode
 
 # --- load_confirm_mode ---
 
@@ -27,7 +27,7 @@ def test_resolve_backend_mapping(monkeypatch) -> None:
     monkeypatch.setattr(cb.sys, "platform", "linux")
     assert cb.resolve_backend("auto") is cb.web_confirm
     monkeypatch.setattr(cb.sys, "platform", "darwin")
-    from kainext_binance_mcp_confirmer.dialog import ask_confirmation
+    from krmaazha_binance_mcp_confirmer.dialog import ask_confirmation
     assert cb.resolve_backend("auto") is ask_confirmation
 
 

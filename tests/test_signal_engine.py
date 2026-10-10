@@ -17,8 +17,8 @@ from decimal import Decimal
 
 import pytest
 
-from kainext_binance_mcp.models import Signal
-from kainext_binance_mcp.signals.engine import (
+from krmaazha_binance_mcp.models import Signal
+from krmaazha_binance_mcp.signals.engine import (
     DEFAULT_ATR_MULT,
     DEFAULT_RR,
     DEFAULT_THRESHOLD,

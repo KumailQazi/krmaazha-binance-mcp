@@ -11,8 +11,8 @@ from unittest.mock import MagicMock
 import pandas as pd
 import pytest
 
-from kainext_binance_mcp.klines import fetch_klines, klines_to_models
-from kainext_binance_mcp.models import Kline
+from krmaazha_binance_mcp.klines import fetch_klines, klines_to_models
+from krmaazha_binance_mcp.models import Kline
 
 
 def _binance_rows() -> list[list[object]]:

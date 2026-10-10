@@ -1,7 +1,7 @@
 from decimal import Decimal
 from unittest.mock import MagicMock
 
-from kainext_binance_mcp.tools.read import get_balance, get_open_orders, get_price
+from krmaazha_binance_mcp.tools.read import get_balance, get_open_orders, get_price
 
 
 def test_get_balance_filters_nonzero_and_uses_decimal():
@@ -34,7 +34,7 @@ def test_get_account_info_testnet_omits_key_perms():
     c = MagicMock()
     c.get_account.return_value = {"canTrade": True, "accountType": "SPOT",
                                   "commissionRates": {"maker": "0.001", "taker": "0.001"}}
-    from kainext_binance_mcp.tools.read import get_account_info
+    from krmaazha_binance_mcp.tools.read import get_account_info
     info = get_account_info(c, is_testnet=True)
     assert info.key_permissions is None and info.can_trade
 
@@ -44,7 +44,7 @@ def test_read_tools_validate_symbol_and_limit():
 
     import pytest
 
-    from kainext_binance_mcp.tools.read import get_order_history, get_price
+    from krmaazha_binance_mcp.tools.read import get_order_history, get_price
 
     client = MagicMock()
     with pytest.raises(ValueError, match="invalid symbol"):

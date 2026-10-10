@@ -7,8 +7,8 @@ from __future__ import annotations
 
 from binance.client import Client
 
-from kainext_binance_mcp.indicators import atr, rsi
-from kainext_binance_mcp.klines import fetch_klines
+from krmaazha_binance_mcp.indicators import atr, rsi
+from krmaazha_binance_mcp.klines import fetch_klines
 
 PAIRS = [
     "BTCUSDT", "ETHUSDT", "SOLUSDT", "BNBUSDT", "XRPUSDT", "ADAUSDT",

@@ -19,7 +19,7 @@ import math
 import pandas as pd
 import pytest
 
-from kainext_binance_mcp.indicators import atr, bollinger, ema, macd, rsi
+from krmaazha_binance_mcp.indicators import atr, bollinger, ema, macd, rsi
 
 
 def test_ema_golden_alpha_half() -> None:

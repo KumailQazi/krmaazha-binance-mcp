@@ -1,6 +1,6 @@
 import pytest
 
-from kainext_binance_mcp.config import (
+from krmaazha_binance_mcp.config import (
     ConfigError,
     load_confirmer_settings,
     load_server_settings,

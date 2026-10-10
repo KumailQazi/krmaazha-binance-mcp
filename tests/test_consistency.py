@@ -16,8 +16,8 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from kainext_binance_mcp import server as srv
-from kainext_binance_mcp.knowledge import _RESOURCES
+from krmaazha_binance_mcp import server as srv
+from krmaazha_binance_mcp.knowledge import _RESOURCES
 
 ROOT = Path(__file__).resolve().parent.parent
 README = (ROOT / "README.md").read_text(encoding="utf-8")
@@ -81,7 +81,7 @@ def test_readme_tool_table_lists_every_registered_tool() -> None:
 
 
 def test_readme_prompt_count_matches_registered_prompts() -> None:
-    from kainext_binance_mcp.knowledge import prompts as p
+    from krmaazha_binance_mcp.knowledge import prompts as p
 
     registered = {
         name
@@ -92,7 +92,7 @@ def test_readme_prompt_count_matches_registered_prompts() -> None:
 
 
 def test_resources_are_consistent_across_registry_files_and_readme() -> None:
-    content_dir = ROOT / "src" / "kainext_binance_mcp" / "knowledge" / "content"
+    content_dir = ROOT / "src" / "krmaazha_binance_mcp" / "knowledge" / "content"
     files = {f.name for f in content_dir.glob("*.md")}
     declared = {fname for fname, _title in _RESOURCES.values()}
     assert declared == files, (sorted(declared), sorted(files))
@@ -159,7 +159,7 @@ def test_declared_scope_matches_what_the_package_ships() -> None:
     `_INSTRUCTIONS` no es documentación: MCPServer lo inyecta en TODA sesión de todo
     cliente MCP. Dejarlo obsoleto le da reglas viejas a cada sesión de IA.
     """
-    ships_futures = (ROOT / "src" / "kainext_binance_mcp" / "futures").is_dir()
+    ships_futures = (ROOT / "src" / "krmaazha_binance_mcp" / "futures").is_dir()
     if not ships_futures:
         pytest.skip("el paquete aún no expone research de futuros")
     assert not _claims_spot_only(PYPROJECT["project"]["description"])

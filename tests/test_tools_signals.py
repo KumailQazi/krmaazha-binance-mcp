@@ -14,9 +14,9 @@ from unittest.mock import MagicMock
 import pandas as pd
 import pytest
 
-from kainext_binance_mcp.models import SentimentResult, Signal
-from kainext_binance_mcp.signals import common
-from kainext_binance_mcp.tools import signals as sig_tools
+from krmaazha_binance_mcp.models import SentimentResult, Signal
+from krmaazha_binance_mcp.signals import common
+from krmaazha_binance_mcp.tools import signals as sig_tools
 
 
 def _binance_klines(n: int, *, slope: float) -> list[list[Any]]:
@@ -162,7 +162,7 @@ def test_scan_signals_empty_list() -> None:
 # --------------------------------------------------------------------------- #
 
 def test_binance_backtest_signal_wires_klines_to_backtest() -> None:
-    from kainext_binance_mcp.models import BacktestResult
+    from krmaazha_binance_mcp.models import BacktestResult
 
     client = MagicMock()
     client.get_klines.return_value = _binance_klines(140, slope=1.0)  # alcista

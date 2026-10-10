@@ -18,9 +18,9 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from kainext_binance_mcp.intents import IntentStore
-from kainext_binance_mcp.ipc import IpcClient, IpcUnavailableError, encode_msg, serve
-from kainext_binance_mcp.models import CanonicalOrder, OrderPreview
+from krmaazha_binance_mcp.intents import IntentStore
+from krmaazha_binance_mcp.ipc import IpcClient, IpcUnavailableError, encode_msg, serve
+from krmaazha_binance_mcp.models import CanonicalOrder, OrderPreview
 
 
 def _order() -> CanonicalOrder:
@@ -41,7 +41,7 @@ def running_socket(monkeypatch):
     sock_path = os.path.join(tmpdir, "confirmer.sock")
 
     # Stub del clic: SIEMPRE False (no ejecutar).
-    import kainext_binance_mcp_confirmer.dialog as dialog
+    import krmaazha_binance_mcp_confirmer.dialog as dialog
     monkeypatch.setattr(dialog, "ask_confirmation", lambda text: False)
 
     store = IntentStore(ttl_seconds=300, now=lambda: int(time.time()))
@@ -138,7 +138,7 @@ def test_anti_spam_rejects_when_too_many_pending(monkeypatch):
     sock_path = os.path.join(tmpdir, "confirmer.sock")
 
     block = threading.Event()
-    import kainext_binance_mcp_confirmer.dialog as dialog
+    import krmaazha_binance_mcp_confirmer.dialog as dialog
     # El diálogo se queda bloqueado → los intents quedan 'pending' (diálogo abierto).
     monkeypatch.setattr(dialog, "ask_confirmation", lambda text: block.wait(timeout=5) or False)
 

@@ -9,9 +9,9 @@ from __future__ import annotations
 
 import pytest
 
-from kainext_binance_mcp.models import NewsItem, SentimentResult
-from kainext_binance_mcp.news.fetch import NewsCache
-from kainext_binance_mcp.tools import news as news_tools
+from krmaazha_binance_mcp.models import NewsItem, SentimentResult
+from krmaazha_binance_mcp.news.fetch import NewsCache
+from krmaazha_binance_mcp.tools import news as news_tools
 
 
 class _FakeSource:

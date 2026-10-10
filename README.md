@@ -1,11 +1,11 @@
-# kainext-binance-mcp
+# krmaazha-binance-mcp
 
-[![CI](https://github.com/Alejandrehl/kainext-binance-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/Alejandrehl/kainext-binance-mcp/actions/workflows/ci.yml)
+[![CI](https://github.com/Alejandrehl/krmaazha-binance-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/Alejandrehl/krmaazha-binance-mcp/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Python 3.12+](https://img.shields.io/badge/python-3.12%2B-blue.svg)](https://www.python.org/)
 [![MCP](https://img.shields.io/badge/MCP-server-7c3aed)](https://modelcontextprotocol.io/)
-[![PyPI](https://img.shields.io/pypi/v/kainext-binance-mcp.svg)](https://pypi.org/project/kainext-binance-mcp/)
-[![Downloads](https://img.shields.io/pypi/dm/kainext-binance-mcp.svg)](https://pypi.org/project/kainext-binance-mcp/)
+[![PyPI](https://img.shields.io/pypi/v/krmaazha-binance-mcp.svg)](https://pypi.org/project/krmaazha-binance-mcp/)
+[![Downloads](https://img.shields.io/pypi/dm/krmaazha-binance-mcp.svg)](https://pypi.org/project/krmaazha-binance-mcp/)
 [![Typed: mypy strict](https://img.shields.io/badge/typed-mypy%20strict-blue.svg)](pyproject.toml)
 
 > **Let an AI assistant read Binance markets, analyze them, and *propose* real-money
@@ -18,9 +18,9 @@
   <em>The gate. Every order renders exactly what will execute — and the default button is Cancel.</em>
 </p>
 
-`kainext-binance-mcp` is a [Model Context Protocol](https://modelcontextprotocol.io/) server
+`krmaazha-binance-mcp` is a [Model Context Protocol](https://modelcontextprotocol.io/) server
 that connects any MCP client (Claude Code, Claude Desktop, …) to a Binance account.
-It exposes **25 tools**, **5 analyst prompts** and **8 knowledge resources** spanning live
+It exposes **26 tools**, **5 analyst prompts** and **8 knowledge resources** spanning live
 market data, technical indicators, news & sentiment, derivatives positioning, market
 structure, portfolio/risk analytics, transparent trading signals, and **two-phase order
 execution with a human in the loop** — a complete, honest crypto analysis consultant in
@@ -56,8 +56,8 @@ Two processes, least privilege, human-in-the-loop:
 
 | Process | Launched by | Key | Role |
 |---|---|---|---|
-| **MCP server** `kainext-binance-mcp` | your MCP client (stdio) | **read-only** (`BINANCE_READ_*`) | reads, pre-validates, and **proposes** orders. **Never executes, holds no trade key.** |
-| **Confirmer** `kainext-binance-mcp-confirmer` | **you**, in a separate terminal | **trade** (`BINANCE_TRADE_*`) | the **sole authority**: receives canonical fields, renders the dialog, re-validates, and **executes only on your click**. |
+| **MCP server** `krmaazha-binance-mcp` | your MCP client (stdio) | **read-only** (`BINANCE_READ_*`) | reads, pre-validates, and **proposes** orders. **Never executes, holds no trade key.** |
+| **Confirmer** `krmaazha-binance-mcp-confirmer` | **you**, in a separate terminal | **trade** (`BINANCE_TRADE_*`) | the **sole authority**: receives canonical fields, renders the dialog, re-validates, and **executes only on your click**. |
 
 Releases are published to PyPI via **trusted publishing** and carry **Sigstore digital
 attestations** (verify any file at `pypi.org/integrity/`): what you install is provably
@@ -95,7 +95,7 @@ physical click. The model has neither. Defense in depth on top of that:
 
 ---
 
-## Tools (25)
+## Tools (26)
 
 ### Read (5 · read key · no gate)
 
@@ -107,12 +107,13 @@ physical click. The model has neither. Defense in depth on top of that:
 | `binance_get_order_history` | Closed spot order history | `symbol`, `limit?` |
 | `binance_get_account_info` | Flags + fees; key permissions (mainnet) | — |
 
-### Market data — layer 2 (4 · read key · 100% read-only)
+### Market data — layer 2 (5 · read key · 100% read-only)
 
 | Tool | What it does | Params |
 |---|---|---|
 | `binance_get_klines` | OHLCV candles (Decimal). `last_n` returns only the newest N to keep responses small | `symbol`, `interval`, `limit?` (≤1000), `last_n?` |
 | `binance_get_ticker_24h` | Rolling 24h stats (% change, high/low, volume) | `symbol` |
+| `binance_get_order_book_depth` | Order-book bid/ask depth, ±1% & ±2% liquidity, touch spread in bps | `symbol`, `limit?` |
 | `binance_compute_indicators` | RSI / MACD / EMA / Bollinger / ATR. Returns only the latest value per series by default (`last_n=1`) to keep responses small; raise `last_n` for recent history | `symbol`, `interval`, `indicators`, `limit?`, `last_n?` |
 | `binance_backtest` | Lightweight, no-lookahead backtest of a simple rule | `symbol`, `interval`, `strategy` (`ema_cross`/`rsi_threshold`), `limit?` |
 
@@ -182,7 +183,7 @@ instructions tell clients to read the doctrine before giving any investment anal
 
 ## Futures research
 
-An **offline USD-M futures research engine** lives in `kainext_binance_mcp.futures`, behind
+An **offline USD-M futures research engine** lives in `krmaazha_binance_mcp.futures`, behind
 the `[research]` extra. It is deliberately **not** an MCP surface:
 
 - **No tools, no prompts, no resources.** Nothing about it reaches the model.
@@ -238,7 +239,7 @@ Go to Binance → **API Management**. The design uses two keys for least privile
   "mcpServers": {
     "binance": {
       "command": "uvx",
-      "args": ["kainext-binance-mcp"],
+      "args": ["krmaazha-binance-mcp"],
       "env": {
         "BINANCE_ENV": "${BINANCE_ENV}",
         "BINANCE_READ_API_KEY": "${BINANCE_READ_API_KEY}",
@@ -253,7 +254,7 @@ Go to Binance → **API Management**. The design uses two keys for least privile
 server aborts with a clear message — export the variables before launching your client.
 
 Installing from git instead of PyPI? Use `"args": ["--from",
-"git+https://github.com/Alejandrehl/kainext-binance-mcp@v1.2.1", "kainext-binance-mcp"]`
+"git+https://github.com/Alejandrehl/krmaazha-binance-mcp@v1.2.1", "krmaazha-binance-mcp"]`
 (pin a tag; `git+https` works without any GitHub credentials).
 
 ### 4. Run the confirmer (required to execute)
@@ -265,7 +266,7 @@ export BINANCE_ENV=testnet
 export BINANCE_TRADE_API_KEY="...your trade key..."
 export BINANCE_TRADE_API_SECRET="...your trade secret..."
 
-uvx kainext-binance-mcp-confirmer  # or: uvx --from "git+https://github.com/Alejandrehl/kainext-binance-mcp@v1.2.1" kainext-binance-mcp-confirmer
+uvx krmaazha-binance-mcp-confirmer  # or: uvx --from "git+https://github.com/Alejandrehl/krmaazha-binance-mcp@v1.2.1" krmaazha-binance-mcp-confirmer
 ```
 
 It listens on a local Unix socket. When the AI proposes an order, a **native dialog** appears
@@ -289,15 +290,15 @@ order that will execute, the default is deny, and a 45s timeout denies.
 
 ### Watch mode — get notified, never auto-trade
 
-`kainext-binance-mcp-watch` is a third process that holds **no keys at all** (public
+`krmaazha-binance-mcp-watch` is a third process that holds **no keys at all** (public
 endpoints only) and can execute nothing. It checks your triggers on an interval and
 notifies (desktop notification + optional webhook) on threshold **crossings** — price,
 daily close (completed candles only), funding rate, Fear & Greed:
 
 ```bash
-mkdir -p ~/.config/kainext-binance-mcp
-cp examples/watch.example.toml ~/.config/kainext-binance-mcp/watch.toml  # edit it
-kainext-binance-mcp-watch
+mkdir -p ~/.config/krmaazha-binance-mcp
+cp examples/watch.example.toml ~/.config/krmaazha-binance-mcp/watch.toml  # edit it
+krmaazha-binance-mcp-watch
 ```
 
 ### Testnet-first (recommended)
@@ -376,12 +377,12 @@ responsible for every order you confirm — that is exactly why the human gate e
 ## Author
 
 Built by **[Alejandro Exequiel Hernández Lara](https://github.com/Alejandrehl)** — founder of
-[KaiNext](https://www.kainext.cl). Part of KaiNext's MCP product line.
+[Krmaazha](https://www.krmaazha.cl). Part of Krmaazha's MCP product line.
 
 ## License
 
-[MIT](LICENSE) © 2026 Alejandro Exequiel Hernández Lara (KaiNext)
+[MIT](LICENSE) © 2026 Alejandro Exequiel Hernández Lara (Krmaazha)
 
 ---
 
-<sub>mcp-name: io.github.Alejandrehl/kainext-binance-mcp</sub>
+<sub>mcp-name: io.github.Alejandrehl/krmaazha-binance-mcp</sub>

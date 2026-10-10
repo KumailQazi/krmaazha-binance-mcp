@@ -1,0 +1,10 @@
+The most useful upgrade is to separate **pair/trade facts**, **asset fundamentals**, and **your decision**. These changes apply to any crypto pair:
+
+- **Identify the instrument exactly:** base/quote, venue, spot or perpetual, contract/network if relevant, and a timestamp with timezone. State whether prices, volume and order-book depth are venue-specific; don’t mix unsynchronized quotes.
+- **Make every signal reproducible:** name candle interval and whether the candle is closed; specify EMA/RSI/ATR periods, formula, signal version and thresholds. Show the input data or link it. If the model can’t be reproduced, call it an unverified indicator output—not a quantified recommendation.
+- **Define the trade setup, not just levels:** say long or short, hypothetical entry condition, invalidation, target, time horizon, and gross/net reward-to-risk after fees, spread, slippage and (for perps) funding. Explain that stops may slip and that a stop above price may imply a short, not a spot-holder exit.
+- **Report executable liquidity:** touch spread, depth within stated price bands, and recent quote-volume in the quote currency; flag thin books and venue divergence. Volume alone is not proof an order can fill at that price.
+- **Keep the asset section adaptable:** assess supply, unlocks, fees, revenue or value capture only where they actually apply to that asset. Define each metric and period; don’t force a corporate P/S multiple onto tokens or imply network activity automatically accrues to holders.
+- **Separate evidence from interpretation:** label claims as verified, estimated, or opinion; cite primary sources beside claims; give both supportive and opposing evidence, note what would change the view, and avoid universal allocation percentages or “best” rankings without the user’s horizon and risk limit.
+
+A good bottom line for any pair is: “At [timestamp], [instrument] is [state]. The setup is valid only if [observable condition]; it is invalidated by [condition]. Costs/risks are [items]. Otherwise, no trade.”

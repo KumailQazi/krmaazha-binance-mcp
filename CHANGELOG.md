@@ -11,7 +11,7 @@ engine**, and the doctrine that governs it changed accordingly.
 
 ### Added
 
-- **Futures research engine** (`kainext_binance_mcp.futures`, behind the new `[research]`
+- **Futures research engine** (`krmaazha_binance_mcp.futures`, behind the new `[research]`
   extra). Keyless and offline: it reads Binance's public archives with no API key, exposes
   **no MCP tools**, and the server never imports it — a `uvx` install without the extra
   starts exactly as before.
@@ -94,7 +94,7 @@ the doctrine actually recommends.
   `web`: ephemeral localhost page (one-shot token, POST-only, Host-validated, Cancel
   focused, 45s timeout = deny). `tty`: exact `CONFIRM` word on POSIX terminals. All
   invariants preserved (text rendered from the canonical order, default deny).
-- **`kainext-binance-mcp-watch`**: a keyless watchdog process — price / completed daily
+- **`krmaazha-binance-mcp-watch`**: a keyless watchdog process — price / completed daily
   close / funding / Fear & Greed triggers from public endpoints, crossing-based
   anti-spam with persisted state, desktop notification + optional https webhook.
   It notifies and can execute nothing, by construction.

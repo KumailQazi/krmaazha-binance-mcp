@@ -1,4 +1,4 @@
-from kainext_binance_mcp.errors import map_binance_error, scrub_secrets
+from krmaazha_binance_mcp.errors import map_binance_error, scrub_secrets
 
 
 def test_maps_known_codes():
@@ -21,7 +21,7 @@ def test_run_guarded_maps_and_scrubs():
     con mensaje mapeado y sin secretos."""
     import pytest
 
-    from kainext_binance_mcp.errors import ToolExecutionError, run_guarded
+    from krmaazha_binance_mcp.errors import ToolExecutionError, run_guarded
 
     class FakeBinanceError(Exception):
         def __init__(self) -> None:
@@ -40,7 +40,7 @@ def test_run_guarded_maps_and_scrubs():
 def test_run_guarded_valueerror_keeps_message():
     import pytest
 
-    from kainext_binance_mcp.errors import ToolExecutionError, run_guarded
+    from krmaazha_binance_mcp.errors import ToolExecutionError, run_guarded
 
     def bad():
         raise ValueError("invalid interval '5x'")
@@ -50,7 +50,7 @@ def test_run_guarded_valueerror_keeps_message():
 
 
 def test_run_guarded_returns_value():
-    from kainext_binance_mcp.errors import run_guarded
+    from krmaazha_binance_mcp.errors import run_guarded
     assert run_guarded(lambda: [], lambda: 42) == 42
 
 
@@ -58,6 +58,6 @@ def test_strategy_literal_matches_backtest_strategies():
     """server.Strategy (Literal, viaja al schema) debe calzar con backtest.STRATEGIES."""
     from typing import get_args
 
-    from kainext_binance_mcp import backtest as bt
-    from kainext_binance_mcp.server import Strategy
+    from krmaazha_binance_mcp import backtest as bt
+    from krmaazha_binance_mcp.server import Strategy
     assert set(get_args(Strategy)) == set(bt.STRATEGIES)

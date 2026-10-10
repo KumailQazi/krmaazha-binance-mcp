@@ -6,8 +6,8 @@ from pathlib import Path
 
 import pytest
 
-from kainext_binance_mcp.config import ConfigError
-from kainext_binance_mcp.watch import (
+from krmaazha_binance_mcp.config import ConfigError
+from krmaazha_binance_mcp.watch import (
     Trigger,
     evaluate,
     fetch_value,

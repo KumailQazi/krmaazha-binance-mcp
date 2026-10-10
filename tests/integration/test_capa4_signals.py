@@ -27,7 +27,7 @@ import os
 
 import pytest
 
-from kainext_binance_mcp.models import Signal
+from krmaazha_binance_mcp.models import Signal
 
 _HAS_KEYS = bool(os.environ.get("BINANCE_READ_API_KEY"))
 
@@ -46,8 +46,8 @@ _EXPECTED_FACTORS = {"trend", "momentum", "macd", "bollinger", "sentiment"}
 @pytest.fixture
 def read_client():
     """Client real (read key de testnet) construido desde el entorno."""
-    from kainext_binance_mcp.client import make_client
-    from kainext_binance_mcp.config import load_server_settings
+    from krmaazha_binance_mcp.client import make_client
+    from krmaazha_binance_mcp.config import load_server_settings
 
     settings = load_server_settings(os.environ)
     return make_client(settings)
@@ -55,7 +55,7 @@ def read_client():
 
 def test_capa4_generate_signal_real(read_client):
     """Señal compuesta real para BTCUSDT 1h: score acotado, 5 factores, niveles coherentes."""
-    from kainext_binance_mcp.tools import signals as sig
+    from krmaazha_binance_mcp.tools import signals as sig
 
     try:
         signal = sig.generate_signal_tool(read_client, _SYMBOL, _INTERVAL)

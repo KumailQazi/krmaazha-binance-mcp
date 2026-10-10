@@ -11,10 +11,10 @@ from typing import Any
 
 import pytest
 
-from kainext_binance_mcp.models import NewsItem
-from kainext_binance_mcp.news import fetch as fetchmod
-from kainext_binance_mcp.news import sources as srcmod
-from kainext_binance_mcp.news.sources import SOURCES, CoinDeskRSS, CryptoNewsRSS
+from krmaazha_binance_mcp.models import NewsItem
+from krmaazha_binance_mcp.news import fetch as fetchmod
+from krmaazha_binance_mcp.news import sources as srcmod
+from krmaazha_binance_mcp.news.sources import SOURCES, CoinDeskRSS, CryptoNewsRSS
 
 
 def _fake_parsed() -> Any:
@@ -76,8 +76,8 @@ def test_registry_has_all_sources() -> None:
 
 def test_new_sources_are_rss_and_never_raise(monkeypatch) -> None:
     """Las 3 fuentes v1.1 siguen el contrato: RSS + fetch() que nunca propaga."""
-    import kainext_binance_mcp.news.sources as srcmod
-    from kainext_binance_mcp.news.sources import DecryptRSS, FedPressRSS, TheBlockRSS
+    import krmaazha_binance_mcp.news.sources as srcmod
+    from krmaazha_binance_mcp.news.sources import DecryptRSS, FedPressRSS, TheBlockRSS
 
     def _boom(url):
         raise OSError("network down")

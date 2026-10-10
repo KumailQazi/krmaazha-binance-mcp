@@ -35,9 +35,9 @@ from dataclasses import dataclass
 
 from binance.client import Client
 
-from kainext_binance_mcp.backtest import backtest_df
-from kainext_binance_mcp.klines import fetch_klines
-from kainext_binance_mcp.signals.backtest_signal import backtest_signal
+from krmaazha_binance_mcp.backtest import backtest_df
+from krmaazha_binance_mcp.klines import fetch_klines
+from krmaazha_binance_mcp.signals.backtest_signal import backtest_signal
 
 # Fuente de datos: klines PÚBLICAS de mainnet (sin keys, sin auth, read-only puro).
 DATA_SOURCE = "mainnet_public"

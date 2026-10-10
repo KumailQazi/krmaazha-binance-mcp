@@ -1,5 +1,5 @@
-# kainext-binance-mcp-watch — example config.
-# Copy to ~/.config/kainext-binance-mcp/watch.toml and edit.
+# krmaazha-binance-mcp-watch — example config.
+# Copy to ~/.config/krmaazha-binance-mcp/watch.toml and edit.
 # The watchdog NOTIFIES on threshold crossings. It holds NO keys and can execute NOTHING.
 
 interval_seconds = 300

@@ -12,7 +12,7 @@ import pandas as pd
 import pytest
 
 from examples.walk_forward import sim_window
-from kainext_binance_mcp.backtest import COMMISSION_TAKER, backtest_df
+from krmaazha_binance_mcp.backtest import COMMISSION_TAKER, backtest_df
 
 
 def _series(n: int, seed: int) -> pd.DataFrame:
@@ -38,7 +38,7 @@ def test_sim_window_matches_the_library_engine(seed: int, fast: int, slow: int) 
     df = _series(400, seed)
     result = backtest_df(df, "TESTUSDT", "1d", "ema_cross", fast=fast, slow=slow)
 
-    from kainext_binance_mcp.backtest import ema_cross
+    from krmaazha_binance_mcp.backtest import ema_cross
     sig = ema_cross(df, fast=fast, slow=slow).to_numpy()
     ret_pct, n_trades = sim_window(
         df["open"].to_numpy(dtype="float64"),

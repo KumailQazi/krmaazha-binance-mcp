@@ -13,7 +13,7 @@ Binance testnet, pero con el clic del diálogo **stubeado** (nunca abre osascrip
 Arquitectura ejercitada:
 - **Confirmador:** `ipc.serve(...)` corriendo en un hilo daemon, con el client/estimator
   de la TRADE key. `ask_confirmation` se reemplaza por un stub que SIEMPRE confirma
-  (monkeypatch sobre `kainext_binance_mcp_confirmer.dialog.ask_confirmation`), así el
+  (monkeypatch sobre `krmaazha_binance_mcp_confirmer.dialog.ask_confirmation`), así el
   flujo de integración NUNCA abre un diálogo real de osascript (apto para CI headless).
 - **Server:** `IpcClient` apuntando al MISMO socket + las tools de `tools/write.py`
   y las lecturas de `tools/read.py` con el client de la READ key.
@@ -119,12 +119,12 @@ def _limit_buy_params(client, symbol: str) -> tuple[Decimal, Decimal]:
 def testnet_stack(monkeypatch):
     """Levanta confirmador (serve en hilo) + server (IpcClient) contra testnet real."""
     # Clic SIEMPRE Confirmar: el flujo de integración jamás abre osascript real.
-    import kainext_binance_mcp_confirmer.dialog as dialog
-    from kainext_binance_mcp.client import make_client
-    from kainext_binance_mcp.config import load_confirmer_settings, load_server_settings
-    from kainext_binance_mcp.intents import IntentStore
-    from kainext_binance_mcp.ipc import IpcClient, serve
-    from kainext_binance_mcp.market import MarketEstimator, parse_symbol_filters
+    import krmaazha_binance_mcp_confirmer.dialog as dialog
+    from krmaazha_binance_mcp.client import make_client
+    from krmaazha_binance_mcp.config import load_confirmer_settings, load_server_settings
+    from krmaazha_binance_mcp.intents import IntentStore
+    from krmaazha_binance_mcp.ipc import IpcClient, serve
+    from krmaazha_binance_mcp.market import MarketEstimator, parse_symbol_filters
     monkeypatch.setattr(dialog, "ask_confirmation", lambda text: True)
 
     # Clients reales de testnet (read + trade; en testnet puede ser la misma key).
@@ -162,8 +162,8 @@ def testnet_stack(monkeypatch):
 
 
 def test_full_testnet_flow(testnet_stack):
-    from kainext_binance_mcp.tools import read as read_tools
-    from kainext_binance_mcp.tools import write as write_tools
+    from krmaazha_binance_mcp.tools import read as read_tools
+    from krmaazha_binance_mcp.tools import write as write_tools
 
     ipc, read_client, server_market = testnet_stack
 

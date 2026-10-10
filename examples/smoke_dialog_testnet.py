@@ -18,11 +18,11 @@ import threading
 import time
 from decimal import ROUND_UP, Decimal
 
-from kainext_binance_mcp import ipc
-from kainext_binance_mcp.intents import IntentStore
-from kainext_binance_mcp.models import CanonicalOrder
-from kainext_binance_mcp_confirmer import dialog
-from kainext_binance_mcp_confirmer.__main__ import _make_estimator, bootstrap
+from krmaazha_binance_mcp import ipc
+from krmaazha_binance_mcp.intents import IntentStore
+from krmaazha_binance_mcp.models import CanonicalOrder
+from krmaazha_binance_mcp_confirmer import dialog
+from krmaazha_binance_mcp_confirmer.__main__ import _make_estimator, bootstrap
 
 SYMBOL = "BTCUSDT"
 dialog._DIALOG_TIMEOUT_S = 90  # más holgura para el clic manual

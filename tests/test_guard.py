@@ -1,12 +1,12 @@
 import pytest
 
-from kainext_binance_mcp.guard import (
+from krmaazha_binance_mcp.guard import (
     GuardError,
     assert_read_key_safe,
     assert_trade_key_safe,
     perms_from_api,
 )
-from kainext_binance_mcp.models import KeyPermissions
+from krmaazha_binance_mcp.models import KeyPermissions
 
 SAFE_TRADE = dict(enable_spot_and_margin_trading=True, enable_withdrawals=False,
                   permits_universal_transfer=False, enable_internal_transfer=False,

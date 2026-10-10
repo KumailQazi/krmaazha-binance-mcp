@@ -42,16 +42,16 @@ _LIMIT = 100
 @pytest.fixture
 def read_client():
     """Client real (read key) construido desde el entorno."""
-    from kainext_binance_mcp.client import make_client
-    from kainext_binance_mcp.config import load_server_settings
+    from krmaazha_binance_mcp.client import make_client
+    from krmaazha_binance_mcp.config import load_server_settings
 
     settings = load_server_settings(os.environ)
     return make_client(settings)
 
 
 def test_capa2_klines_and_indicators_real(read_client):
-    from kainext_binance_mcp.klines import fetch_klines
-    from kainext_binance_mcp.tools import marketdata as md
+    from krmaazha_binance_mcp.klines import fetch_klines
+    from krmaazha_binance_mcp.tools import marketdata as md
 
     # ── 1) Klines reales → DataFrame con ~100 filas y columnas estandarizadas.
     df = fetch_klines(read_client, _SYMBOL, _INTERVAL, _LIMIT)
@@ -130,7 +130,7 @@ def test_capa2_klines_and_indicators_real(read_client):
 
 def test_capa2_ticker_24h_real(read_client):
     """Opcional: ticker 24h real (endpoint público) bien tipado."""
-    from kainext_binance_mcp.tools import marketdata as md
+    from krmaazha_binance_mcp.tools import marketdata as md
 
     t = md.get_ticker_24h(read_client, _SYMBOL)
     print(

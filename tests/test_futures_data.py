@@ -13,7 +13,7 @@ from pathlib import Path
 
 import pytest
 
-from kainext_binance_mcp.futures.data import (
+from krmaazha_binance_mcp.futures.data import (
     FUNDING_COLUMNS,
     KLINE_COLUMNS,
     BinanceArchive,
@@ -190,9 +190,9 @@ def test_month_and_day_ranges_are_inclusive_and_cross_year() -> None:
 def test_cache_root_is_overridable_and_defaults_outside_icloud(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setenv("KAINEXT_FUTURES_DATA_DIR", "/tmp/panel")
+    monkeypatch.setenv("KRMAAZHA_FUTURES_DATA_DIR", "/tmp/panel")
     assert default_cache_root() == Path("/tmp/panel")
-    monkeypatch.delenv("KAINEXT_FUTURES_DATA_DIR")
+    monkeypatch.delenv("KRMAAZHA_FUTURES_DATA_DIR")
     root = default_cache_root()
     assert "Mobile Documents" not in str(root), "el panel NO puede caer en iCloud"
 

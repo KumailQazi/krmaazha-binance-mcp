@@ -5,9 +5,9 @@ import stat
 from decimal import Decimal
 from unittest.mock import MagicMock
 
-from kainext_binance_mcp.models import CanonicalOrder
-from kainext_binance_mcp_confirmer.audit import append_audit_entry
-from kainext_binance_mcp_confirmer.executor import handle_cancel_intent, handle_intent
+from krmaazha_binance_mcp.models import CanonicalOrder
+from krmaazha_binance_mcp_confirmer.audit import append_audit_entry
+from krmaazha_binance_mcp_confirmer.executor import handle_cancel_intent, handle_intent
 
 
 def test_append_audit_entry_writes_expected_line_without_secrets(tmp_path):
@@ -89,7 +89,7 @@ def test_executor_writes_audit_line_after_mark_executed(tmp_path):
 def test_audit_failure_never_breaks_execution(monkeypatch, tmp_path):
     """A1 (best-effort): si el audit append revienta, la orden YA quedó executed; el fallo
     del audit no debe propagar ni revertir el estado."""
-    import kainext_binance_mcp_confirmer.audit as audit_mod
+    import krmaazha_binance_mcp_confirmer.audit as audit_mod
 
     def boom(**kw):
         raise OSError("disco lleno")
@@ -150,7 +150,7 @@ def test_cancel_executor_does_not_write_audit_when_no_path(tmp_path):
 
 def test_cancel_audit_failure_never_breaks_cancellation(monkeypatch, tmp_path):
     """A1 (best-effort): si el audit revienta, la cancelación YA quedó executed; no propaga."""
-    import kainext_binance_mcp_confirmer.audit as audit_mod
+    import krmaazha_binance_mcp_confirmer.audit as audit_mod
 
     def boom(**kw):
         raise OSError("disco lleno")
