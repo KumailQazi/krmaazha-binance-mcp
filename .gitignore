@@ -11,3 +11,4 @@ dist/
 # rompe el build si aparece cualquier cosa que parezca una credencial.
 .env
 *.local
+snapshot/
