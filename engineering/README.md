@@ -41,13 +41,6 @@ Welcome to the **Engineering Documentation Hub** for the `krmaazha-binance-mcp` 
 
 ---
 
-### 4. [Senior Data & AI Engineer Interview Preparation (`senior_data_ai_engineer_interview_prep.md`)](file:///c:/Users/Raza/Downloads/konnextBinMcp/engineering/senior_data_ai_engineer_interview_prep.md)
-* **Production-Grade Interview Invariants**: How this architecture answers questions on zero-trust AI safety, closed-bar gating, survivorship bias elimination, and IEEE-754 numerical stability.
-* **High-Signal Question Bank**: Tailored technical questions with architectural answers, code mappings, and evaluation metrics.
-* **Competency Matrix**: Mapping of Senior Data & AI competencies to specific code files and tests.
-
----
-
-### 5. [MCP Server Manifest Spec (`server.json`)](file:///c:/Users/Raza/Downloads/konnextBinMcp/engineering/server.json)
+### 4. [MCP Server Manifest Spec (`server.json`)](file:///c:/Users/Raza/Downloads/konnextBinMcp/engineering/server.json)
 * **Official Registry Descriptor**: Formal MCP server registry schema configuration, package identifier (`krmaazha-binance-mcp`), stdio transport, and required environment variable definitions.
 
