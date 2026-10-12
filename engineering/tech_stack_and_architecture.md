@@ -91,6 +91,33 @@ flowchart TB
 | **UX & Observability** | Async SSE streaming server, Canvas/SVG charting, Obsidian terminal UI | Vanilla JS, CSS3, SSE | [`web_dashboard/`](file:///c:/Users/Raza/Downloads/konnextBinMcp/web_dashboard) |
 | **Type Safety & Testing** | Mypy (Strict), Pytest (Asyncio), Ruff, Coverage | `mypy==2.3.1`, `pytest==9.1.1`, `pytest-cov==7.1.0` (≥90% gate) | [pyproject.toml](file:///c:/Users/Raza/Downloads/konnextBinMcp/pyproject.toml), [`tests/`](file:///c:/Users/Raza/Downloads/konnextBinMcp/tests) |
 
+### Specific Technologies & Their Main Purpose
+
+| Category | Specific Technology | Version / Spec | Main Purpose in Krmaazha MCP |
+|---|---|---|---|
+| **Runtime & Build** | **Python** | `>=3.12` | Primary execution runtime leveraging modern typing (`Self`, `Literal`, generics), asyncio task groups, and native socket primitives. |
+| **Runtime & Build** | **Astral `uv` / `uvx`** | Latest | Blazing-fast package resolution and zero-install ephemeral execution (`uvx krmaazha-binance-mcp-confirmer`). |
+| **Runtime & Build** | **Hatchling** | PEP 517/660 | Deterministic wheel and editable build backend managing the dual-package `src/` layout (`krmaazha_binance_mcp` and `krmaazha_binance_mcp_confirmer`). |
+| **Protocol** | **FastMCP (MCP SDK)** | `2.0.0` | Implements the Model Context Protocol over `stdio` (JSON-RPC), exposing 26 tools, 5 prompts, and 8 resources to LLM hosts (Claude Desktop, Cursor, etc.). |
+| **Data Ingestion** | **`python-binance`** | `1.0.37` | Exchange client for Binance Spot REST endpoints (order books, tickers, historical klines) and signed order execution. |
+| **Data Ingestion** | **Binance Vision Archives** | `data.binance.vision` | Historical archives used for cold offline futures ingestion across 986 USD-M pairs without hitting live API rate limits. |
+| **Data Ingestion** | **`feedparser` & `requests`** | `6.0.14` / `2.34.2` | Ingestion of unstructured news RSS feeds (CoinDesk, crypto.news) and external macro indicators (Alternative.me Fear & Greed). |
+| **Data Validation** | **Pydantic v2** | `2.13.4` | High-speed Rust-backed data validation and schema enforcement for incoming tool parameters and the immutable `CanonicalOrder` IPC contract. |
+| **Numerical Math** | **Python `Decimal`** | Standard Library | Fixed-point, zero-float precision arithmetic eliminating IEEE-754 rounding drift on asset quantities, notionals, and sub-dollar micro-cap prices (`$0.002452`). |
+| **Numerical Math** | **Pandas** | `3.0.5` | In-memory time-series manipulation, candle bar alignment, and closed-bar slicing (`[:-1]`) for indicator calculations and backtesting. |
+| **Numerical Math** | **NumPy** | `2.5.2` (optional `[research]`) | Vectorized mathematical operations and array computations for offline multi-pair futures volatility audits and survivorship bias elimination. |
+| **IPC & Security** | **Unix Domain Sockets** | `AF_UNIX` / TCP Loopback | Secure local inter-process communication connecting the read-only MCP server (`Process 1`) to the execution confirmer daemon (`Process 2`) with strict `0600` file permissions. |
+| **IPC & Security** | **Python `hashlib` (SHA-256)** | Standard Library | Cryptographic hashing of order parameters into deterministic idempotency tokens to prevent duplicate order placement during network retries. |
+| **Physical Gate** | **AppleScript (`osascript`)** | macOS Native | Spawns a modal system confirmation dialog with Real Money warnings and "Cancel" as default on macOS. |
+| **Physical Gate** | **Python `http.server` & Tkinter** | Standard Library | Cross-platform fallback gates providing a local web confirmation page (browser) or interactive TTY prompt for headless/Windows/Linux environments. |
+| **AI Knowledge** | **MCP Resources (`kb://`)** | Custom Markdown bank | In-context institutional operating doctrines (`kb://discipline`, `kb://research/no-edge`) grounded directly into the LLM system prompt. |
+| **UX & Dashboard** | **Starlette & Uvicorn** | Async ASGI | Asynchronous micro-framework serving the web intelligence terminal, REST endpoints, and static UI assets on port 8888. |
+| **UX & Dashboard** | **Server-Sent Events (SSE)** | W3C Standard | Unidirectional real-time event streaming pushing live ticker ticks and order-book depth deltas to the dashboard without WebSocket overhead. |
+| **Testing & Quality** | **Mypy** | `2.3.1` (Strict) | Static type checker enforcing `py.typed` compliance, strict nullability, and union checking across both package trees. |
+| **Testing & Quality** | **Pytest & `pytest-cov`** | `9.1.1` / `7.1.0` | Automated test suite enforcing a non-negotiable $\ge 90\%$ code coverage merge gate on critical financial and security logic. |
+| **Code Formatting** | **Ruff** | `0.16.3` | Ultra-fast Rust-based linter and code formatter ensuring clean, idiomatic Python code. |
+
+
 ---
 
 ## 3. Engineering Reasoning: Deep Technical Justification
