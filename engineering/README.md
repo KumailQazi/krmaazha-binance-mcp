@@ -38,3 +38,16 @@ Welcome to the **Engineering Documentation Hub** for the `krmaazha-binance-mcp` 
   * **Data Engineering**: `data-quality-frameworks`, `dbt-transformation-patterns`, `airflow-dag-patterns`, `spark-optimization`, `sql-optimization-patterns`, `postgresql-table-design`, `backtesting-frameworks`, `risk-metrics-calculation`.
   * **AI Engineering**: `rag-implementation`, `llm-evaluation`, `eval-harness-first`, `prompt-engineering-patterns`, `hybrid-search-implementation`, `embedding-strategies`, `vector-index-tuning`, `dataset-curation`, `ml-pipeline-workflow`, `ai-debt-detector`.
 * **Agent Skills Binding**: Direct alignment with sub-agent responsibilities in [`AGENTS.md`](file:///c:/Users/Raza/Downloads/konnextBinMcp/AGENTS.md).
+
+---
+
+### 4. [Senior Data & AI Engineer Interview Preparation (`senior_data_ai_engineer_interview_prep.md`)](file:///c:/Users/Raza/Downloads/konnextBinMcp/engineering/senior_data_ai_engineer_interview_prep.md)
+* **Production-Grade Interview Invariants**: How this architecture answers questions on zero-trust AI safety, closed-bar gating, survivorship bias elimination, and IEEE-754 numerical stability.
+* **High-Signal Question Bank**: Tailored technical questions with architectural answers, code mappings, and evaluation metrics.
+* **Competency Matrix**: Mapping of Senior Data & AI competencies to specific code files and tests.
+
+---
+
+### 5. [MCP Server Manifest Spec (`server.json`)](file:///c:/Users/Raza/Downloads/konnextBinMcp/engineering/server.json)
+* **Official Registry Descriptor**: Formal MCP server registry schema configuration, package identifier (`krmaazha-binance-mcp`), stdio transport, and required environment variable definitions.
+
