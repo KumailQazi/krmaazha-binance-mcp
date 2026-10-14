@@ -7,6 +7,8 @@
 [![PyPI](https://img.shields.io/pypi/v/krmaazha-binance-mcp.svg)](https://pypi.org/project/krmaazha-binance-mcp/)
 [![Downloads](https://img.shields.io/pypi/dm/krmaazha-binance-mcp.svg)](https://pypi.org/project/krmaazha-binance-mcp/)
 [![Typed: mypy strict](https://img.shields.io/badge/typed-mypy%20strict-blue.svg)](pyproject.toml)
+[![M8ven Score](https://m8ven.ai/badge/mcp/kumailqazi-krmaazha-binance-mcp-adxe98?v=ff274763c9a7689f1db3dede0992e14a)](https://m8ven.ai/mcp/kumailqazi-krmaazha-binance-mcp-adxe98?s=readme)
+[![M8ven Score](https://m8ven.ai/badge/mcp/kumailqazi/krmaazha-binance-mcp)](https://m8ven.ai/mcp/kumailqazi/krmaazha-binance-mcp?s=readme)
 
 > **About**: Security-first Binance MCP server and multi-agent intelligence platform. Read market data, perform quantitative analysis, and propose spot orders behind human confirmation.  
 > **Tags**: `#mcp` `#model-context-protocol` `#binance` `#crypto` `#trading` `#multi-agent` `#quantitative-finance` `#spot-trading` `#futures` `#backtesting` `#ai-agents` `#claude` `#llm` `#fastmcp` `#algorithmic-trading`
