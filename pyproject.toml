@@ -53,6 +53,7 @@ build-backend = "hatchling.build"
 packages = ["src/krmaazha_binance_mcp", "src/krmaazha_binance_mcp_confirmer"]
 
 [tool.pytest.ini_options]
+testpaths = ["tests"]
 # --cov-fail-under=90: gate duro de merge (plan §5). Los módulos críticos del gate
 # (intents/ipc/idempotency/guard/executor) están al 100%/≥95% por sus tests dedicados.
 addopts = "--cov=krmaazha_binance_mcp --cov=krmaazha_binance_mcp_confirmer --cov-report=term-missing --cov-fail-under=90"

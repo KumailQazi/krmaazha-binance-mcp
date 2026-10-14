@@ -3,20 +3,22 @@
 Allows testing public analytical tools, indicators, news, signals,
 market structure, knowledge resources, and simulated order execution.
 """
+__test__ = False
+
 import sys
+
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8")
-import json
-from decimal import Decimal
 from binance.client import Client
 
-from krmaazha_binance_mcp.tools import news as news_tools
-from krmaazha_binance_mcp.tools import marketdata as md_tools
-from krmaazha_binance_mcp.tools import signals as sig_tools
-from krmaazha_binance_mcp.tools import analytics as an_tools
+from krmaazha_binance_mcp.knowledge import _RESOURCES, read_content
 from krmaazha_binance_mcp.marketwide import get_market_structure
 from krmaazha_binance_mcp.plans import backtest_dca
-from krmaazha_binance_mcp.knowledge import read_content, _RESOURCES
+from krmaazha_binance_mcp.tools import analytics as an_tools
+from krmaazha_binance_mcp.tools import marketdata as md_tools
+from krmaazha_binance_mcp.tools import news as news_tools
+from krmaazha_binance_mcp.tools import signals as sig_tools
+
 
 def print_banner(title: str):
     print("\n" + "=" * 65)
@@ -30,18 +32,32 @@ def test_market_data(client: Client, symbol: str = "BTCUSDT"):
     print(f"Symbol: {symbol}")
     print(f"Current Price: ${float(ticker['price']):,.2f}")
     print(f"24h Change: {stats24['priceChangePercent']}%")
-    print(f"24h High: ${float(stats24['highPrice']):,.2f} | 24h Low: ${float(stats24['lowPrice']):,.2f}")
+    print(
+        f"24h High: ${float(stats24['highPrice']):,.2f} | "
+        f"24h Low: ${float(stats24['lowPrice']):,.2f}"
+    )
     print(f"24h Volume: {float(stats24['volume']):,.2f} {symbol.replace('USDT','')}")
+
 
 def test_indicators(client: Client, symbol: str = "BTCUSDT"):
     print_banner("2. Technical Indicators (Server-side & Lookahead-free)")
-    res = md_tools.compute_indicators(client, symbol, "1d", ["rsi", "ema", "macd", "bollinger", "atr"], last_n=1)
+    res = md_tools.compute_indicators(
+        client, symbol, "1d", ["rsi", "ema", "macd", "bollinger", "atr"], last_n=1
+    )
     ind = res.indicators
     print(f"Symbol: {symbol} (Interval: 1d)")
     print(f"RSI (14): {ind['rsi'][-1]:.2f}")
     print(f"EMA (12): ${ind['ema'][-1]:,.2f}")
-    print(f"MACD Line: {ind['macd'][-1]:.2f} | Signal: {ind['macd_signal'][-1]:.2f} | Hist: {ind['macd_hist'][-1]:.2f}")
-    print(f"Bollinger Bands: Lower: ${ind['bollinger_lower'][-1]:,.2f} | Mid: ${ind['bollinger_mid'][-1]:,.2f} | Upper: ${ind['bollinger_upper'][-1]:,.2f}")
+    print(
+        f"MACD Line: {ind['macd'][-1]:.2f} | "
+        f"Signal: {ind['macd_signal'][-1]:.2f} | "
+        f"Hist: {ind['macd_hist'][-1]:.2f}"
+    )
+    print(
+        f"Bollinger Bands: Lower: ${ind['bollinger_lower'][-1]:,.2f} | "
+        f"Mid: ${ind['bollinger_mid'][-1]:,.2f} | "
+        f"Upper: ${ind['bollinger_upper'][-1]:,.2f}"
+    )
     print(f"ATR (14): ${ind['atr'][-1]:,.2f}")
 
 def test_news_and_sentiment(asset: str = "BTC"):
@@ -109,9 +125,7 @@ def test_signal_generation(client: Client, symbol: str = "BTCUSDT"):
 
 def test_knowledge_resources():
     print_banner("8. MCP Knowledge Resources (Consultant Methodology)")
-    for uri, (fname, title) in _RESOURCES.items():
-        content = read_content(fname)
-        first_line = content.splitlines()[0] if content else ""
+    for uri, (_, title) in _RESOURCES.items():
         print(f"• {uri:<32} -> {title}")
     
     print("\nExcerpt from kb://discipline:")
