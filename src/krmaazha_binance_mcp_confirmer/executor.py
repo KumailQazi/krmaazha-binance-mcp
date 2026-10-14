@@ -5,7 +5,7 @@ from __future__ import annotations
 import contextlib
 from collections.abc import Callable
 from decimal import Decimal
-from typing import Any, cast
+from typing import Any, Literal, cast
 
 from binance.client import Client
 
@@ -158,8 +158,8 @@ def _to_cancel_result(raw: dict[str, Any], env: str) -> CancelResult:
         order_id=raw["orderId"],
         status="CANCELED" if status == "CANCELED" else "NOT_CANCELABLE",
         detail=f"orden {raw['orderId']} {status}",
-        env=env,
-    )  # type: ignore[arg-type]
+        env=cast(Literal["testnet", "mainnet"], env),
+    )
 
 
 def _create(client: Client, order: CanonicalOrder, preview: Any, cid: str) -> dict[str, Any]:
@@ -211,8 +211,8 @@ def _to_result(raw: dict[str, Any], env: str) -> OrderResult:
         executed_qty=Decimal(raw["executedQty"]),
         cummulative_quote_qty=Decimal(raw.get("cummulativeQuoteQty", "0")),
         fills=fills,
-        env=env,
-    )  # type: ignore[arg-type]
+        env=cast(Literal["testnet", "mainnet"], env),
+    )
 
 
 def _audit_order(
