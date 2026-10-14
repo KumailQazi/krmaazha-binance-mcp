@@ -236,3 +236,37 @@ def test_analyst_tools_delegate_and_never_execute():
 
     client.create_order.assert_not_called()
     client.cancel_order.assert_not_called()
+
+
+def test_all_tools_have_complete_safety_annotations():
+    """Verify that all 26 registered tools declare explicit boolean annotations:
+    readOnlyHint, destructiveHint, idempotentHint, and openWorldHint (M8ven & OpenAI quality gate)."""
+    tm = _register(MagicMock(), MagicMock(), MagicMock())
+    tools = tm.list_tools()
+    assert len(tools) == 26
+
+    for tool in tools:
+        assert tool.annotations is not None, f"Tool {tool.name} missing annotations"
+        dump = tool.annotations.model_dump(by_alias=True)
+        for hint in ("readOnlyHint", "destructiveHint", "idempotentHint", "openWorldHint"):
+            assert hint in dump, f"Tool {tool.name} missing hint {hint}"
+            assert isinstance(dump[hint], bool), (
+                f"Tool {tool.name} hint {hint} must be boolean, got {dump[hint]!r}"
+            )
+
+        if tool.name in ("binance_spot_order_propose", "binance_cancel_order_propose"):
+            assert dump["readOnlyHint"] is False
+            assert dump["destructiveHint"] is True
+            assert dump["idempotentHint"] is False
+            assert dump["openWorldHint"] is True
+        elif tool.name in ("binance_spot_order_status", "binance_cancel_order_status"):
+            assert dump["readOnlyHint"] is True
+            assert dump["destructiveHint"] is False
+            assert dump["idempotentHint"] is True
+            assert dump["openWorldHint"] is False
+        else:
+            assert dump["readOnlyHint"] is True
+            assert dump["destructiveHint"] is False
+            assert dump["idempotentHint"] is True
+            assert dump["openWorldHint"] is True
+

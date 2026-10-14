@@ -8,6 +8,7 @@ from decimal import Decimal
 from typing import Literal, TypeVar
 
 from mcp.server.mcpserver import MCPServer
+from mcp.types import ToolAnnotations
 
 from krmaazha_binance_mcp import runtime
 from krmaazha_binance_mcp.config import Settings, load_server_settings
@@ -59,6 +60,30 @@ Strategy = Literal["ema_cross", "rsi_threshold"]
 
 _T = TypeVar("_T")
 
+# Tool safety & behavior annotations (OpenAI / M8ven directory standards).
+# All four hints (readOnlyHint, destructiveHint, idempotentHint, openWorldHint)
+# must be explicit booleans matching each handler's real behavior.
+HINT_READ_ONLY_OPEN = ToolAnnotations(
+    read_only_hint=True,
+    destructive_hint=False,
+    idempotent_hint=True,
+    open_world_hint=True,
+)
+
+HINT_READ_ONLY_LOCAL = ToolAnnotations(
+    read_only_hint=True,
+    destructive_hint=False,
+    idempotent_hint=True,
+    open_world_hint=False,
+)
+
+HINT_MUTATING_PROPOSAL = ToolAnnotations(
+    read_only_hint=False,
+    destructive_hint=True,
+    idempotent_hint=False,
+    open_world_hint=True,
+)
+
 # Se inyecta en TODA sesión de todo cliente MCP: no es documentación, es
 # comportamiento. Si la doctrina cambia y esto no, cada sesión arranca con reglas
 # viejas. `tests/test_consistency.py` lo ata al alcance real del paquete.
@@ -100,7 +125,7 @@ _make_estimator = runtime.make_estimator
 def _register_tools(
     client: object, ipc: IpcClient, market: MarketEstimator, *, is_testnet: bool
 ) -> None:
-    """Registra las 25 tools. Cada @mcp.tool() delega en las funciones ya testeadas
+    """Registra las 26 tools. Cada @mcp.tool() delega en las funciones ya testeadas
     de tools/read.py, tools/write.py, tools/marketdata.py, tools/news.py y tools/signals.py.
     Las read, las de market data (capa 2) y las de señales (capa 4) reciben `client`; las de
     noticias (capa 3) no reciben client (RSS público); las write reciben `ipc`/`market`/`client`
@@ -113,33 +138,33 @@ def _register_tools(
         return run_guarded(lambda: client_secrets(client), fn)
 
     # --- 5 read tools (read key) ---
-    @mcp.tool()
+    @mcp.tool(annotations=HINT_READ_ONLY_OPEN)
     def binance_get_balance() -> list[AssetBalance]:
         """Spot balances with non-zero amounts (free/locked)."""
         return _g(lambda: read_tools.get_balance(client))
 
-    @mcp.tool()
+    @mcp.tool(annotations=HINT_READ_ONLY_OPEN)
     def binance_get_price(symbol: str) -> PriceTicker:
         """Current price for a symbol (e.g. BTCUSDT)."""
         return _g(lambda: read_tools.get_price(client, symbol))
 
-    @mcp.tool()
+    @mcp.tool(annotations=HINT_READ_ONLY_OPEN)
     def binance_get_open_orders(symbol: str | None = None) -> list[OpenOrder]:
         """Open orders (all, or for one symbol)."""
         return _g(lambda: read_tools.get_open_orders(client, symbol))
 
-    @mcp.tool()
+    @mcp.tool(annotations=HINT_READ_ONLY_OPEN)
     def binance_get_order_history(symbol: str, limit: int = 50) -> list[OpenOrder]:
         """Order history for a symbol (limit 1-1000)."""
         return _g(lambda: read_tools.get_order_history(client, symbol, limit))
 
-    @mcp.tool()
+    @mcp.tool(annotations=HINT_READ_ONLY_OPEN)
     def binance_get_account_info() -> AccountInfo:
         """Account info (canTrade, commissions; key permissions on mainnet only)."""
         return _g(lambda: read_tools.get_account_info(client, is_testnet=is_testnet))
 
     # --- 4 tools de capa 2: market data + indicadores (read key, 100% read-only) ---
-    @mcp.tool()
+    @mcp.tool(annotations=HINT_READ_ONLY_OPEN)
     def binance_get_klines(
         symbol: str, interval: str, limit: int = 500, last_n: int | None = None
     ) -> list[Kline]:
@@ -151,18 +176,18 @@ def _register_tools(
             lambda: marketdata_tools.get_klines(client, symbol, interval, limit, last_n=last_n)
         )
 
-    @mcp.tool()
+    @mcp.tool(annotations=HINT_READ_ONLY_OPEN)
     def binance_get_ticker_24h(symbol: str) -> Ticker24h:
         """Rolling 24h stats (change %, high/low, volume, last price)."""
         return _g(lambda: marketdata_tools.get_ticker_24h(client, symbol))
 
-    @mcp.tool()
+    @mcp.tool(annotations=HINT_READ_ONLY_OPEN)
     def binance_get_order_book_depth(symbol: str) -> OrderBookLiquidity:
         """Executable order-book liquidity audit: touch spread (bps), ±1% depth (USDT),
         thin-book warning, and 24h quote volume (IMPROVEMENTS.MD §4)."""
         return _g(lambda: marketdata_tools.get_order_book_liquidity(client, symbol))
 
-    @mcp.tool()
+    @mcp.tool(annotations=HINT_READ_ONLY_OPEN)
     def binance_compute_indicators(
         symbol: str, interval: str, indicators: list[str], limit: int = 500, last_n: int = 1
     ) -> IndicatorResult:
@@ -177,7 +202,7 @@ def _register_tools(
             )
         )
 
-    @mcp.tool()
+    @mcp.tool(annotations=HINT_READ_ONLY_OPEN)
     def binance_backtest(
         symbol: str, interval: str, strategy: Strategy, limit: int = 500
     ) -> BacktestResult:
@@ -186,14 +211,14 @@ def _register_tools(
 
     # --- 2 tools de capa 3: noticias + sentiment (RSS público, 100% read-only) ---
     # No reciben `client`: leen feeds RSS sin API key. Sentiment es señal cruda (disclaimer).
-    @mcp.tool()
+    @mcp.tool(annotations=HINT_READ_ONLY_OPEN)
     def binance_get_news(
         asset: str | None = None, sources: list[str] | None = None, limit: int | None = None
     ) -> list[NewsItem]:
         """Crypto news from RSS feeds (CoinDesk, crypto.news), filterable by asset/source."""
         return _g(lambda: news_tools.get_news(asset=asset, sources=sources, limit=limit))
 
-    @mcp.tool()
+    @mcp.tool(annotations=HINT_READ_ONLY_OPEN)
     def binance_get_sentiment(asset: str, window_hours: int = 24) -> SentimentResult:
         """RAW aggregated sentiment for an asset over a window (lexicon-based, NOT a prediction)."""
         return _g(lambda: news_tools.get_sentiment(asset, window_hours=window_hours))
@@ -201,7 +226,7 @@ def _register_tools(
     # --- 3 tools de capa 4: motor de señales + backtest (read key, 100% read-only) ---
     # Combinan indicadores (capa 2) + sentiment (capa 3) + ATR en una señal transparente.
     # PROPONEN; NUNCA colocan órdenes (eso es capa 1 con gate humano).
-    @mcp.tool()
+    @mcp.tool(annotations=HINT_READ_ONLY_OPEN)
     def binance_generate_signal(
         symbol: str, interval: str = "1h", threshold: float = 0.15
     ) -> Signal:
@@ -215,12 +240,12 @@ def _register_tools(
             )
         )
 
-    @mcp.tool()
+    @mcp.tool(annotations=HINT_READ_ONLY_OPEN)
     def binance_scan_signals(symbols: list[str], interval: str = "1h") -> list[Signal]:
         """Signals for a watchlist, ranked by score (where to LOOK, not auto-trading)."""
         return _g(lambda: signals_tools.scan_signals(client, symbols, interval))
 
-    @mcp.tool()
+    @mcp.tool(annotations=HINT_READ_ONLY_OPEN)
     def binance_backtest_signal(
         symbol: str, interval: str = "1h", limit: int = 500, threshold: float | None = None
     ) -> BacktestResult:
@@ -233,7 +258,7 @@ def _register_tools(
         )
 
     # --- 5 analyst tools: capa 5 (datos) + capa 6 (frameworks) — 100% read-only ---
-    @mcp.tool()
+    @mcp.tool(annotations=HINT_READ_ONLY_OPEN)
     def binance_get_derivatives(symbol: str, funding_limit: int = 8) -> DerivativesSnapshot:
         """Public futures positioning for a pair: mark/index price, current funding rate,
         short funding history, open interest. THE leverage thermometer — interpret with
@@ -241,7 +266,7 @@ def _register_tools(
         this data is synthetic."""
         return _g(lambda: _get_derivatives(client, symbol, funding_limit=funding_limit))
 
-    @mcp.tool()
+    @mcp.tool(annotations=HINT_READ_ONLY_OPEN)
     def binance_get_market_structure() -> MarketStructure:
         """Whole-market context in one cheap call: Fear & Greed (+week series), BTC
         dominance, total market cap, BTC ATH/drawdown, on-chain fees and hashrate.
@@ -249,14 +274,14 @@ def _register_tools(
         Interpret with kb://frameworks/cycle-analysis and kb://glossary."""
         return _g(lambda: _get_market_structure())
 
-    @mcp.tool()
+    @mcp.tool(annotations=HINT_READ_ONLY_OPEN)
     def binance_analyze_cycle(symbol: str = "BTCUSDT") -> CycleAnalysis:
         """Objective cycle-position inputs: Mayer Multiple (price/200d MA), drawdown from
         ATH (BTC only), distance to the next halving. Interpret with
         kb://frameworks/cycle-analysis — output a PHASE with uncertainty, never a target."""
         return _g(lambda: analytics_tools.analyze_cycle(client, symbol))
 
-    @mcp.tool()
+    @mcp.tool(annotations=HINT_READ_ONLY_OPEN)
     def binance_analyze_portfolio(
         cost_basis: dict[str, float] | None = None,
         tax_rate: float = 0.0,
@@ -272,14 +297,14 @@ def _register_tools(
             )
         )
 
-    @mcp.tool()
+    @mcp.tool(annotations=HINT_READ_ONLY_OPEN)
     def binance_assess_risk(symbols: list[str] | None = None) -> RiskReport:
         """Realized volatility (30/90d), max drawdown (90d window) and BTC correlation
         per asset — defaults to current non-stable holdings. Rehearse drawdowns BEFORE
         the market does it (kb://discipline rule 2)."""
         return _g(lambda: analytics_tools.assess_risk(client, symbols))
 
-    @mcp.tool()
+    @mcp.tool(annotations=HINT_READ_ONLY_OPEN)
     def binance_backtest_dca(
         symbol: str, monthly_quote: float, months: int, day_of_month: int = 5, fee: float = 0.001
     ) -> DcaBacktestResult:
@@ -293,7 +318,7 @@ def _register_tools(
             )
         )
 
-    @mcp.tool()
+    @mcp.tool(annotations=HINT_READ_ONLY_OPEN)
     def binance_backtest_harvest(
         symbol: str, initial_qty: float, grid: list[dict[str, float]], start: str | None = None
     ) -> HarvestBacktestResult:
@@ -305,7 +330,7 @@ def _register_tools(
     # --- 4 tools de escritura two-phase (server propone; NUNCA ejecuta) ---
     # Los Literal (Side/OrderType/Env/TimeInForce) viajan al schema de la tool y los
     # re-valida Pydantic en runtime al construir CanonicalOrder (spec §3.3).
-    @mcp.tool()
+    @mcp.tool(annotations=HINT_MUTATING_PROPOSAL)
     def binance_spot_order_propose(
         symbol: str,
         side: Side,
@@ -330,19 +355,19 @@ def _register_tools(
             time_in_force=time_in_force,
         )
 
-    @mcp.tool()
+    @mcp.tool(annotations=HINT_READ_ONLY_LOCAL)
     def binance_spot_order_status(intent_id: str) -> OrderStatus:
         """Polls the outcome of a proposed order (no side effects)."""
         return write_tools.spot_order_status(ipc=ipc, intent_id=intent_id)
 
-    @mcp.tool()
+    @mcp.tool(annotations=HINT_MUTATING_PROPOSAL)
     def binance_cancel_order_propose(symbol: str, order_id: int, env: Env) -> OrderProposal:
         """Proposes canceling an order (re-checks status; does NOT cancel)."""
         return write_tools.cancel_order_propose(
             ipc=ipc, client=client, symbol=symbol, order_id=order_id, env=env
         )
 
-    @mcp.tool()
+    @mcp.tool(annotations=HINT_READ_ONLY_LOCAL)
     def binance_cancel_order_status(intent_id: str) -> OrderStatus:
         """Polls the outcome of a proposed cancellation (no side effects)."""
         return write_tools.cancel_order_status(ipc=ipc, intent_id=intent_id)
