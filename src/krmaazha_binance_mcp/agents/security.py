@@ -1,8 +1,9 @@
 """Security & Key Guard Agent: Defense-in-depth guardian of credentials and capital."""
+
 from __future__ import annotations
 
 import os
-from typing import Any, Dict
+from typing import Any
 
 from krmaazha_binance_mcp.agents.base import AgentMessage, AgentMetadata, BaseAgent
 
@@ -14,7 +15,9 @@ class SecurityGuardAgent(BaseAgent):
         agent_id="security_guard",
         name="Security & Key Guard Agent",
         icon="🛡️",
-        role_description="Guarantees credential isolation, IP whitelisting, and physical confirmation gates.",
+        role_description=(
+            "Guarantees credential isolation, IP whitelisting, and physical confirmation gates."
+        ),
         governing_skill="security-review",
         responsibilities=(
             "Verify read-only key cannot submit trades or withdraw assets",
@@ -34,18 +37,18 @@ class SecurityGuardAgent(BaseAgent):
     def __init__(self) -> None:
         super().__init__(self.METADATA)
 
-    def evaluate(self, context: Dict[str, Any]) -> AgentMessage:
+    def evaluate(self, context: dict[str, Any]) -> AgentMessage:
         """Audit the environment and request context for security violations."""
         has_read_key = bool(os.getenv("BINANCE_READ_API_KEY") or os.getenv("BINANCE_API_KEY"))
         has_trade_key = bool(os.getenv("BINANCE_TRADE_API_KEY"))
-        
+
         # Read-only server verification
         is_isolated = not (has_trade_key and "mcp_server" in context.get("process", "mcp_server"))
         action_requested = context.get("action", "market_analysis")
-        
+
         status = "PASSED"
         notes = []
-        
+
         if action_requested in ("trade", "order_proposal", "execute"):
             notes.append("Execution gate ENGAGED: Physical human confirmation is mandatory.")
             gate_required = True
@@ -54,8 +57,10 @@ class SecurityGuardAgent(BaseAgent):
             gate_required = False
 
         if not has_read_key:
-            notes.append("Public fallback active: Real-time queries use anonymous public Binance REST endpoints.")
-            
+            notes.append(
+                "Public fallback active: Telemetry uses anonymous public Binance REST endpoints."
+            )
+
         summary = (
             f"Security Audit: {status}. Read-key isolation verified. "
             f"Zero-trust confirmer gate: {'REQUIRED' if gate_required else 'STANDBY'}."

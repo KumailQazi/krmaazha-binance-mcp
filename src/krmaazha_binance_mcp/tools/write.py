@@ -1,4 +1,5 @@
 """Tools de escritura (lado server): proponen y consultan. NUNCA ejecutan (spec §3.2)."""
+
 from __future__ import annotations
 
 from decimal import Decimal
@@ -25,15 +26,31 @@ class IpcClient(Protocol):
     def status(self, intent_id: str) -> dict[str, Any]: ...
 
 
-def spot_order_propose(*, ipc: IpcClient, market: Any, symbol: str, side: Side, type: OrderType,
-                       env: Env, quantity: Decimal | None = None,
-                       quote_quantity: Decimal | None = None, price: Decimal | None = None,
-                       time_in_force: TimeInForce | None = None) -> OrderProposal:
+def spot_order_propose(
+    *,
+    ipc: IpcClient,
+    market: Any,
+    symbol: str,
+    side: Side,
+    type: OrderType,
+    env: Env,
+    quantity: Decimal | None = None,
+    quote_quantity: Decimal | None = None,
+    price: Decimal | None = None,
+    time_in_force: TimeInForce | None = None,
+) -> OrderProposal:
     if type == "LIMIT" and time_in_force is None:
         time_in_force = "GTC"
-    order = CanonicalOrder(symbol=symbol, side=side, type=type, quantity=quantity,
-                           quote_quantity=quote_quantity, price=price,
-                           time_in_force=time_in_force, env=env)
+    order = CanonicalOrder(
+        symbol=symbol,
+        side=side,
+        type=type,
+        quantity=quantity,
+        quote_quantity=quote_quantity,
+        price=price,
+        time_in_force=time_in_force,
+        env=env,
+    )
     # Pre-validación local (fail-fast); NO autoritativa — el confirmador re-estima.
     estimate: OrderPreview = market.estimate(order)
     try:
@@ -48,8 +65,9 @@ def spot_order_status(*, ipc: IpcClient, intent_id: str) -> OrderStatus:
     return OrderStatus(**ipc.status(intent_id))
 
 
-def cancel_order_propose(*, ipc: Any, client: Any, symbol: str, order_id: int,
-                         env: Env) -> OrderProposal:
+def cancel_order_propose(
+    *, ipc: Any, client: Any, symbol: str, order_id: int, env: Env
+) -> OrderProposal:
     """Re-consulta el estado de la orden ANTES de proponer la cancelación: si ya está
     llenada/cancelada/expirada devuelve un OrderProposal con error (sin crear intent).
     A2: get_order puede lanzar (-2013/red) → se devuelve OrderProposal con error mapeado
@@ -63,10 +81,13 @@ def cancel_order_propose(*, ipc: Any, client: Any, symbol: str, order_id: int,
         message = scrub_secrets(map_binance_error(code, str(msg)), client_secrets(client))
         return OrderProposal(error=ToolError(code=code, message=message))
     if current.get("status") in NOT_CANCELABLE:
-        return OrderProposal(error=ToolError(
-            code=-2011,
-            message=f"Order {order_id} is no longer cancelable (status {current.get('status')}).",
-        ))
+        st = current.get("status")
+        return OrderProposal(
+            error=ToolError(
+                code=-2011,
+                message=f"Order {order_id} is no longer cancelable (status {st}).",
+            )
+        )
     try:
         intent_id, expires_at = ipc.register_cancel(symbol=symbol, order_id=order_id, env=env)
     except IpcUnavailableError as e:

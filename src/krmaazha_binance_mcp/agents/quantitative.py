@@ -1,8 +1,9 @@
-"""Quantitative Research & Risk Agent: Mathematical computation, order book liquidity, and trade setups."""
+"""Quantitative Research & Risk Agent: Computation, order book depth, and trade setups."""
+
 from __future__ import annotations
 
 from decimal import Decimal
-from typing import Any, Dict, Optional
+from typing import Any
 
 from krmaazha_binance_mcp.agents.base import AgentMessage, AgentMetadata, BaseAgent
 
@@ -14,7 +15,10 @@ class QuantitativeRiskAgent(BaseAgent):
         agent_id="quant_risk",
         name="Quantitative Research & Risk Agent",
         icon="📊",
-        role_description="Performs mathematical market audits, order-book depth analysis, and net risk-reward modeling.",
+        role_description=(
+            "Performs mathematical market audits, order-book depth analysis, "
+            "and net risk-reward modeling."
+        ),
         governing_skill="async-python-patterns",
         responsibilities=(
             "Enforce zero-lookahead bias: closed bar t signals execute at t+1 open",
@@ -42,7 +46,7 @@ class QuantitativeRiskAgent(BaseAgent):
     def __init__(self) -> None:
         super().__init__(self.METADATA)
 
-    def evaluate(self, context: Dict[str, Any]) -> AgentMessage:
+    def evaluate(self, context: dict[str, Any]) -> AgentMessage:
         """Analyze instrument, liquidity, indicators, and compute trade setup."""
         symbol = context.get("symbol", "BTCUSDT").upper()
         price = Decimal(str(context.get("price", 0)))
@@ -86,9 +90,17 @@ class QuantitativeRiskAgent(BaseAgent):
             target = Decimal(str(context.get("suggested_target") or (price * Decimal("1.065"))))
 
             # RECOMPUTE NET R:R STRICTLY FROM TRIGGER PRICE (NOT CURRENT QUOTE)
-            gross_risk_pct = abs(trigger_price - invalidation) / trigger_price * Decimal("100") if trigger_price > 0 else Decimal("1")
-            gross_reward_pct = abs(target - trigger_price) / trigger_price * Decimal("100") if trigger_price > 0 else Decimal("2")
-            
+            gross_risk_pct = (
+                abs(trigger_price - invalidation) / trigger_price * Decimal("100")
+                if trigger_price > 0
+                else Decimal("1")
+            )
+            gross_reward_pct = (
+                abs(target - trigger_price) / trigger_price * Decimal("100")
+                if trigger_price > 0
+                else Decimal("2")
+            )
+
             gross_rr = gross_reward_pct / gross_risk_pct if gross_risk_pct > 0 else Decimal("0")
             net_risk_pct = gross_risk_pct + friction_pct
             net_reward_pct = max(Decimal("0"), gross_reward_pct - friction_pct)
@@ -96,10 +108,14 @@ class QuantitativeRiskAgent(BaseAgent):
 
             is_trigger_met = price >= trigger_price
             if is_trigger_met:
-                decision_state = f"LONG / READY — Confirmed 1h close above {_fmt_price(trigger_price)}"
+                decision_state = (
+                    f"LONG / READY — Confirmed 1h close above {_fmt_price(trigger_price)}"
+                )
                 auth_status = "AUTHORIZED (Awaiting Physical Confirmation)"
             else:
-                decision_state = f"WAITING — Long only if a completed 1h candle closes above {_fmt_price(trigger_price)}"
+                decision_state = (
+                    f"WAITING — Long only if 1h candle closes above {_fmt_price(trigger_price)}"
+                )
                 auth_status = "GATED — WAITING FOR CANDLE CLOSE"
 
             setup = {
@@ -109,7 +125,9 @@ class QuantitativeRiskAgent(BaseAgent):
                 "trigger_price": str(trigger_price),
                 "trigger_formatted": _fmt_price(trigger_price),
                 "entry_trigger": f"Confirmed 1h candle close above {_fmt_price(trigger_price)}",
-                "invalidation_stop": f"{_fmt_price(invalidation)} (-{gross_risk_pct:.2f}% from trigger)",
+                "invalidation_stop": (
+                    f"{_fmt_price(invalidation)} (-{gross_risk_pct:.2f}% from trigger)"
+                ),
                 "profit_target": f"{_fmt_price(target)} (+{gross_reward_pct:.2f}% from trigger)",
                 "time_horizon": "24h - 72h (Swing)",
                 "gross_rr": f"{gross_rr:.2f}:1",
@@ -118,7 +136,9 @@ class QuantitativeRiskAgent(BaseAgent):
                 "net_risk_pct": float(net_risk_pct),
                 "net_reward_pct": float(net_reward_pct),
                 "friction_bps": float(total_friction_bps),
-                "fee_slippage_deduction": f"{friction_pct:.3f}% ({total_friction_bps:.1f} bps total)",
+                "fee_slippage_deduction": (
+                    f"{friction_pct:.3f}% ({total_friction_bps:.1f} bps total)"
+                ),
                 "formula": "(Gross Reward % - Friction %) / (Gross Risk % + Friction %)",
                 "assumptions": {
                     "fees_bps": float(fees_bps),
@@ -127,40 +147,58 @@ class QuantitativeRiskAgent(BaseAgent):
                     "total_friction_bps": float(total_friction_bps),
                 },
                 "telemetry_gates": {
-                    "order_book_depth": "PASS (Depth > $100k USDT)" if not is_thin_book else "WARN (Thin Book)",
-                    "touch_spread": f"PASS ({spread_bps:.2f} bps)" if spread_bps < Decimal("10.0") else "WARN (Wide Spread)",
+                    "order_book_depth": "PASS (Depth > $100k USDT)"
+                    if not is_thin_book
+                    else "WARN (Thin Book)",
+                    "touch_spread": f"PASS ({spread_bps:.2f} bps)"
+                    if spread_bps < Decimal("10.0")
+                    else "WARN (Wide Spread)",
                     "closed_bar_indicators": "PASS (Closed 1h bar evaluated with zero lookahead)",
-                    "decimal_precision": "PASS (IEEE float artifacts eliminated via Python Decimal)",
+                    "decimal_precision": "PASS (IEEE float artifacts eliminated via Decimal)",
                 },
                 "authorization_gate": {
                     "status": auth_status,
                     "condition": f"Closed 1h bar >= {_fmt_price(trigger_price)}",
                     "physical_confirmer_required": True,
                 },
-                "stop_slip_warning": "Execution stop-loss orders are subject to market slippage during high-volatility breaks.",
+                "stop_slip_warning": (
+                    "Execution stop-loss orders are subject to slippage during high volatility."
+                ),
             }
         elif price > 0 and direction_type == "AVOID":
             trigger_price = Decimal(str(context.get("trigger_price") or price))
             invalidation = Decimal(str(context.get("suggested_stop") or (price * Decimal("1.025"))))
             target = Decimal(str(context.get("suggested_target") or (price * Decimal("0.94"))))
 
-            gross_risk_pct = abs(invalidation - trigger_price) / trigger_price * Decimal("100") if trigger_price > 0 else Decimal("1")
-            gross_reward_pct = abs(trigger_price - target) / trigger_price * Decimal("100") if trigger_price > 0 else Decimal("2")
+            gross_risk_pct = (
+                abs(invalidation - trigger_price) / trigger_price * Decimal("100")
+                if trigger_price > 0
+                else Decimal("1")
+            )
+            gross_reward_pct = (
+                abs(trigger_price - target) / trigger_price * Decimal("100")
+                if trigger_price > 0
+                else Decimal("2")
+            )
 
             gross_rr = gross_reward_pct / gross_risk_pct if gross_risk_pct > 0 else Decimal("0")
             net_risk_pct = gross_risk_pct + friction_pct
             net_reward_pct = max(Decimal("0"), gross_reward_pct - friction_pct)
             net_rr = net_reward_pct / net_risk_pct if net_risk_pct > 0 else Decimal("0")
 
-            decision_state = f"AVOID / SPOT DEFENSE — No long entry; cash preservation"
+            decision_state = "AVOID / SPOT DEFENSE — No long entry; cash preservation"
             setup = {
                 "decision_state": decision_state,
                 "direction": "AVOID",
                 "action_type": "cash_hedge_exit",
                 "trigger_price": str(trigger_price),
                 "trigger_formatted": _fmt_price(trigger_price),
-                "entry_trigger": f"Downside continuation below {_fmt_price(trigger_price)} (exit spot / cash hedge)",
-                "invalidation_stop": f"{_fmt_price(invalidation)} (+{gross_risk_pct:.2f}% above trigger)",
+                "entry_trigger": (
+                    f"Downside continuation below {_fmt_price(trigger_price)} (exit spot / cash)"
+                ),
+                "invalidation_stop": (
+                    f"{_fmt_price(invalidation)} (+{gross_risk_pct:.2f}% above trigger)"
+                ),
                 "profit_target": f"{_fmt_price(target)} (-{gross_reward_pct:.2f}% below trigger)",
                 "time_horizon": "12h - 48h (Defense)",
                 "gross_rr": f"{gross_rr:.2f}:1",
@@ -169,7 +207,9 @@ class QuantitativeRiskAgent(BaseAgent):
                 "net_risk_pct": float(net_risk_pct),
                 "net_reward_pct": float(net_reward_pct),
                 "friction_bps": float(total_friction_bps),
-                "fee_slippage_deduction": f"{friction_pct:.3f}% ({total_friction_bps:.1f} bps total)",
+                "fee_slippage_deduction": (
+                    f"{friction_pct:.3f}% ({total_friction_bps:.1f} bps total)"
+                ),
                 "formula": "(Gross Reward % - Friction %) / (Gross Risk % + Friction %)",
                 "assumptions": {
                     "fees_bps": float(fees_bps),
@@ -178,17 +218,26 @@ class QuantitativeRiskAgent(BaseAgent):
                     "total_friction_bps": float(total_friction_bps),
                 },
                 "telemetry_gates": {
-                    "order_book_depth": "PASS (Depth > $100k USDT)" if not is_thin_book else "WARN (Thin Book)",
-                    "touch_spread": f"PASS ({spread_bps:.2f} bps)" if spread_bps < Decimal("10.0") else "WARN (Wide Spread)",
+                    "order_book_depth": "PASS (Depth > $100k USDT)"
+                    if not is_thin_book
+                    else "WARN (Thin Book)",
+                    "touch_spread": f"PASS ({spread_bps:.2f} bps)"
+                    if spread_bps < Decimal("10.0")
+                    else "WARN (Wide Spread)",
                     "closed_bar_indicators": "PASS (Bearish EMA/MACD momentum confirmed)",
                     "decimal_precision": "PASS (Python Decimal precision)",
                 },
                 "authorization_gate": {
-                    "status": "BLOCKED — Capital preservation doctrine forbids long entries during downtrends (kb://discipline)",
-                    "condition": f"No long trades permitted while trend score <= -0.15",
+                    "status": (
+                        "BLOCKED — Capital preservation doctrine forbids long entries "
+                        "during downtrends (kb://discipline)"
+                    ),
+                    "condition": "No long trades permitted while trend score <= -0.15",
                     "physical_confirmer_required": True,
                 },
-                "stop_slip_warning": "Spot exit protection. This is NOT a derivatives short recommendation.",
+                "stop_slip_warning": (
+                    "Spot exit protection. NOT a derivatives short recommendation."
+                ),
             }
         else:
             decision_state = "WAITING / NEUTRAL — No edge; awaiting confirmed breakout catalyst"
@@ -232,7 +281,8 @@ class QuantitativeRiskAgent(BaseAgent):
 
         summary = (
             f"Quant Audit: {symbol} @ {_fmt_price(price)} | State: {decision_state} | "
-            f"Touch Spread: {spread_bps:.2f} bps | ±1% Depth: ${depth_1pct_usdt:,.0f} USDT | Net R:R: {setup.get('net_rr')}."
+            f"Touch Spread: {spread_bps:.2f} bps | ±1% Depth: ${depth_1pct_usdt:,.0f} USDT | "
+            f"Net R:R: {setup.get('net_rr')}."
         )
 
         return AgentMessage(

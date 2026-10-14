@@ -15,6 +15,7 @@ multiplicador produce un salto de precio de ×1000 que aparecería como un retor
 +99.900% y dominaría cualquier ranking de momentum. Trece de los 527 vivos llevan
 multiplicador, así que no es un caso hipotético.
 """
+
 from __future__ import annotations
 
 import re
@@ -58,7 +59,7 @@ def list_archive_symbols(fetch: XmlFetcher | None = None) -> list[str]:
         root = ET.fromstring(fetch(url))
         for node in root.findall(f"{_NS}CommonPrefixes/{_NS}Prefix"):
             if node.text:
-                symbols.append(node.text[len(_PREFIX):].rstrip("/"))
+                symbols.append(node.text[len(_PREFIX) :].rstrip("/"))
         nxt = root.findtext(f"{_NS}NextContinuationToken")
         if not nxt:
             return sorted(set(symbols))
@@ -87,7 +88,11 @@ class Universe:
         self.symbols = symbols
 
     def load_panels(
-        self, *, start: date, end: date | None = None, interval: str = "1d",
+        self,
+        *,
+        start: date,
+        end: date | None = None,
+        interval: str = "1d",
     ) -> tuple[pd.DataFrame, pd.DataFrame]:
         """Devuelve `(close, quote_volume)` indexados por `open_time`.
 

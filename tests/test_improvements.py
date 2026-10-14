@@ -7,11 +7,12 @@ from __future__ import annotations
 
 from decimal import Decimal
 from unittest.mock import MagicMock
+
 import pytest
 
-from krmaazha_binance_mcp.models import OrderBookLiquidity, TradeSetup, Signal
-from krmaazha_binance_mcp.tools.marketdata import get_order_book_liquidity
+from krmaazha_binance_mcp.models import OrderBookLiquidity
 from krmaazha_binance_mcp.signals.engine import generate_signal
+from krmaazha_binance_mcp.tools.marketdata import get_order_book_liquidity
 
 
 def test_order_book_liquidity_calculation():

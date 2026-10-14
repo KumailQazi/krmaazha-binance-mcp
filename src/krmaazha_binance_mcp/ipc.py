@@ -11,6 +11,7 @@ Respuestas:
   status   → OrderStatus json ({intent_id, state, result, error})
   error    → {"error": "<motivo>"}  (también ante type desconocido: NO se actúa)
 """
+
 from __future__ import annotations
 
 import json
@@ -79,7 +80,8 @@ class IpcClient:
         if not os.path.exists(self.socket_path):
             raise IpcUnavailableError(
                 "confirmer unavailable: start `krmaazha-binance-mcp-confirmer` "
-                f"(socket {self.socket_path} does not exist)")
+                f"(socket {self.socket_path} does not exist)"
+            )
         try:
             conn = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
             conn.connect(self.socket_path)
@@ -98,39 +100,67 @@ class IpcClient:
             raise IpcProtocolError(f"invalid response from confirmer: {e}") from e
         # Envelope de error del servidor IPC: {"error": "..."} y sin payload de estado.
         # (OrderStatus también lleva una clave "error", pero junto a "state".)
-        if isinstance(data, dict) and "error" in data and "state" not in data \
-                and "intent_id" not in data:
+        if (
+            isinstance(data, dict)
+            and "error" in data
+            and "state" not in data
+            and "intent_id" not in data
+        ):
             raise IpcProtocolError(str(data["error"]))
         return cast("dict[str, Any]", data)
 
     def register(self, order: CanonicalOrder) -> tuple[str, int]:
-        data = self._request({"v": PROTOCOL_VERSION, "type": "register", "kind": "order",
-                              "order": order.model_dump(mode="json")})
+        data = self._request(
+            {
+                "v": PROTOCOL_VERSION,
+                "type": "register",
+                "kind": "order",
+                "order": order.model_dump(mode="json"),
+            }
+        )
         return data["intent_id"], int(data["expires_at"])
 
     def register_cancel(self, symbol: str, order_id: int, env: str = "testnet") -> tuple[str, int]:
-        data = self._request({"v": PROTOCOL_VERSION, "type": "register", "kind": "cancel",
-                              "symbol": symbol, "order_id": order_id, "env": env})
+        data = self._request(
+            {
+                "v": PROTOCOL_VERSION,
+                "type": "register",
+                "kind": "cancel",
+                "symbol": symbol,
+                "order_id": order_id,
+                "env": env,
+            }
+        )
         return data["intent_id"], int(data["expires_at"])
 
     def status(self, intent_id: str) -> dict[str, Any]:
         return self._request({"v": PROTOCOL_VERSION, "type": "status", "intent_id": intent_id})
 
 
-def serve(socket_path: str, store: Any, client: Any, nonce: str,
-          dialog_lock: threading.Lock, estimator: Any,
-          *, max_pending: int = _MAX_PENDING, confirmer_env: str = "testnet",
-          audit_path: str | None = None,
-          confirm: Callable[[str], bool] | None = None) -> None:
+def serve(
+    socket_path: str,
+    store: Any,
+    client: Any,
+    nonce: str,
+    dialog_lock: threading.Lock,
+    estimator: Any,
+    *,
+    max_pending: int = _MAX_PENDING,
+    confirmer_env: str = "testnet",
+    audit_path: str | None = None,
+    confirm: Callable[[str], bool] | None = None,
+) -> None:
     """Servidor IPC (lo corre el confirmador). Crea el Unix socket (carpeta 0700,
     socket 0600), acepta conexiones y atiende register/status. La ejecución NUNCA
     nace de un mensaje: sólo de `handle_intent` tras el clic en el diálogo (spec §4.3)."""
     # Import diferido para no acoplar el server (read-only) al confirmador.
     from krmaazha_binance_mcp.models import CanonicalOrder
+
     if confirm is None:
         # Import DIFERIDO a propósito: los tests monkeypatchean dialog.ask_confirmation
         # antes de arrancar serve() — resolver acá (no al importar) mantiene ese contrato.
         from krmaazha_binance_mcp_confirmer.dialog import ask_confirmation
+
         confirm = ask_confirmation
     confirm_fn: Callable[[str], bool] = confirm
     from krmaazha_binance_mcp_confirmer.executor import handle_cancel_intent, handle_intent
@@ -148,15 +178,31 @@ def serve(socket_path: str, store: Any, client: Any, nonce: str,
 
     def _dispatch(order: CanonicalOrder, intent_id: str) -> None:
         with dialog_lock:  # anti-spam §4.3c: un diálogo a la vez
-            handle_intent(order=order, intent_id=intent_id, store=store, client=client,
-                          estimator=estimator, confirm=confirm_fn, nonce=nonce,
-                          confirmer_env=confirmer_env, audit_path=audit_path)
+            handle_intent(
+                order=order,
+                intent_id=intent_id,
+                store=store,
+                client=client,
+                estimator=estimator,
+                confirm=confirm_fn,
+                nonce=nonce,
+                confirmer_env=confirmer_env,
+                audit_path=audit_path,
+            )
 
     def _dispatch_cancel(symbol: str, order_id: int, env: str, intent_id: str) -> None:
         with dialog_lock:
-            handle_cancel_intent(symbol=symbol, order_id=order_id, env=env, intent_id=intent_id,
-                                 store=store, client=client, confirm=confirm_fn,
-                                 confirmer_env=confirmer_env, audit_path=audit_path)
+            handle_cancel_intent(
+                symbol=symbol,
+                order_id=order_id,
+                env=env,
+                intent_id=intent_id,
+                store=store,
+                client=client,
+                confirm=confirm_fn,
+                confirmer_env=confirmer_env,
+                audit_path=audit_path,
+            )
 
     def _handle(msg: dict[str, Any]) -> dict[str, Any]:
         mtype = msg["type"]
@@ -170,8 +216,9 @@ def serve(socket_path: str, store: Any, client: Any, nonce: str,
                 env = msg.get("env", "testnet")
                 iid = store.register_cancel(symbol, order_id)
                 expires_at = store.get(iid).expires_at
-                threading.Thread(target=_dispatch_cancel,
-                                 args=(symbol, order_id, env, iid), daemon=True).start()
+                threading.Thread(
+                    target=_dispatch_cancel, args=(symbol, order_id, env, iid), daemon=True
+                ).start()
                 return {"intent_id": iid, "expires_at": expires_at}
             order = CanonicalOrder(**msg["order"])
             iid = store.register(order)

@@ -4,6 +4,7 @@ Endpoints SIN firma (`signed=False` en python-binance): no usan el secret ni req
 `enableFutures` en la key. La read key viaja como header (inocuo — nota en SECURITY.md).
 Con BINANCE_ENV=testnet el client rutea a testnet-fapi → datos sintéticos (disclaimer).
 """
+
 from __future__ import annotations
 
 import time
@@ -27,10 +28,13 @@ DISCLAIMER = (
 FUNDING_HISTORY_LIMIT = 8  # ~últimas 8 ventanas de funding (8h c/u ≈ 2.7 días)
 
 
-def get_derivatives(client: Client, symbol: str,
-                    funding_limit: int = FUNDING_HISTORY_LIMIT,
-                    start_time: int | None = None,
-                    end_time: int | None = None) -> DerivativesSnapshot:
+def get_derivatives(
+    client: Client,
+    symbol: str,
+    funding_limit: int = FUNDING_HISTORY_LIMIT,
+    start_time: int | None = None,
+    end_time: int | None = None,
+) -> DerivativesSnapshot:
     """Snapshot de derivados de un par: mark/index, funding actual + histórico corto, OI.
 
     `start_time`/`end_time` (epoch ms) acotan el histórico de funding a una ventana
@@ -42,8 +46,7 @@ def get_derivatives(client: Client, symbol: str,
     if start_time is not None and end_time is not None and start_time > end_time:
         raise ValueError("start_time must not be after end_time")
     premium = client.futures_mark_price(symbol=symbol)
-    window = {k: v for k, v in (("startTime", start_time), ("endTime", end_time))
-              if v is not None}
+    window = {k: v for k, v in (("startTime", start_time), ("endTime", end_time)) if v is not None}
     history = client.futures_funding_rate(symbol=symbol, limit=funding_limit, **window)
     oi = client.futures_open_interest(symbol=symbol)
     return DerivativesSnapshot(

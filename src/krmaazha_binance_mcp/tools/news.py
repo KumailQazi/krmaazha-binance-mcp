@@ -13,6 +13,7 @@ el confirmador, NO mueven plata, NO requieren API key.
 Los parámetros ``_registry`` / ``_cache`` / ``_now`` son inyectables para testear sin red;
 en producción usan los defaults reales (registro ``SOURCES`` + cache de módulo + reloj wall).
 """
+
 from __future__ import annotations
 
 import time
@@ -52,9 +53,7 @@ def _resolve_sources(
     for name in sources:
         src = registry.get(name)
         if src is None:
-            raise ValueError(
-                f"unknown source {name!r}. Available: {sorted(registry)}"
-            )
+            raise ValueError(f"unknown source {name!r}. Available: {sorted(registry)}")
         resolved.append(src)
     return resolved
 
@@ -102,11 +101,7 @@ def get_sentiment(
 
     cutoff = now() - window_hours * 3600
     # Items del activo dentro de la ventana, ya ordenados por más reciente (fetch_all ordena).
-    items = [
-        i
-        for i in fetch_all(selected, cache=cache, asset=asset)
-        if i.published >= cutoff
-    ]
+    items = [i for i in fetch_all(selected, cache=cache, asset=asset) if i.published >= cutoff]
 
     n_items = len(items)
     score = sum(i.sentiment for i in items) / n_items if n_items else 0.0

@@ -1,4 +1,5 @@
 """Modelos Pydantic de entrada/salida y el CanonicalOrder (spec §3.3/§3.4)."""
+
 from __future__ import annotations
 
 from decimal import Decimal
@@ -40,6 +41,7 @@ TimeInForce = Literal["GTC", "IOC", "FOK"]
 
 class CanonicalOrder(BaseModel):
     """Lo ÚNICO que viaja por IPC al confirmador. Sin texto, sin id, sin hash."""
+
     model_config = {"frozen": True}
     # Trust boundary: symbol es el único texto controlado por el modelo que llega a un
     # intérprete (AppleScript, dialog.py). El pattern lo cierra acá, en el modelo canónico.
@@ -127,6 +129,7 @@ class OrderResult(BaseModel):
 class CancelResult(BaseModel):
     """Resultado de una cancelación (spec §3.3). Distinto de OrderResult: una cancelación
     no tiene fills ni qty ejecutada propia, sólo el desenlace."""
+
     order_id: int
     status: Literal["CANCELED", "NOT_CANCELABLE"]
     detail: str = ""
@@ -182,8 +185,10 @@ class AccountInfo(BaseModel):
 
 # --- Capa 2: market data + indicadores (read-only). OHLCV en Decimal (E3); floats. ---
 
+
 class Kline(BaseModel):
     """Vela OHLCV. OHLCV en Decimal por consistencia con capa 1 (E3)."""
+
     open_time: int
     open: PlainDecimal
     high: PlainDecimal
@@ -195,6 +200,7 @@ class Kline(BaseModel):
 
 class Ticker24h(BaseModel):
     """Stats rolling 24h de un par."""
+
     symbol: str
     price_change_pct: PlainDecimal
     high: PlainDecimal
@@ -209,6 +215,7 @@ class IndicatorResult(BaseModel):
     ``indicators`` mapea nombre -> serie alineada con las velas; ``None`` en el periodo de
     calentamiento de cada indicador. ``as_of`` = close_time de la última vela usada.
     """
+
     symbol: str
     interval: str
     indicators: dict[str, list[float | None]]
@@ -217,6 +224,7 @@ class IndicatorResult(BaseModel):
 
 class BacktestResult(BaseModel):
     """Resultado de un backtest liviano (E5). Métricas en float; honesto y sin promesas."""
+
     symbol: str
     interval: str
     strategy: str
@@ -230,6 +238,7 @@ class BacktestResult(BaseModel):
 
 # --- Capa 3: noticias + sentiment (read-only). Sentiment en float (señal cruda, spec §4). ---
 
+
 class NewsItem(BaseModel):
     """Un ítem de noticia normalizado desde un feed RSS (spec §4).
 
@@ -237,6 +246,7 @@ class NewsItem(BaseModel):
     [-1, +1] (léxico determinista, ver ``news.sentiment``). ``assets`` son los símbolos
     canónicos detectados en título+resumen.
     """
+
     title: str
     summary: str
     source: str
@@ -253,6 +263,7 @@ class SentimentResult(BaseModel):
     ``sample`` son items representativos. ``disclaimer`` es obligatorio y explícito:
     señal cruda, no es análisis; el juicio fino lo hace Claude leyendo los items.
     """
+
     asset: str
     window_hours: int
     score: float
@@ -274,6 +285,7 @@ class SignalFactor(BaseModel):
     ``weight`` su peso en la mezcla; ``contribution`` = value·weight (lo que efectivamente
     empujó al score). ``note`` explica en lenguaje claro qué se midió. Sin caja negra (S3).
     """
+
     name: str
     value: float
     weight: float
@@ -283,6 +295,7 @@ class SignalFactor(BaseModel):
 
 class OrderBookLiquidity(BaseModel):
     """Auditoría de liquidez ejecutable del order-book (IMPROVEMENTS.MD §4)."""
+
     symbol: str
     venue: str = "Binance Spot"
     market_type: str = "SPOT"
@@ -301,7 +314,8 @@ class OrderBookLiquidity(BaseModel):
 
 
 class TradeSetup(BaseModel):
-    """Definición institucional completa de setup de trading con Net R:R (IMPROVEMENTS.MD §3 & §5)."""
+    """Definición de setup institucional con Net R:R (IMPROVEMENTS.MD §3 & §5)."""
+
     symbol: str
     direction: Literal["long", "short", "avoid", "neutral"]
     bar_state: Literal["closed", "forming"] = "closed"
@@ -317,7 +331,9 @@ class TradeSetup(BaseModel):
     net_risk_reward: float
     indicator_periods: dict[str, Any]
     formula_version: str = "krmaazha-v1.3-reproducible"
-    stop_slip_warning: str = "Execution stop-loss orders are subject to market slippage during high-volatility breaks."
+    stop_slip_warning: str = (
+        "Execution stop-loss orders are subject to market slippage during high-volatility breaks."
+    )
 
 
 class Signal(BaseModel):
@@ -329,6 +345,7 @@ class Signal(BaseModel):
     ``None`` para hold (zona neutra). ``disclaimer`` obligatorio (S6): no es predicción.
     Incluye setup completo y Net R:R según estándares de IMPROVEMENTS.MD.
     """
+
     symbol: str
     interval: str
     direction: SignalDirection
@@ -372,6 +389,7 @@ Signal.model_rebuild()
 def validate_symbol(symbol: str) -> str:
     """Valida el symbol en las tools read-only (mismo pattern que CanonicalOrder)."""
     import re
+
     if not re.fullmatch(SYMBOL_PATTERN, symbol):
         raise ValueError(f"invalid symbol {symbol!r}: expected {SYMBOL_PATTERN} (e.g. BTCUSDT)")
     return symbol
@@ -388,6 +406,7 @@ class FundingEvent(BaseModel):
     que dejaba la serie inservible como serie temporal: sin hora no se puede alinear el
     accrual con las velas ni saber si faltan ventanas.
     """
+
     funding_time: int
     funding_rate: float
 
@@ -398,6 +417,7 @@ class DerivativesSnapshot(BaseModel):
     `last_funding_rate` > 0 = longs pagan (positioning alcista); sostenido > 0.0005/8h =
     longs apiñados. `funding_history` = últimas N tasas (más antigua primero). En
     BINANCE_ENV=testnet estos datos son sintéticos (lo dice el disclaimer)."""
+
     symbol: str
     mark_price: PlainDecimal
     index_price: PlainDecimal
@@ -415,6 +435,7 @@ class MarketStructure(BaseModel):
     BINANCE_ENV). CADA bloque degrada a None si su fuente falla — mirar `notes`.
 
     Lectura: `kb://glossary` y `kb://frameworks/cycle-analysis`."""
+
     fear_greed: int | None
     fear_greed_label: str | None
     fear_greed_week: list[int]
@@ -436,6 +457,7 @@ class MarketStructure(BaseModel):
 class CycleAnalysis(BaseModel):
     """Inputs objetivos de posición de ciclo — la INTERPRETACIÓN la hace el cliente con
     `kb://frameworks/cycle-analysis`. `mayer_multiple` = precio / MA200 diaria."""
+
     symbol: str
     price: PlainDecimal
     ma200d: PlainDecimal | None
@@ -450,6 +472,7 @@ class CycleAnalysis(BaseModel):
 
 class PortfolioPosition(BaseModel):
     """Una posición valorizada. `cost_basis`/`pnl_pct` sólo si el usuario aportó costos."""
+
     asset: str
     amount: PlainDecimal
     price_usdt: PlainDecimal | None
@@ -462,6 +485,7 @@ class PortfolioPosition(BaseModel):
 class PortfolioReport(BaseModel):
     """Valorización + concentración + break-even NETO paramétrico (sin datos personales
     embebidos: cost_basis/tax_rate/spread son SIEMPRE parámetros del usuario)."""
+
     positions: list[PortfolioPosition]
     total_value_usdt: PlainDecimal
     top_concentration_pct: float | None
@@ -473,6 +497,7 @@ class PortfolioReport(BaseModel):
 
 class AssetRisk(BaseModel):
     """Métricas de riesgo de un activo (ventanas en días de velas 1d)."""
+
     symbol: str
     realized_vol_30d_pct: float | None
     realized_vol_90d_pct: float | None
@@ -483,6 +508,7 @@ class AssetRisk(BaseModel):
 class RiskReport(BaseModel):
     """Riesgo del portafolio: vol/drawdown/correlación por activo. La interpretación
     (sizing) vive en `kb://discipline` regla 2."""
+
     assets: list[AssetRisk]
     notes: list[str]
     as_of: int
@@ -495,6 +521,7 @@ class RiskReport(BaseModel):
 class DcaBacktestResult(BaseModel):
     """Simulación histórica de un plan DCA mecánico. NO es predicción (start-date
     sensitivity real — probar varias ventanas). Comparación honesta vs lump-sum."""
+
     symbol: str
     months: int
     monthly_quote: PlainDecimal
@@ -513,6 +540,7 @@ class DcaBacktestResult(BaseModel):
 
 class HarvestFill(BaseModel):
     """Un tramo de la grilla ejecutado en la simulación (fill al nivel, como limit)."""
+
     date: str
     level: PlainDecimal
     qty_sold: PlainDecimal
@@ -522,6 +550,7 @@ class HarvestFill(BaseModel):
 class HarvestBacktestResult(BaseModel):
     """Simulación de una grilla de cosecha pre-comprometida sobre cierres diarios.
     Cada nivel dispara UNA vez (cruce al alza). Comparación vs puro hold."""
+
     symbol: str
     initial_qty: PlainDecimal
     fills: list[HarvestFill]

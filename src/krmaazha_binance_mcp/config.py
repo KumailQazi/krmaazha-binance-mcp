@@ -1,4 +1,5 @@
 """Validación de variables de entorno del server (read key). Spec §4.1/§4.2a."""
+
 from __future__ import annotations
 
 from collections.abc import Mapping
@@ -62,6 +63,5 @@ def load_confirm_mode(values: Mapping[str, str]) -> str:
     Valor desconocido aborta al arranque (fail-closed, patrón BINANCE_ENV)."""
     mode = values.get("BINANCE_CONFIRM_MODE", "auto").strip() or "auto"
     if mode not in _CONFIRM_MODES:
-        raise ConfigError(
-            f"BINANCE_CONFIRM_MODE must be one of {_CONFIRM_MODES}, not '{mode}'")
+        raise ConfigError(f"BINANCE_CONFIRM_MODE must be one of {_CONFIRM_MODES}, not '{mode}'")
     return mode

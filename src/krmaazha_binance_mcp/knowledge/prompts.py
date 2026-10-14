@@ -1,6 +1,7 @@
 """Los 5 playbooks del consultor (capa 7). Cada prompt devuelve un plan de trabajo en
 texto que el cliente LLM ejecuta con las tools del server; el PRIMER paso siempre es
 leer los resources que gobiernan la interpretación (los clientes no los leen solos)."""
+
 from __future__ import annotations
 
 _GROUNDING = (
@@ -13,8 +14,7 @@ _GROUNDING = (
 def portfolio_review(risk_profile: str = "conservative") -> str:
     """Methodical portfolio review: balances, market context, derivatives, news, verdict."""
     return (
-        _GROUNDING
-        + f"You are reviewing a crypto portfolio for a {risk_profile} investor. Steps:\n"
+        _GROUNDING + f"You are reviewing a crypto portfolio for a {risk_profile} investor. Steps:\n"
         "1. `binance_get_balance` — the actual holdings (never assume).\n"
         "2. `binance_get_price` / `binance_get_ticker_24h` for each held asset → value "
         "each position and the total. Compute concentration (% per asset).\n"
@@ -38,8 +38,7 @@ def portfolio_review(risk_profile: str = "conservative") -> str:
 def asset_thesis(symbol: str) -> str:
     """Build an honest investment thesis for one asset using the value-capture framework."""
     return (
-        _GROUNDING
-        + f"Build an investment thesis for {symbol}. Steps:\n"
+        _GROUNDING + f"Build an investment thesis for {symbol}. Steps:\n"
         "1. Read `kb://frameworks/token-value` — the five questions govern everything.\n"
         f"2. `binance_get_ticker_24h`/`binance_get_klines` for {symbol} (price context, "
         "NOT the thesis).\n"
@@ -61,8 +60,7 @@ def asset_thesis(symbol: str) -> str:
 def market_briefing() -> str:
     """Daily/weekly market briefing: what to read and what actually changed."""
     return (
-        _GROUNDING
-        + "Produce a market briefing without hype. Steps:\n"
+        _GROUNDING + "Produce a market briefing without hype. Steps:\n"
         "1. Read `kb://sources` — weight every input by its annotated bias.\n"
         "2. `binance_get_market_structure` — F&G (and its direction), dominance, mcap.\n"
         "3. `binance_get_derivatives` BTCUSDT — funding/OI: crowded or washed out?\n"
@@ -81,8 +79,7 @@ def risk_check(portfolio_description: str = "") -> str:
     """Stress-test the current portfolio: concentration, volatility, drawdown rehearsal."""
     extra = f" Context from the user: {portfolio_description}." if portfolio_description else ""
     return (
-        _GROUNDING
-        + "Run a risk check on the actual portfolio." + extra + " Steps:\n"
+        _GROUNDING + "Run a risk check on the actual portfolio." + extra + " Steps:\n"
         "1. `binance_get_balance` + prices → position sizes and concentration.\n"
         "2. `binance_assess_risk` — realized vol, max historical drawdown, correlation "
         "to BTC per held asset.\n"
@@ -100,8 +97,7 @@ def risk_check(portfolio_description: str = "") -> str:
 def dca_plan(monthly_amount: str, quote_asset: str = "USDT") -> str:
     """Design a disciplined, unconditional DCA plan with cold-blooded exit rules."""
     return (
-        _GROUNDING
-        + f"Design a DCA plan for {monthly_amount} {quote_asset} per month. Steps:\n"
+        _GROUNDING + f"Design a DCA plan for {monthly_amount} {quote_asset} per month. Steps:\n"
         "1. Read `kb://discipline` rules 1, 2, 4 and 5 — they ARE the plan's skeleton.\n"
         "2. Allocation: default to the highest-quality asset (BTC) unless the user "
         "holds a verified thesis for something else (`kb://frameworks/token-value`). "

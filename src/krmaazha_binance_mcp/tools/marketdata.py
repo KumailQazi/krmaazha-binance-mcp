@@ -5,10 +5,11 @@ Delegan en ``klines``, ``indicators`` y ``backtest`` (módulos ya testeados). Va
 params de entrada (interval válido, indicadores conocidos, strategy del enum) antes de
 pegarle a Binance, para fallar barato y con un mensaje claro.
 """
+
 from __future__ import annotations
 
-from datetime import datetime, timezone
 import math
+from datetime import UTC, datetime
 from decimal import Decimal
 from typing import TYPE_CHECKING
 
@@ -30,13 +31,14 @@ if TYPE_CHECKING:
     from binance.client import Client
 
 # Indicadores soportados (spec §4). El nombre 'macd'/'bollinger' se expande a varias series.
-VALID_INDICATORS: frozenset[str] = frozenset(
-    {"rsi", "macd", "ema", "bollinger", "atr"}
-)
+VALID_INDICATORS: frozenset[str] = frozenset({"rsi", "macd", "ema", "bollinger", "atr"})
 
 
 def get_klines(
-    client: Client, symbol: str, interval: str, limit: int = 500,
+    client: Client,
+    symbol: str,
+    interval: str,
+    limit: int = 500,
     last_n: int | None = None,
 ) -> list[Kline]:
     """Velas OHLCV de un par/intervalo como modelos ``Kline`` (OHLCV en Decimal).
@@ -73,7 +75,7 @@ def get_order_book_liquidity(client: Client, symbol: str) -> OrderBookLiquidity:
     depth = client.get_order_book(symbol=sym, limit=100)
     ticker = client.get_ticker(symbol=sym)
 
-    now_utc = datetime.now(timezone.utc)
+    now_utc = datetime.now(UTC)
     as_of_ms = int(now_utc.timestamp() * 1000)
     as_of_iso = now_utc.isoformat()
 
@@ -88,8 +90,8 @@ def get_order_book_liquidity(client: Client, symbol: str) -> OrderBookLiquidity:
 
     # ±1% Depth Bands
     bid_threshold = mid * Decimal("0.01")
-    bid_depth_usdt = sum(p * q for p, q in bids if (mid - p) <= bid_threshold)
-    ask_depth_usdt = sum(p * q for p, q in asks if (p - mid) <= bid_threshold)
+    bid_depth_usdt = sum((p * q for p, q in bids if (mid - p) <= bid_threshold), start=Decimal("0"))
+    ask_depth_usdt = sum((p * q for p, q in asks if (p - mid) <= bid_threshold), start=Decimal("0"))
     total_depth_1pct = bid_depth_usdt + ask_depth_usdt
 
     # Thin book flag: < $50,000 USDT total 1% depth or spread > 10 bps
@@ -143,16 +145,12 @@ def compute_indicators(
     refiere a la última vela, recorte o no.
     """
     if interval not in VALID_INTERVALS:
-        raise ValueError(
-            f"invalid interval {interval!r}. Valid: {sorted(VALID_INTERVALS)}"
-        )
+        raise ValueError(f"invalid interval {interval!r}. Valid: {sorted(VALID_INTERVALS)}")
     if not indicators:
         raise ValueError("at least one indicator is required")
     unknown = [i for i in indicators if i not in VALID_INDICATORS]
     if unknown:
-        raise ValueError(
-            f"unknown indicator(s): {unknown}. Valid: {sorted(VALID_INDICATORS)}"
-        )
+        raise ValueError(f"unknown indicator(s): {unknown}. Valid: {sorted(VALID_INDICATORS)}")
 
     df = fetch_klines(client, validate_symbol(symbol), interval, limit)
     close = df["close"]
@@ -210,12 +208,8 @@ def backtest(
     (fast/slow para ema_cross; low/high/n para rsi_threshold).
     """
     if interval not in VALID_INTERVALS:
-        raise ValueError(
-            f"invalid interval {interval!r}. Valid: {sorted(VALID_INTERVALS)}"
-        )
+        raise ValueError(f"invalid interval {interval!r}. Valid: {sorted(VALID_INTERVALS)}")
     if strategy not in bt.STRATEGIES:
-        raise ValueError(
-            f"unknown strategy {strategy!r}. Valid: {sorted(bt.STRATEGIES)}"
-        )
+        raise ValueError(f"unknown strategy {strategy!r}. Valid: {sorted(bt.STRATEGIES)}")
     df = fetch_klines(client, validate_symbol(symbol), interval, limit)
     return bt.backtest_df(df, symbol, interval, strategy, **params)

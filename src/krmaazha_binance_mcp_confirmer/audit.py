@@ -5,6 +5,7 @@ Cada orden ejecutada appendea UNA línea JSON a un archivo de auditoría local
 carpeta 0700). Registra QUÉ se ejecutó —timestamp, ids, símbolo, lado, cantidad
 efectiva, precio, env— y NUNCA secretos (ni API key/secret, ni nonce).
 """
+
 from __future__ import annotations
 
 import json
@@ -14,7 +15,8 @@ from decimal import Decimal
 from typing import Any
 
 DEFAULT_AUDIT_PATH = os.path.expanduser(
-    "~/Library/Application Support/krmaazha-binance-mcp/audit.log")
+    "~/Library/Application Support/krmaazha-binance-mcp/audit.log"
+)
 
 
 def _json_default(o: Any) -> str:

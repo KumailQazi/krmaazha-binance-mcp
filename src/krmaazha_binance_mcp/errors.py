@@ -1,6 +1,7 @@
 """Mapeo de errores de Binance a mensajes útiles + scrub de secretos (spec §4.9),
 y el contrato de error único de las tools read-only (v1.0.0): toda excepción que salga
 de una tool va mapeada + scrubbeada como ToolExecutionError — nunca un traceback crudo."""
+
 from __future__ import annotations
 
 from collections.abc import Callable
@@ -55,12 +56,16 @@ def run_guarded[T](secrets_of: Callable[[], list[str]], fn: Callable[[], T]) -> 
         code = code if isinstance(code, int) else -1
         msg = getattr(e, "message", None) or str(e)
         raise ToolExecutionError(
-            scrub_secrets(map_binance_error(code, str(msg)), secrets_of())) from None
+            scrub_secrets(map_binance_error(code, str(msg)), secrets_of())
+        ) from None
 
 
 def client_secrets(client: object) -> list[str]:
     """Key/secret del client para scrubbear mensajes de error (python-binance los guarda
     en client.API_KEY / client.API_SECRET). Sólo strings reales (con un MagicMock en tests
     los atributos no son str y se descartan). Único home (server + confirmador lo comparten)."""
-    return [v for v in (getattr(client, "API_KEY", None), getattr(client, "API_SECRET", None))
-            if isinstance(v, str) and v]
+    return [
+        v
+        for v in (getattr(client, "API_KEY", None), getattr(client, "API_SECRET", None))
+        if isinstance(v, str) and v
+    ]

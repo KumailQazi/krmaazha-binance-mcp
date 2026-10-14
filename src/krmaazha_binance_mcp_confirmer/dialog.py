@@ -1,5 +1,6 @@
 """Diálogo nativo macOS. El TEXTO se renderiza desde el CanonicalOrder que se ejecuta
 (spec §4.3): el humano ve exactamente lo que se ejecuta. NUNCA texto provisto por el server."""
+
 from __future__ import annotations
 
 import subprocess
@@ -13,7 +14,8 @@ from krmaazha_binance_mcp_confirmer.confirm_backends import (
 def render_dialog_text(order: CanonicalOrder, preview: OrderPreview) -> str:
     env_banner = "⚠️ REAL MONEY (MAINNET)" if order.env == "mainnet" else "TESTNET"
     lines = [
-        env_banner, "",
+        env_banner,
+        "",
         f"{order.side} {order.type}  {order.symbol}",
         f"Effective quantity: {preview.effective_qty}",
     ]
@@ -21,13 +23,15 @@ def render_dialog_text(order: CanonicalOrder, preview: OrderPreview) -> str:
         lines.append(f"Price: {preview.price}  ({order.time_in_force})")
     if order.type == "MARKET":
         lines.append(
-            "(MARKET: quantity/cost are estimates; you approve the QUANTITY, not the cost)")
+            "(MARKET: quantity/cost are estimates; you approve the QUANTITY, not the cost)"
+        )
     lines.append(f"Estimated notional: {preview.est_notional}")
     return "\n".join(lines)
 
 
-def render_cancel_dialog_text(*, symbol: str, order_id: int, env: str,
-                              status: str | None = None) -> str:
+def render_cancel_dialog_text(
+    *, symbol: str, order_id: int, env: str, status: str | None = None
+) -> str:
     """Texto del diálogo de cancelación. Como el resto del gate, lo renderiza el
     confirmador desde los campos que él mismo va a ejecutar (spec §4.3)."""
     env_banner = "⚠️ REAL MONEY (MAINNET)" if env == "mainnet" else "TESTNET"
@@ -59,7 +63,7 @@ def ask_confirmation(text: str) -> bool:
         f'display dialog "{safe}" buttons {{"Cancel","Confirm"}} '
         f'default button "Cancel" cancel button "Cancel" '
         f'with title "Binance MCP — confirm order" with icon caution '
-        f'giving up after {_DIALOG_TIMEOUT_S}'
+        f"giving up after {_DIALOG_TIMEOUT_S}"
     )
     proc = subprocess.run(["osascript", "-e", script], capture_output=True, text=True)
     return parse_osascript_result(returncode=proc.returncode, stdout=proc.stdout)

@@ -1,4 +1,5 @@
 """Filtros de símbolo y redondeo Decimal a tick/step (spec §2.1.3/§4.6)."""
+
 from __future__ import annotations
 
 from collections.abc import Callable
@@ -55,8 +56,9 @@ class MarketEstimator:
     """Pre-validación/estimación. La usa el server (no autoritativa) Y el confirmador
     (autoritativa). Misma lógica para que no diverjan."""
 
-    def __init__(self, get_filters: Callable[[str], SymbolFilters],
-                 get_price: Callable[[str], Decimal]) -> None:
+    def __init__(
+        self, get_filters: Callable[[str], SymbolFilters], get_price: Callable[[str], Decimal]
+    ) -> None:
         self._get_filters = get_filters
         self._get_price = get_price
 
@@ -75,7 +77,12 @@ class MarketEstimator:
         reason = validate_notional(eff_qty, eff_price, f.min_notional)
         notional = eff_qty * eff_price
         return OrderPreview(
-            effective_qty=eff_qty, price=eff_price if order.price is not None else None,
-            est_notional=notional, est_commission=notional * Decimal("0.001"),
-            env=order.env, warnings=warnings, feasible=reason is None, reason=reason,
+            effective_qty=eff_qty,
+            price=eff_price if order.price is not None else None,
+            est_notional=notional,
+            est_commission=notional * Decimal("0.001"),
+            env=order.env,
+            warnings=warnings,
+            feasible=reason is None,
+            reason=reason,
         )

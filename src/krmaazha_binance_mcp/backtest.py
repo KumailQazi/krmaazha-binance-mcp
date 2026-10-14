@@ -28,6 +28,7 @@ Métricas (todas ``float``; los indicadores/retornos son analíticos, no montos 
 - ``max_drawdown_pct``: magnitud (>= 0) de la peor caída pico-a-valle de la curva de equity
   marcada por vela.
 """
+
 from __future__ import annotations
 
 from collections.abc import Callable
@@ -63,6 +64,7 @@ class Trade:
 # --------------------------------------------------------------------------- #
 # Estrategias → señal {0, 1} alineada a las velas (decidida al close de cada vela)
 # --------------------------------------------------------------------------- #
+
 
 def ema_cross(df: pd.DataFrame, fast: int = 12, slow: int = 26) -> pd.Series:
     """Long (1) mientras EMA(fast) > EMA(slow), flat (0) en caso contrario.
@@ -107,6 +109,7 @@ STRATEGIES: dict[str, Callable[..., pd.Series]] = {
 # --------------------------------------------------------------------------- #
 # Simulación sin lookahead
 # --------------------------------------------------------------------------- #
+
 
 def simulate(
     df: pd.DataFrame, signal: pd.Series, commission: float = COMMISSION_TAKER
@@ -203,21 +206,26 @@ def backtest_df(
     en producción). ``params`` son los parámetros de la estrategia (fast/slow/low/high/n).
     """
     if strategy not in STRATEGIES:
-        raise ValueError(
-            f"strategy desconocida: {strategy!r}. Válidas: {sorted(STRATEGIES)}"
-        )
+        raise ValueError(f"strategy desconocida: {strategy!r}. Válidas: {sorted(STRATEGIES)}")
 
     n = len(df)
     if n < 2:
         # Muestra insuficiente para ejecutar un solo fill: todo en cero, honesto.
         return BacktestResult(
-            symbol=symbol, interval=interval, strategy=strategy,
-            total_return_pct=0.0, buy_hold_return_pct=0.0, n_trades=0,
-            win_rate=0.0, max_drawdown_pct=0.0, disclaimer=DISCLAIMER,
+            symbol=symbol,
+            interval=interval,
+            strategy=strategy,
+            total_return_pct=0.0,
+            buy_hold_return_pct=0.0,
+            n_trades=0,
+            win_rate=0.0,
+            max_drawdown_pct=0.0,
+            disclaimer=DISCLAIMER,
         )
 
-    signal = (_signal_override if _signal_override is not None
-              else STRATEGIES[strategy](df, **params))
+    signal = (
+        _signal_override if _signal_override is not None else STRATEGIES[strategy](df, **params)
+    )
     trades, equity_curve = simulate(df, signal, commission=commission)
 
     total_return_pct = (equity_curve[-1] - 1.0) * 100.0

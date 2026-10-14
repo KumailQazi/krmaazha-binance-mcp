@@ -11,6 +11,7 @@ Los clientes MCP NO leen resources solos: el cableado que hace que el conocimien
 actúe está en (a) las instructions del server, (b) los docstrings de las tools
 interpretativas, y (c) el primer paso de cada prompt (leer sus resources).
 """
+
 from __future__ import annotations
 
 from importlib import resources as _res
@@ -35,7 +36,8 @@ _RESOURCES: dict[str, tuple[str, str]] = {
 def read_content(filename: str) -> str:
     """Lee un .md embebido del paquete (funciona instalado desde wheel o editable)."""
     return (_res.files("krmaazha_binance_mcp.knowledge") / "content" / filename).read_text(
-        encoding="utf-8")
+        encoding="utf-8"
+    )
 
 
 def register_knowledge(mcp: MCPServer) -> None:
@@ -51,12 +53,14 @@ def register_knowledge(mcp: MCPServer) -> None:
         def _make_reader(fname: str):  # type: ignore[no-untyped-def]  # helper local
             def _reader() -> str:
                 return read_content(fname)
+
             return _reader
 
         reader = _make_reader(filename)
         reader.__doc__ = title
-        mcp.resource(uri, name=filename.removesuffix(".md"), title=title,
-                     mime_type="text/markdown")(reader)
+        mcp.resource(
+            uri, name=filename.removesuffix(".md"), title=title, mime_type="text/markdown"
+        )(reader)
 
     mcp.prompt(title="Full portfolio review (methodical)")(_prompts.portfolio_review)
     mcp.prompt(title="Asset thesis (value-capture framework)")(_prompts.asset_thesis)

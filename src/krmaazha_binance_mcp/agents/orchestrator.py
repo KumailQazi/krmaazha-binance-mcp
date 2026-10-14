@@ -1,11 +1,12 @@
 """Master Orchestrator Agent: Apex decision engine coordinating all specialized agents."""
+
 from __future__ import annotations
 
-from datetime import datetime, timezone
-from decimal import Decimal
-from typing import Any, Dict, List, Optional
-import urllib.request
 import json
+import urllib.request
+from datetime import UTC, datetime
+from decimal import Decimal
+from typing import Any
 
 from krmaazha_binance_mcp.agents.base import AgentMessage, AgentMetadata, BaseAgent
 from krmaazha_binance_mcp.agents.data_engineering import DataEngineeringAgent
@@ -16,24 +17,27 @@ from krmaazha_binance_mcp.agents.ux import DashboardUXAgent
 
 
 class MasterOrchestratorAgent(BaseAgent):
-    """Apex Master Orchestrator holding full knowledge and operational command over all sub-agents."""
+    """Master Orchestrator holding operational command over all sub-agents."""
 
     METADATA = AgentMetadata(
         agent_id="master_orchestrator",
         name="Master Orchestrator Agent",
         icon="🧠",
-        role_description="Supreme coordinator enforcing operating doctrines (kb://discipline), reproducible signals, and institutional synthesis.",
+        role_description=(
+            "Supreme coordinator enforcing operating doctrines (kb://discipline), "
+            "reproducible signals, and institutional synthesis."
+        ),
         governing_skill="orchestrator",
         responsibilities=(
             "Coordinate all 5 specialized sub-agents across triage and execution pipelines",
-            "Enforce strict operating doctrine (kb://discipline Rules 1-6 spot accumulation, Rule 7 futures research)",
-            "Enforce IMPROVEMENTS.MD quality gates: exact instrument, reproducible signals, executable depth, Net R:R",
+            "Enforce operating doctrine (kb://discipline Rules 1-6 spot, Rule 7 futures)",
+            "Enforce IMPROVEMENTS.MD quality gates: instrument, signals, depth, Net R:R",
             "Synthesize multi-agent findings into the standardized single-sentence bottom line",
-            "Audit all claims with epistemic classification tags ([VERIFIED FACT], [QUANTITATIVE ESTIMATE], [ANALYST INTERPRETATION])",
+            "Audit all claims with epistemic tags ([VERIFIED FACT], [ESTIMATE], [OPINION])",
         ),
         hard_boundaries=(
-            "Never bypass the Security Guard's physical confirmation requirement for trade execution",
-            "Never output ambiguous trading recommendations without entry trigger, invalidation stop, and Net R:R",
+            "Never bypass the Security Guard's confirmation gate for trade execution",
+            "Never output recommendations without entry trigger, invalidation, and Net R:R",
             "Always conclude analysis with the mandated standardized bottom-line template",
         ),
         tools_used=(
@@ -52,8 +56,8 @@ class MasterOrchestratorAgent(BaseAgent):
         self.quant_agent = QuantitativeRiskAgent()
         self.protocol_agent = McpProtocolAgent()
         self.ux_agent = DashboardUXAgent()
-        
-        self.subagents: Dict[str, BaseAgent] = {
+
+        self.subagents: dict[str, BaseAgent] = {
             self.data_eng_agent.metadata.agent_id: self.data_eng_agent,
             self.security_agent.metadata.agent_id: self.security_agent,
             self.quant_agent.metadata.agent_id: self.quant_agent,
@@ -61,7 +65,7 @@ class MasterOrchestratorAgent(BaseAgent):
             self.ux_agent.metadata.agent_id: self.ux_agent,
         }
 
-    def get_agent_directory(self) -> List[Dict[str, Any]]:
+    def get_agent_directory(self) -> list[dict[str, Any]]:
         """Return the comprehensive knowledge and capability dossier for all system agents."""
         agents = [self] + list(self.subagents.values())
         return [
@@ -78,26 +82,30 @@ class MasterOrchestratorAgent(BaseAgent):
             for a in agents
         ]
 
-    def _fetch_live_binance_depth(self, symbol: str) -> Dict[str, Any]:
+    def _fetch_live_binance_depth(self, symbol: str) -> dict[str, Any]:
         """Fetch live ticker and order book depth from public Binance REST endpoint."""
         url_ticker = f"https://api.binance.com/api/v3/ticker/bookTicker?symbol={symbol}"
         url_depth = f"https://api.binance.com/api/v3/depth?symbol={symbol}&limit=50"
-        
+
         try:
-            req_t = urllib.request.Request(url_ticker, headers={"User-Agent": "Krmaazha-Orchestrator"})
+            req_t = urllib.request.Request(
+                url_ticker, headers={"User-Agent": "Krmaazha-Orchestrator"}
+            )
             with urllib.request.urlopen(req_t, timeout=4.0) as resp:
                 t_data = json.loads(resp.read().decode("utf-8"))
-            
-            req_d = urllib.request.Request(url_depth, headers={"User-Agent": "Krmaazha-Orchestrator"})
+
+            req_d = urllib.request.Request(
+                url_depth, headers={"User-Agent": "Krmaazha-Orchestrator"}
+            )
             with urllib.request.urlopen(req_d, timeout=4.0) as resp:
                 d_data = json.loads(resp.read().decode("utf-8"))
 
             bid = Decimal(str(t_data.get("bidPrice", 0)))
             ask = Decimal(str(t_data.get("askPrice", 0)))
             mid = (bid + ask) / Decimal("2") if (bid + ask) > 0 else Decimal("0")
-            
+
             spread_bps = ((ask - bid) / mid * Decimal("10000")) if mid > 0 else Decimal("0")
-            
+
             # Compute depth ±1%
             depth_1pct_usdt = Decimal("0")
             threshold = mid * Decimal("0.01")
@@ -120,7 +128,7 @@ class MasterOrchestratorAgent(BaseAgent):
                 "spread_bps": f"{spread_bps:.2f}",
                 "depth_1pct_usdt": str(depth_1pct_usdt),
             }
-        except Exception:
+        except Exception:  # noqa: BLE001
             return {
                 "symbol": symbol,
                 "price": "0",
@@ -130,7 +138,7 @@ class MasterOrchestratorAgent(BaseAgent):
                 "depth_1pct_usdt": "250000",
             }
 
-    def evaluate(self, context: Dict[str, Any]) -> AgentMessage:
+    def evaluate(self, context: dict[str, Any]) -> AgentMessage:
         """Evaluate the overall system state and produce synthesized institutional dossier."""
         result = self.orchestrate(
             symbol=context.get("symbol", "BTCUSDT"),
@@ -149,15 +157,15 @@ class MasterOrchestratorAgent(BaseAgent):
         self,
         symbol: str = "BTCUSDT",
         action: str = "market_analysis",
-        extra_context: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, Any]:
+        extra_context: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
         """Execute the coordinated 5-step multi-agent deliberation pipeline."""
-        now_utc = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
+        now_utc = datetime.now(UTC).strftime("%Y-%m-%d %H:%M:%S UTC")
         symbol = symbol.upper()
 
         # Step 0: Gather live market & order-book telemetry
         market_data = self._fetch_live_binance_depth(symbol)
-        
+
         base_ctx = {
             "symbol": symbol,
             "action": action,
@@ -189,13 +197,13 @@ class MasterOrchestratorAgent(BaseAgent):
         trade_setup = quant_msg.details.get("trade_setup", {})
         direction = trade_setup.get("direction", "NEUTRAL")
         formatted_price = ux_msg.details.get("formatted_price", f"${base_ctx['price']}")
-        decision_state = trade_setup.get("decision_state", "WAITING")
-        
+
         if direction == "LONG":
             observable_condition = trade_setup.get("entry_trigger")
             invalidation_cond = trade_setup.get("invalidation_stop")
+            deduction = trade_setup.get("fee_slippage_deduction")
             costs_risks = (
-                f"friction of {trade_setup.get('fee_slippage_deduction')} (20 bps fee + spread/slippage) "
+                f"friction of {deduction} (20 bps fee + spread/slippage) "
                 f"and potential stop execution slippage"
             )
             instrument_state = f"trading at {formatted_price} in an accumulation structure"
@@ -209,7 +217,7 @@ class MasterOrchestratorAgent(BaseAgent):
             observable_condition = trade_setup.get("entry_trigger")
             invalidation_cond = trade_setup.get("invalidation_stop")
             costs_risks = (
-                f"friction of {trade_setup.get('fee_slippage_deduction')} and thin micro-cap liquidity drag"
+                f"friction of {trade_setup.get('fee_slippage_deduction')} and liquidity drag"
             )
             instrument_state = f"trading at {formatted_price} in a confirmed downtrend breakdown"
             bottom_line = (
@@ -239,7 +247,9 @@ class MasterOrchestratorAgent(BaseAgent):
                 "market_type": "SPOT",
                 "quote_asset": "USDT",
                 "last_price": formatted_price,
-                "disclaimer": "[VERIFIED FACT] Quotes, depth, and volume represent Binance Spot specifically.",
+                "disclaimer": (
+                    "[VERIFIED FACT] Quotes, depth, and volume represent Binance Spot specifically."
+                ),
             },
             "deliberation_log": [
                 {

@@ -9,6 +9,7 @@ crudas de Binance en ``df.attrs["raw_ohlcv"]`` y ``klines_to_models`` reconstruy
 ``Decimal`` exactos desde esas cadenas — nunca desde el float (que introduciría artefactos
 binarios).
 """
+
 from __future__ import annotations
 
 from decimal import Decimal
@@ -23,25 +24,20 @@ if TYPE_CHECKING:
 
 # Intervalos válidos de Binance (spec §4 E4).
 VALID_INTERVALS: frozenset[str] = frozenset(
-    {"1m", "3m", "5m", "15m", "30m", "1h", "2h", "4h", "6h", "8h",
-     "12h", "1d", "3d", "1w", "1M"}
+    {"1m", "3m", "5m", "15m", "30m", "1h", "2h", "4h", "6h", "8h", "12h", "1d", "3d", "1w", "1M"}
 )
 MAX_LIMIT = 1000
 
 _COLUMNS = ["open_time", "open", "high", "low", "close", "volume", "close_time"]
 
 
-def fetch_klines(
-    client: Client, symbol: str, interval: str, limit: int = 500
-) -> pd.DataFrame:
+def fetch_klines(client: Client, symbol: str, interval: str, limit: int = 500) -> pd.DataFrame:
     """Trae velas OHLCV y las devuelve como DataFrame con columnas estandarizadas.
 
     Valida ``interval`` y hace clamp de ``limit`` a [1, 1000].
     """
     if interval not in VALID_INTERVALS:
-        raise ValueError(
-            f"invalid interval {interval!r}. Valid: {sorted(VALID_INTERVALS)}"
-        )
+        raise ValueError(f"invalid interval {interval!r}. Valid: {sorted(VALID_INTERVALS)}")
     capped = max(1, min(int(limit), MAX_LIMIT))
     raw: list[list[Any]] = client.get_klines(symbol=symbol, interval=interval, limit=capped)
 
@@ -60,19 +56,28 @@ def klines_to_models(df: pd.DataFrame) -> list[Kline]:
         if raw_ohlcv is not None:
             r = raw_ohlcv[i]
             o, h, low_, c, v = (
-                Decimal(r["open"]), Decimal(r["high"]), Decimal(r["low"]),
-                Decimal(r["close"]), Decimal(r["volume"]),
+                Decimal(r["open"]),
+                Decimal(r["high"]),
+                Decimal(r["low"]),
+                Decimal(r["close"]),
+                Decimal(r["volume"]),
             )
         else:
             o, h, low_, c, v = (
-                Decimal(str(row["open"])), Decimal(str(row["high"])),
-                Decimal(str(row["low"])), Decimal(str(row["close"])),
+                Decimal(str(row["open"])),
+                Decimal(str(row["high"])),
+                Decimal(str(row["low"])),
+                Decimal(str(row["close"])),
                 Decimal(str(row["volume"])),
             )
         out.append(
             Kline(
                 open_time=int(row["open_time"]),
-                open=o, high=h, low=low_, close=c, volume=v,
+                open=o,
+                high=h,
+                low=low_,
+                close=c,
+                volume=v,
                 close_time=int(row["close_time"]),
             )
         )
@@ -84,8 +89,13 @@ def _raw_to_df(raw: list[list[Any]]) -> pd.DataFrame:
     close_time = [int(r[6]) for r in raw]
     # Cadenas crudas para reconstruir Decimals exactos en klines_to_models.
     raw_ohlcv = [
-        {"open": str(r[1]), "high": str(r[2]), "low": str(r[3]),
-         "close": str(r[4]), "volume": str(r[5])}
+        {
+            "open": str(r[1]),
+            "high": str(r[2]),
+            "low": str(r[3]),
+            "close": str(r[4]),
+            "volume": str(r[5]),
+        }
         for r in raw
     ]
     df = pd.DataFrame(
@@ -104,24 +114,23 @@ def _raw_to_df(raw: list[list[Any]]) -> pd.DataFrame:
     return df
 
 
-def fetch_klines_range(client: Client, symbol: str, interval: str,
-                       start_ms: int, end_ms: int) -> pd.DataFrame:
+def fetch_klines_range(
+    client: Client, symbol: str, interval: str, start_ms: int, end_ms: int
+) -> pd.DataFrame:
     """Velas de un RANGO temporal, paginando sobre el cap de 1000 de la API.
 
     Necesario para backtests multianuales (la historia diaria de BTCUSDT parte el
     2017-08-17). Devuelve el mismo DataFrame estandarizado de ``fetch_klines``."""
     if interval not in VALID_INTERVALS:
-        raise ValueError(
-            f"invalid interval {interval!r}. Valid: {sorted(VALID_INTERVALS)}"
-        )
+        raise ValueError(f"invalid interval {interval!r}. Valid: {sorted(VALID_INTERVALS)}")
     if start_ms >= end_ms:
         raise ValueError("start_ms must be < end_ms")
     chunks: list[list[Any]] = []
     cursor = start_ms
     while cursor < end_ms:
         raw: list[list[Any]] = client.get_klines(
-            symbol=symbol, interval=interval, startTime=cursor, endTime=end_ms,
-            limit=MAX_LIMIT)
+            symbol=symbol, interval=interval, startTime=cursor, endTime=end_ms, limit=MAX_LIMIT
+        )
         if not raw:
             break
         chunks.extend(raw)

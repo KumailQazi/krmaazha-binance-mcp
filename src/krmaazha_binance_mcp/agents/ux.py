@@ -1,31 +1,34 @@
-"""Financial Dashboard & UX Agent: High-density aesthetics, micro-cap decimals, and epistemic labeling."""
+"""Financial Dashboard & UX Agent: High-density aesthetics and micro-cap precision."""
+
 from __future__ import annotations
 
 from decimal import Decimal
-from typing import Any, Dict
+from typing import Any
 
 from krmaazha_binance_mcp.agents.base import AgentMessage, AgentMetadata, BaseAgent
 
 
 class DashboardUXAgent(BaseAgent):
-    """Specialized agent ensuring high-density terminal aesthetics, micro-cap formatting, and epistemic labeling."""
+    """Agent ensuring high-density terminal aesthetics and micro-cap formatting."""
 
     METADATA = AgentMetadata(
         agent_id="dashboard_ux",
         name="Financial Dashboard & UX Agent",
         icon="🖥️",
-        role_description="Governs financial UI ergonomics, sub-dollar micro-cap precision, and epistemic classifications.",
+        role_description=(
+            "Governs financial UI ergonomics, micro-cap precision, and epistemic labeling."
+        ),
         governing_skill="frontend-design",
         responsibilities=(
-            "Maintain professional institutional terminal design (obsidian #07090e, Binance gold #f0b90b)",
-            "Format sub-dollar micro-caps (NOM, RESOLV, XVG) with up to 6 decimal places ($0.002452)",
-            "Enforce epistemic prefix labels: [VERIFIED FACT], [QUANTITATIVE ESTIMATE], [ANALYST INTERPRETATION]",
-            "Render live sync status with exact last-fetched UTC timestamps and auto-polling countdowns",
+            "Maintain institutional terminal design (obsidian #07090e, Binance gold #f0b90b)",
+            "Format sub-dollar micro-caps (NOM, RESOLV, XVG) with dynamic decimal precision",
+            "Enforce epistemic prefix labels: [VERIFIED FACT], [QUANTITATIVE ESTIMATE], [OPINION]",
+            "Render live sync status with exact UTC timestamps and auto-polling countdowns",
             "Present clear interactive DCA accumulation curves and multi-asset scanner grids",
         ),
         hard_boundaries=(
             "Never truncate low-price assets to $0.00; always use dynamic precision",
-            "Never display speculative analyst views without explicit [ANALYST INTERPRETATION] marking",
+            "Never display speculative analyst views without explicit [OPINION] marking",
             "Ensure all visual components retain high-contrast readability and responsiveness",
         ),
         tools_used=(
@@ -52,7 +55,7 @@ class DashboardUXAgent(BaseAgent):
             return f"${d:.4f}"
         return f"${d:,.2f}"
 
-    def evaluate(self, context: Dict[str, Any]) -> AgentMessage:
+    def evaluate(self, context: dict[str, Any]) -> AgentMessage:
         """Format data into institutional presentation standards."""
         raw_price = context.get("price", 0)
         formatted_price = self.format_price(raw_price)

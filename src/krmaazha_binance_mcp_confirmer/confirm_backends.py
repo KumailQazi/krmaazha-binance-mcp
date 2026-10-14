@@ -8,6 +8,7 @@ Contrato de TODO backend — el mismo que ya cumple `dialog.ask_confirmation`:
 - Retorno en tiempo finito (<= CONFIRM_TIMEOUT_S): corre bajo `dialog_lock` en un hilo
   daemon — colgarse cuelga la cola de intents completa. No asumir main thread.
 """
+
 from __future__ import annotations
 
 import contextlib
@@ -72,8 +73,9 @@ def web_confirm(text: str) -> bool:
             if not self._host_ok() or self.path != base:
                 self.send_error(404)
                 return
-            body = _PAGE.format(text=html.escape(text), base=base,
-                                seconds=CONFIRM_TIMEOUT_S).encode()
+            body = _PAGE.format(
+                text=html.escape(text), base=base, seconds=CONFIRM_TIMEOUT_S
+            ).encode()
             self.send_response(200)
             self.send_header("Content-Type", "text/html; charset=utf-8")
             self.send_header("Content-Length", str(len(body)))
@@ -98,6 +100,7 @@ def web_confirm(text: str) -> bool:
         # SEGUNDOS (visto en runners macOS). Solo servimos loopback: nombre fijo.
         def server_bind(self) -> None:
             import socketserver
+
             socketserver.TCPServer.server_bind(self)
             self.server_name = "127.0.0.1"
             self.server_port = self.server_address[1]
@@ -109,8 +112,11 @@ def web_confirm(text: str) -> bool:
     try:
         srv.timeout = 1.0
         url = f"http://127.0.0.1:{srv.server_address[1]}{base}"
-        print(f"[confirm] open to approve/deny (expires {CONFIRM_TIMEOUT_S}s): {url}",
-              file=sys.stderr, flush=True)
+        print(
+            f"[confirm] open to approve/deny (expires {CONFIRM_TIMEOUT_S}s): {url}",
+            file=sys.stderr,
+            flush=True,
+        )
         with contextlib.suppress(Exception):
             webbrowser.open(url)
         while "ok" not in result and time.monotonic() < deadline:
@@ -128,11 +134,18 @@ def tty_confirm(text: str, *, _stdin: TextIO | None = None) -> bool:
     stdin = _stdin if _stdin is not None else sys.stdin
     print(f"\n{text}\n", file=sys.stderr, flush=True)
     if not hasattr(select, "select") or sys.platform == "win32":
-        print("[confirm] tty mode is POSIX-only; use BINANCE_CONFIRM_MODE=web",
-              file=sys.stderr, flush=True)
+        print(
+            "[confirm] tty mode is POSIX-only; use BINANCE_CONFIRM_MODE=web",
+            file=sys.stderr,
+            flush=True,
+        )
         return False
-    print(f"[confirm] type CONFIRM + Enter to execute (anything else denies; "
-          f"{CONFIRM_TIMEOUT_S}s timeout): ", file=sys.stderr, flush=True)
+    print(
+        f"[confirm] type CONFIRM + Enter to execute (anything else denies; "
+        f"{CONFIRM_TIMEOUT_S}s timeout): ",
+        file=sys.stderr,
+        flush=True,
+    )
     try:
         try:
             stdin.fileno()
@@ -158,6 +171,7 @@ def resolve_backend(mode: str):  # type: ignore[no-untyped-def]  # Callable[[str
         mode = "macos" if sys.platform == "darwin" else "web"
     if mode == "macos":
         from krmaazha_binance_mcp_confirmer.dialog import ask_confirmation
+
         return ask_confirmation
     if mode == "web":
         return web_confirm

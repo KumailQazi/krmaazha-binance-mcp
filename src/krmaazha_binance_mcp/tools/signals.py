@@ -12,6 +12,7 @@ El parámetro ``_sentiment_fn`` es inyectable para testear sin red; en producci�
 default real (``news.tools.get_sentiment``). Si la capa 3 falla (red caída), el sentiment se
 degrada a 0.0: la señal técnica sigue siendo válida.
 """
+
 from __future__ import annotations
 
 from collections.abc import Callable
@@ -35,7 +36,18 @@ _LIMIT = 200  # suficiente para el calentamiento de EMA26/MACD/Bollinger/ATR.
 # Quote assets conocidos de Binance: para derivar el activo base del símbolo (BTCUSDT → BTC)
 # y pedir el sentiment de ese activo (capa 3). Más largos primero para no cortar de menos.
 _QUOTE_ASSETS: tuple[str, ...] = (
-    "USDT", "FDUSD", "TUSD", "USDC", "BUSD", "DAI", "BTC", "ETH", "BNB", "EUR", "TRY", "BRL",
+    "USDT",
+    "FDUSD",
+    "TUSD",
+    "USDC",
+    "BUSD",
+    "DAI",
+    "BTC",
+    "ETH",
+    "BNB",
+    "EUR",
+    "TRY",
+    "BRL",
 )
 
 SentimentFn = Callable[..., SentimentResult]
@@ -74,9 +86,7 @@ def generate_signal_tool(
     """
     validate_symbol(symbol)
     if interval not in VALID_INTERVALS:
-        raise ValueError(
-            f"invalid interval {interval!r}. Valid: {sorted(VALID_INTERVALS)}"
-        )
+        raise ValueError(f"invalid interval {interval!r}. Valid: {sorted(VALID_INTERVALS)}")
     sentiment_fn = _sentiment_fn if _sentiment_fn is not None else news_tools.get_sentiment
 
     df = fetch_klines(client, symbol, interval, _LIMIT)
@@ -92,16 +102,13 @@ def generate_signal_tool(
     atr_val = common.last_valid(ind.atr(df["high"], df["low"], close, common.ATR_PERIOD))
 
     last_price_float = float(close.iloc[-1])
-    bb_pos = common.bb_position(last_price_float, common.last_valid(lower),
-                                common.last_valid(upper))
+    bb_pos = common.bb_position(
+        last_price_float, common.last_valid(lower), common.last_valid(upper)
+    )
 
     # Precio exacto en Decimal desde la cadena cruda de Binance (sin artefactos binarios).
     raw_ohlcv = df.attrs.get("raw_ohlcv")
-    price = (
-        Decimal(raw_ohlcv[-1]["close"])
-        if raw_ohlcv
-        else Decimal(str(last_price_float))
-    )
+    price = Decimal(raw_ohlcv[-1]["close"]) if raw_ohlcv else Decimal(str(last_price_float))
     as_of = int(df["close_time"].iloc[-1]) if len(df) else 0
 
     # Sentiment del activo base (capa 3). Degrada a 0.0 si la capa 3 falla (red).
@@ -148,9 +155,7 @@ def binance_backtest_signal(
     ``buy_hold_return_pct`` es el test honesto de "¿la señal tiene edge?".
     """
     if interval not in VALID_INTERVALS:
-        raise ValueError(
-            f"invalid interval {interval!r}. Valid: {sorted(VALID_INTERVALS)}"
-        )
+        raise ValueError(f"invalid interval {interval!r}. Valid: {sorted(VALID_INTERVALS)}")
     df = fetch_klines(client, symbol, interval, limit)
     return backtest_signal(
         df,
@@ -180,9 +185,15 @@ def scan_signals(
     """
     out = [
         generate_signal_tool(
-            client, symbol, interval,
-            weights=weights, threshold=threshold, atr_mult=atr_mult, rr=rr,
-            window_hours=window_hours, _sentiment_fn=_sentiment_fn,
+            client,
+            symbol,
+            interval,
+            weights=weights,
+            threshold=threshold,
+            atr_mult=atr_mult,
+            rr=rr,
+            window_hours=window_hours,
+            _sentiment_fn=_sentiment_fn,
         )
         for symbol in symbols
     ]

@@ -6,6 +6,7 @@ expiración de forma determinista (sin ``sleep`` ni ``time.time()`` hardcodeado)
 
 100% read-only. Errores de fuente ya degradan a ``[]`` dentro de cada ``NewsSource.fetch``.
 """
+
 from __future__ import annotations
 
 import time

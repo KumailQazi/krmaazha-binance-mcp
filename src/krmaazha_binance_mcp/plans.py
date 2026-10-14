@@ -4,6 +4,7 @@ No backtesteamos señales (no tienen edge — kb://research/no-edge): backtestea
 COMPORTAMIENTO — DCA mecánico y grillas de cosecha — sobre históricos reales. Es
 simulación histórica, jamás predicción; la sensibilidad a la fecha de inicio es real.
 """
+
 from __future__ import annotations
 
 import time
@@ -35,8 +36,14 @@ HARVEST_DISCLAIMER = (
 )
 
 
-def backtest_dca(client: Client, symbol: str, monthly_quote: float, months: int,
-                 day_of_month: int = 5, fee: float = 0.001) -> DcaBacktestResult:
+def backtest_dca(
+    client: Client,
+    symbol: str,
+    monthly_quote: float,
+    months: int,
+    day_of_month: int = 5,
+    fee: float = 0.001,
+) -> DcaBacktestResult:
     """Simula comprar `monthly_quote` (USDT) al CIERRE diario del `day_of_month` de cada
     uno de los últimos `months` meses. Compara contra lump-sum del mismo total el día 1."""
     validate_symbol(symbol)
@@ -56,6 +63,7 @@ def backtest_dca(client: Client, symbol: str, monthly_quote: float, months: int,
         raise ValueError(f"no daily history for {symbol} in the requested window")
 
     import datetime as _dt
+
     closes = df["close"].astype(float).tolist()
     days = [_dt.datetime.fromtimestamp(t / 1000, _dt.UTC).date() for t in df["open_time"]]
 
@@ -70,8 +78,7 @@ def backtest_dca(client: Client, symbol: str, monthly_quote: float, months: int,
         buys.append((i, closes[i]))
     buys = buys[-months:]
     if len(buys) < months:
-        raise ValueError(
-            f"only {len(buys)} monthly buys available for {symbol} in this window")
+        raise ValueError(f"only {len(buys)} monthly buys available for {symbol} in this window")
 
     qty = 0.0
     invested = 0.0
@@ -98,7 +105,9 @@ def backtest_dca(client: Client, symbol: str, monthly_quote: float, months: int,
             max_dd = min(max_dd, v / peak - 1)
 
     return DcaBacktestResult(
-        symbol=symbol, months=len(buys), monthly_quote=Decimal(str(monthly_quote)),
+        symbol=symbol,
+        months=len(buys),
+        monthly_quote=Decimal(str(monthly_quote)),
         total_invested=Decimal(str(round(invested, 2))),
         accumulated_qty=Decimal(str(round(qty, 8))),
         avg_cost=Decimal(str(round(invested / qty, 2))) if qty > 0 else Decimal("0"),
@@ -106,14 +115,21 @@ def backtest_dca(client: Client, symbol: str, monthly_quote: float, months: int,
         pnl_pct=round((value_now / invested - 1) * 100, 2) if invested > 0 else 0.0,
         lump_sum_value_now=Decimal(str(round(lump_value, 2))),
         max_drawdown_pct=round(max_dd * 100, 2),
-        first_buy_date=str(days[first_i]), last_buy_date=str(days[buys[-1][0]]),
-        as_of=now_ms, disclaimer=DCA_DISCLAIMER,
+        first_buy_date=str(days[first_i]),
+        last_buy_date=str(days[buys[-1][0]]),
+        as_of=now_ms,
+        disclaimer=DCA_DISCLAIMER,
     )
 
 
-def backtest_harvest(client: Client, symbol: str, initial_qty: float,
-                     grid: list[dict[str, float]], start: str | None = None,
-                     fee: float = 0.001) -> HarvestBacktestResult:
+def backtest_harvest(
+    client: Client,
+    symbol: str,
+    initial_qty: float,
+    grid: list[dict[str, float]],
+    start: str | None = None,
+    fee: float = 0.001,
+) -> HarvestBacktestResult:
     """Simula una grilla de cosecha pre-comprometida: cada nivel vende `sell_pct`% del
     holding VIGENTE la primera vez que el cierre diario cruza el nivel al alza."""
     validate_symbol(symbol)
@@ -130,18 +146,17 @@ def backtest_harvest(client: Client, symbol: str, initial_qty: float,
     levels.sort()
 
     import datetime as _dt
+
     now_ms = int(time.time() * 1000)
     if start is not None:
-        start_ms = int(_dt.datetime.fromisoformat(start)
-                       .replace(tzinfo=_dt.UTC).timestamp() * 1000)
+        start_ms = int(_dt.datetime.fromisoformat(start).replace(tzinfo=_dt.UTC).timestamp() * 1000)
     else:
         start_ms = now_ms - 365 * _DAY_MS
     df = fetch_klines_range(client, symbol, "1d", start_ms, now_ms)
     if df.empty:
         raise ValueError(f"no daily history for {symbol} in the requested window")
     closes = df["close"].astype(float).tolist()
-    days = [str(_dt.datetime.fromtimestamp(t / 1000, _dt.UTC).date())
-            for t in df["open_time"]]
+    days = [str(_dt.datetime.fromtimestamp(t / 1000, _dt.UTC).date()) for t in df["open_time"]]
 
     qty = initial_qty
     proceeds = 0.0
@@ -158,20 +173,29 @@ def backtest_harvest(client: Client, symbol: str, initial_qty: float,
             qty -= sell_qty
             proceeds += got
             fired.add(level)
-            fills.append(HarvestFill(date=days[i], level=Decimal(str(level)),
-                                     qty_sold=Decimal(str(round(sell_qty, 8))),
-                                     proceeds=Decimal(str(round(got, 2)))))
+            fills.append(
+                HarvestFill(
+                    date=days[i],
+                    level=Decimal(str(level)),
+                    qty_sold=Decimal(str(round(sell_qty, 8))),
+                    proceeds=Decimal(str(round(got, 2))),
+                )
+            )
         prev = c
 
     price_now = closes[-1]
     final_value = qty * price_now + proceeds
     hold_value = initial_qty * price_now
     return HarvestBacktestResult(
-        symbol=symbol, initial_qty=Decimal(str(initial_qty)), fills=fills,
+        symbol=symbol,
+        initial_qty=Decimal(str(initial_qty)),
+        fills=fills,
         remaining_qty=Decimal(str(round(qty, 8))),
         total_proceeds=Decimal(str(round(proceeds, 2))),
         final_value=Decimal(str(round(final_value, 2))),
         pure_hold_value=Decimal(str(round(hold_value, 2))),
-        window_start=days[0], window_end=days[-1],
-        as_of=now_ms, disclaimer=HARVEST_DISCLAIMER,
+        window_start=days[0],
+        window_end=days[-1],
+        as_of=now_ms,
+        disclaimer=HARVEST_DISCLAIMER,
     )

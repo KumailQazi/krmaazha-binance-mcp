@@ -26,10 +26,11 @@ Mapeos de factor (todos acotados a [-1, +1], deterministas, verificables a mano)
   recortado a [-1, +1] (cerca de la inferior ⇒ +, posible rebote; superior ⇒ −).
 - **sentiment:** el score crudo de capa 3, recortado a [-1, +1].
 """
+
 from __future__ import annotations
 
 from collections.abc import Mapping
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from decimal import Decimal
 
 from krmaazha_binance_mcp.models import Signal, SignalDirection, SignalFactor, TradeSetup
@@ -54,10 +55,11 @@ _RSI_NEUTRAL = 50.0
 _RSI_HALF_SPAN = 20.0
 
 _DISCLAIMER = (
-    "PROPOSAL, no es predicción (not prediction): deterministic heuristic combination of technical indicators "
-    "(Layer 2) + raw sentiment (Layer 3) + ATR. Does not guarantee returns, does not decide "
-    "position sizing, and NEVER executes automatically — all execution requires physical confirmation "
-    "(Layer 1 gate). Validate rules with backtesting before committing capital."
+    "PROPOSAL, no es predicción (not prediction): deterministic heuristic combination of "
+    "technical indicators (Layer 2) + raw sentiment (Layer 3) + ATR. Does not guarantee returns, "
+    "does not decide position sizing, and NEVER executes automatically — all execution requires "
+    "physical confirmation (Layer 1 gate). Validate rules with backtesting before committing "
+    "capital."
 )
 
 
@@ -199,7 +201,7 @@ def generate_signal(
     stop, target = _levels(direction, price, atr, atr_mult, rr)
 
     # Compute institutional trade setup and Net R:R (IMPROVEMENTS.MD §3 & §5)
-    as_of_iso = datetime.fromtimestamp(as_of / 1000, tz=timezone.utc).isoformat()
+    as_of_iso = datetime.fromtimestamp(as_of / 1000, tz=UTC).isoformat()
     spread_bps = 2.5
     estimated_slippage_bps = 5.0
     fees_bps = 20.0  # 10 bps taker round-trip

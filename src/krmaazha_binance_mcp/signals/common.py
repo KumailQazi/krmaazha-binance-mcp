@@ -2,6 +2,7 @@
 
 Antes duplicados entre tools/signals.py y signals/backtest_signal.py — divergían en
 silencio. Los knobs están alineados con capa 2 (spec §4)."""
+
 from __future__ import annotations
 
 import pandas as pd

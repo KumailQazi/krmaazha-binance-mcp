@@ -1,6 +1,7 @@
 """Piezas de runtime compartidas por los DOS procesos (server read-key y confirmador
 trade-key). Antes vivían duplicadas en server.py y confirmer/__main__.py con un
 comentario "deben coincidir" — ahora coinciden por construcción."""
+
 from __future__ import annotations
 
 import os
@@ -15,12 +16,16 @@ from krmaazha_binance_mcp.models import KeyPermissions
 
 # Socket del IPC server↔confirmador. ÚNICA definición (ambos procesos la importan).
 SOCKET_PATH = os.path.expanduser(
-    "~/Library/Application Support/krmaazha-binance-mcp/confirmer.sock")
+    "~/Library/Application Support/krmaazha-binance-mcp/confirmer.sock"
+)
 
 
-def bootstrap(env: Mapping[str, str], *,
-              load_settings: Callable[[Mapping[str, str]], Settings],
-              assert_key_safe: Callable[[KeyPermissions], None]) -> tuple[Settings, object]:
+def bootstrap(
+    env: Mapping[str, str],
+    *,
+    load_settings: Callable[[Mapping[str, str]], Settings],
+    assert_key_safe: Callable[[KeyPermissions], None],
+) -> tuple[Settings, object]:
     """§4.2: valida env → Client + time-offset → test-call → (mainnet) guard de la key.
     El server pasa (load_server_settings, assert_read_key_safe); el confirmador pasa
     (load_confirmer_settings, assert_trade_key_safe)."""

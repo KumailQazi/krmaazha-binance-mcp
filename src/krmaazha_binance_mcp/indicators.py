@@ -12,6 +12,7 @@ Definiciones (spec §4):
 - Bollinger(20,2): SMA20 ± k·std20 (std poblacional, ddof=0; std=0 => banda colapsa).
 - ATR(14): Wilder sobre True Range = max(high-low, |high-prevClose|, |low-prevClose|).
 """
+
 from __future__ import annotations
 
 import pandas as pd
@@ -87,8 +88,8 @@ def atr(high: pd.Series, low: pd.Series, close: pd.Series, n: int = 14) -> pd.Se
     low_ = low.astype("float64")
     c = close.astype("float64")
     prev_close = c.shift(1)
-    tr = pd.concat(
-        [(h - low_), (h - prev_close).abs(), (low_ - prev_close).abs()], axis=1
-    ).max(axis=1)
+    tr = pd.concat([(h - low_), (h - prev_close).abs(), (low_ - prev_close).abs()], axis=1).max(
+        axis=1
+    )
     # Suavizado de Wilder (alpha = 1/n).
     return tr.ewm(alpha=1.0 / n, adjust=False, min_periods=n).mean()

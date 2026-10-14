@@ -15,6 +15,7 @@ Tres decisiones que no son obvias y que vienen de mirar los archivos reales:
 3. **La vela de hoy no se usa.** Está incompleta hasta el cierre UTC, y una vela parcial
    en un ranking de momentum es lookahead disfrazado. El panel termina ayer, a propósito.
 """
+
 from __future__ import annotations
 
 import hashlib
@@ -32,8 +33,18 @@ BASE_URL = "https://data.binance.vision/data/futures/um"
 
 # Las 12 columnas del CSV de klines, en orden. `ignore` existe en el formato de Binance.
 KLINE_COLUMNS = [
-    "open_time", "open", "high", "low", "close", "volume", "close_time",
-    "quote_volume", "count", "taker_buy_volume", "taker_buy_quote_volume", "ignore",
+    "open_time",
+    "open",
+    "high",
+    "low",
+    "close",
+    "volume",
+    "close_time",
+    "quote_volume",
+    "count",
+    "taker_buy_volume",
+    "taker_buy_quote_volume",
+    "ignore",
 ]
 FUNDING_COLUMNS = ["calc_time", "funding_interval_hours", "last_funding_rate"]
 
@@ -132,7 +143,7 @@ class BinanceArchive:
         return f"{BASE_URL}/{span}/fundingRate/{symbol}/{symbol}-fundingRate-{period}.zip"
 
     def _cache_path(self, url: str) -> Path:
-        return self.root / url[len(BASE_URL) + 1:]
+        return self.root / url[len(BASE_URL) + 1 :]
 
     # ── descarga ─────────────────────────────────────────────────────────────────────
     def fetch_file(self, kind: str, symbol: str, interval: str | None, period: str) -> bytes | None:
@@ -170,8 +181,12 @@ class BinanceArchive:
 
     # ── panel ────────────────────────────────────────────────────────────────────────
     def load_klines(
-        self, symbol: str, interval: str = "1d", *,
-        start: date = HISTORY_START, end: date | None = None,
+        self,
+        symbol: str,
+        interval: str = "1d",
+        *,
+        start: date = HISTORY_START,
+        end: date | None = None,
     ) -> pd.DataFrame:
         """Serie OHLCV continua de `symbol`, sin hueco hasta ayer.
 
@@ -206,7 +221,11 @@ class BinanceArchive:
         return _clip(panel, "open_time", start, end).reset_index(drop=True)
 
     def load_funding(
-        self, symbol: str, *, start: date = HISTORY_START, end: date | None = None,
+        self,
+        symbol: str,
+        *,
+        start: date = HISTORY_START,
+        end: date | None = None,
     ) -> pd.DataFrame:
         """Historial de funding de `symbol`, conservando `funding_interval_hours`.
 

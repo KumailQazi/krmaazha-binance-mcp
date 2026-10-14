@@ -1,4 +1,5 @@
 """Idempotencia de órdenes (spec §4.5). El id lo deriva el CONFIRMADOR."""
+
 from __future__ import annotations
 
 import hashlib
@@ -15,17 +16,28 @@ from krmaazha_binance_mcp.models import CanonicalOrder
 # TimeoutError/ConnectionError. Si sólo capturáramos los builtins, el query-before-retry
 # nunca correría ante un fallo de red real → riesgo de doble orden. Capturamos AMBOS.
 _RETRYABLE_NETWORK_ERRORS: tuple[type[BaseException], ...] = (
-    TimeoutError, ConnectionError, ReqTimeout, ReqConnError,
+    TimeoutError,
+    ConnectionError,
+    ReqTimeout,
+    ReqConnError,
 )
 
 
 def derive_client_order_id(order: CanonicalOrder, intent_id: str, nonce: str) -> str:
-    payload = "|".join([
-        order.symbol, order.side, order.type,
-        str(order.quantity), str(order.quote_quantity),
-        str(order.price), str(order.time_in_force), order.env,
-        intent_id, nonce,
-    ])
+    payload = "|".join(
+        [
+            order.symbol,
+            order.side,
+            order.type,
+            str(order.quantity),
+            str(order.quote_quantity),
+            str(order.price),
+            str(order.time_in_force),
+            order.env,
+            intent_id,
+            nonce,
+        ]
+    )
     digest = hashlib.sha256(payload.encode()).hexdigest()[:28]
     return f"kbm_{digest}"  # 4 + 28 = 32 chars, dentro del límite 36 de Binance
 

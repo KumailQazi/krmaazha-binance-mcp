@@ -1,19 +1,23 @@
-"""MCP Protocol & Tooling Agent: FastMCP interfaces, CanonicalOrder validation, and error scrubbing."""
+"""MCP Protocol & Tooling Agent: FastMCP interfaces and CanonicalOrder validation."""
+
 from __future__ import annotations
 
-from typing import Any, Dict
+from typing import Any
 
 from krmaazha_binance_mcp.agents.base import AgentMessage, AgentMetadata, BaseAgent
 
 
 class McpProtocolAgent(BaseAgent):
-    """Specialized agent verifying Model Context Protocol schemas, CanonicalOrder structures, and API typing."""
+    """Agent verifying Model Context Protocol schemas, CanonicalOrder structures, and typing."""
 
     METADATA = AgentMetadata(
         agent_id="mcp_protocol",
         name="MCP Protocol & Tooling Agent",
         icon="⚡",
-        role_description="Governs MCP server tool registrations, CanonicalOrder validation, Decimal typing, and error scrubbing.",
+        role_description=(
+            "Governs FastMCP tool registration, CanonicalOrder validation, Decimal typing, "
+            "and scrubbing."
+        ),
         governing_skill="mcp-builder",
         responsibilities=(
             "Validate tool arguments against strict Pydantic schemas",
@@ -25,7 +29,7 @@ class McpProtocolAgent(BaseAgent):
         hard_boundaries=(
             "Never allow float rounding in order sizing or price limit evaluations",
             "Never bypass CanonicalOrder schema serialization before IPC dispatch",
-            "Never echo raw Binance exception tracebacks containing query strings with HMAC signatures",
+            "Never echo raw Binance exception tracebacks containing query strings with secrets",
         ),
         tools_used=(
             "register_mcp_tool",
@@ -38,14 +42,14 @@ class McpProtocolAgent(BaseAgent):
     def __init__(self) -> None:
         super().__init__(self.METADATA)
 
-    def evaluate(self, context: Dict[str, Any]) -> AgentMessage:
+    def evaluate(self, context: dict[str, Any]) -> AgentMessage:
         """Validate order payload or tool execution request against MCP specifications."""
         order_data = context.get("order")
         tool_name = context.get("tool_name", "market_query")
-        
+
         findings = []
         is_valid = True
-        
+
         if order_data:
             symbol = order_data.get("symbol")
             side = order_data.get("side")
@@ -56,8 +60,10 @@ class McpProtocolAgent(BaseAgent):
             else:
                 findings.append(f"CanonicalOrder schema verified: {side} {quantity} {symbol}.")
         else:
-            findings.append(f"Tool invocation validated: '{tool_name}' matches registered FastMCP read-only schema.")
-            
+            findings.append(
+                f"Tool invocation validated: '{tool_name}' matches registered FastMCP schema."
+            )
+
         summary = (
             f"Protocol Check: {'VERIFIED' if is_valid else 'REJECTED'}. "
             f"Decimal precision active. Zero-leakage error scrubbers engaged."

@@ -17,6 +17,7 @@ vela (no tenemos archivo de noticias minuto a minuto), así que el backtest corr
 ``≤ i``; el fill simulado usa ``open[i+1]`` (lo aporta el harness de capa 2). Cambiar el
 ``close`` de la última vela no puede alterar posiciones ni trades previos.
 """
+
 from __future__ import annotations
 
 from collections.abc import Mapping
@@ -36,8 +37,7 @@ _STRATEGY_LABEL = "composite_technical_signal"
 
 # Disclaimer ampliado: el de capa 2 + la exclusión EXPLÍCITA del sentiment (spec §0).
 SIGNAL_DISCLAIMER: str = (
-    DISCLAIMER
-    + " IMPORTANTE: este backtest mide SÓLO la parte TÉCNICA de la señal compuesta de "
+    DISCLAIMER + " IMPORTANTE: este backtest mide SÓLO la parte TÉCNICA de la señal compuesta de "
     "capa 4 (tendencia, momentum, MACD, Bollinger). El factor de SENTIMENT se EXCLUYE "
     "(sentiment=0 en cada vela) porque no existe sentiment histórico por vela; el "
     "sentiment es un ajuste en vivo, no backtesteable acá. Por lo tanto no representa la "
@@ -76,8 +76,9 @@ def signal_positions(
     positions: list[int] = []
     for i in range(n):
         price_f = float(close.iloc[i])
-        bb_pos = common.bb_position(price_f, common.value_at(lower, i, price_f),
-                                    common.value_at(upper, i, price_f))
+        bb_pos = common.bb_position(
+            price_f, common.value_at(lower, i, price_f), common.value_at(upper, i, price_f)
+        )
         signal = engine.generate_signal(
             symbol="",
             interval="",
@@ -125,6 +126,4 @@ def backtest_signal(
         commission=commission,
         _signal_override=override,
     )
-    return base.model_copy(
-        update={"strategy": _STRATEGY_LABEL, "disclaimer": SIGNAL_DISCLAIMER}
-    )
+    return base.model_copy(update={"strategy": _STRATEGY_LABEL, "disclaimer": SIGNAL_DISCLAIMER})

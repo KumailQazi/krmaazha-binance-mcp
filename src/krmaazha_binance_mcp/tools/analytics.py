@@ -4,6 +4,7 @@ Los cálculos son objetivos; la INTERPRETACIÓN vive en los resources `kb://…`
 docstring de tool referencia. Sin datos personales embebidos: costo base, impuestos y
 spread son SIEMPRE parámetros del usuario (producto público).
 """
+
 from __future__ import annotations
 
 import math
@@ -73,16 +74,26 @@ def analyze_cycle(client: Client, symbol: str = "BTCUSDT") -> CycleAnalysis:
     else:
         notes.append("ATH/drawdown only computed for BTC (CoinGecko source)")
 
-    return CycleAnalysis(symbol=symbol, price=price, ma200d=ma200, mayer_multiple=mayer,
-                         ath_usd=ath, drawdown_from_ath_pct=dd_pct,
-                         est_next_halving=EST_NEXT_HALVING, notes=notes,
-                         as_of=int(time.time() * 1000), disclaimer=CYCLE_DISCLAIMER)
+    return CycleAnalysis(
+        symbol=symbol,
+        price=price,
+        ma200d=ma200,
+        mayer_multiple=mayer,
+        ath_usd=ath,
+        drawdown_from_ath_pct=dd_pct,
+        est_next_halving=EST_NEXT_HALVING,
+        notes=notes,
+        as_of=int(time.time() * 1000),
+        disclaimer=CYCLE_DISCLAIMER,
+    )
 
 
-def analyze_portfolio(client: Client,
-                      cost_basis: dict[str, float] | None = None,
-                      tax_rate: float = 0.0,
-                      cashout_spread: float = 0.0) -> PortfolioReport:
+def analyze_portfolio(
+    client: Client,
+    cost_basis: dict[str, float] | None = None,
+    tax_rate: float = 0.0,
+    cashout_spread: float = 0.0,
+) -> PortfolioReport:
     """Valoriza los balances live; concentración; PNL y break-even NETO si el usuario
     aporta `cost_basis` (por activo, en USDT) + su `tax_rate`/`cashout_spread`."""
     if not 0.0 <= tax_rate < 1.0:
@@ -115,13 +126,28 @@ def analyze_portfolio(client: Client,
             cb = Decimal(str(cost_basis[b.asset]))
             if price is not None and cb > 0:
                 pnl = round(float(price / cb - 1) * 100, 2)
-        positions.append(PortfolioPosition(asset=b.asset, amount=amount, price_usdt=price,
-                                           value_usdt=value, weight_pct=None,
-                                           cost_basis=cb, pnl_pct=pnl))
+        positions.append(
+            PortfolioPosition(
+                asset=b.asset,
+                amount=amount,
+                price_usdt=price,
+                value_usdt=value,
+                weight_pct=None,
+                cost_basis=cb,
+                pnl_pct=pnl,
+            )
+        )
     if total > 0:
-        positions = [p.model_copy(update={
-            "weight_pct": round(float(p.value_usdt / total) * 100, 2)
-            if p.value_usdt is not None else None}) for p in positions]
+        positions = [
+            p.model_copy(
+                update={
+                    "weight_pct": round(float(p.value_usdt / total) * 100, 2)
+                    if p.value_usdt is not None
+                    else None
+                }
+            )
+            for p in positions
+        ]
     top = max((p.weight_pct for p in positions if p.weight_pct is not None), default=None)
 
     breakeven_note: str | None = None
@@ -131,13 +157,20 @@ def analyze_portfolio(client: Client,
         for asset, c in cost_basis.items():
             p_net = c * (1 - tax_rate) / (1 - cashout_spread - tax_rate)
             parts.append(f"{asset}: gross {c:,.2f} -> net ~{p_net:,.2f} USDT")
-        breakeven_note = ("Net break-even (P*(1-spread) - tax*(P-C) = C; excludes "
-                          "local-currency effects): " + "; ".join(parts))
+        breakeven_note = (
+            "Net break-even (P*(1-spread) - tax*(P-C) = C; excludes "
+            "local-currency effects): " + "; ".join(parts)
+        )
 
-    return PortfolioReport(positions=positions, total_value_usdt=total,
-                           top_concentration_pct=top, net_breakeven_note=breakeven_note,
-                           notes=notes, as_of=int(time.time() * 1000),
-                           disclaimer=PORTFOLIO_DISCLAIMER)
+    return PortfolioReport(
+        positions=positions,
+        total_value_usdt=total,
+        top_concentration_pct=top,
+        net_breakeven_note=breakeven_note,
+        notes=notes,
+        as_of=int(time.time() * 1000),
+        disclaimer=PORTFOLIO_DISCLAIMER,
+    )
 
 
 def _returns(closes: list[float]) -> list[float]:
@@ -204,14 +237,19 @@ def assess_risk(client: Client, symbols: list[str] | None = None) -> RiskReport:
             notes.append(f"{sym}: history unavailable ({type(e).__name__})")
             continue
         rets = _returns(closes)
-        assets.append(AssetRisk(
-            symbol=sym,
-            realized_vol_30d_pct=_ann_vol_pct(rets[-30:]),
-            realized_vol_90d_pct=_ann_vol_pct(rets),
-            max_drawdown_pct=_max_drawdown_pct(closes),
-            correlation_btc_90d=(_corr(rets, btc_rets)
-                                 if btc_rets is not None and sym != "BTCUSDT" else
-                                 (1.0 if sym == "BTCUSDT" else None)),
-        ))
-    return RiskReport(assets=assets, notes=notes, as_of=int(time.time() * 1000),
-                      disclaimer=RISK_DISCLAIMER)
+        assets.append(
+            AssetRisk(
+                symbol=sym,
+                realized_vol_30d_pct=_ann_vol_pct(rets[-30:]),
+                realized_vol_90d_pct=_ann_vol_pct(rets),
+                max_drawdown_pct=_max_drawdown_pct(closes),
+                correlation_btc_90d=(
+                    _corr(rets, btc_rets)
+                    if btc_rets is not None and sym != "BTCUSDT"
+                    else (1.0 if sym == "BTCUSDT" else None)
+                ),
+            )
+        )
+    return RiskReport(
+        assets=assets, notes=notes, as_of=int(time.time() * 1000), disclaimer=RISK_DISCLAIMER
+    )

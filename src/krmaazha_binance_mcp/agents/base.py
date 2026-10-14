@@ -1,15 +1,17 @@
 """Base agent abstractions for the Krmaazha Multi-Agent Architecture."""
+
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional
+from datetime import UTC, datetime
+from typing import Any
 
 
 @dataclass(frozen=True)
 class AgentMetadata:
     """Metadata describing an agent's identity, role, and capabilities."""
+
     agent_id: str
     name: str
     icon: str
@@ -23,12 +25,15 @@ class AgentMetadata:
 @dataclass
 class AgentMessage:
     """A structured message emitted by an agent during deliberation."""
+
     sender_id: str
     sender_name: str
-    timestamp: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
-    epistemic_tag: str = "[VERIFIED FACT]"  # [VERIFIED FACT], [QUANTITATIVE ESTIMATE], [ANALYST INTERPRETATION]
+    timestamp: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
+    epistemic_tag: str = (
+        "[VERIFIED FACT]"  # [VERIFIED FACT], [QUANTITATIVE ESTIMATE], [ANALYST INTERPRETATION]
+    )
     summary: str = ""
-    details: Dict[str, Any] = field(default_factory=dict)
+    details: dict[str, Any] = field(default_factory=dict)
 
 
 class BaseAgent(ABC):
@@ -38,6 +43,6 @@ class BaseAgent(ABC):
         self.metadata = metadata
 
     @abstractmethod
-    def evaluate(self, context: Dict[str, Any]) -> AgentMessage:
+    def evaluate(self, context: dict[str, Any]) -> AgentMessage:
         """Evaluate the provided context and produce an authoritative agent message."""
         pass

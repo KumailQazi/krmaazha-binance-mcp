@@ -27,6 +27,7 @@ Config TOML (default ~/.config/krmaazha-binance-mcp/watch.toml, override --confi
 Anti-spam por CRUCE: cada trigger dispara al pasar de no-cumplido → cumplido y se
 re-arma cuando la condición se limpia. Estado en state.json junto al config.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -58,9 +59,10 @@ DEFAULT_CONFIG = Path.home() / ".config" / "krmaazha-binance-mcp" / "watch.toml"
 @dataclass(frozen=True)
 class Trigger:
     """Un trigger normalizado. kind ∈ {price, daily_close, funding, fear_greed}."""
+
     kind: str
     symbol: str | None
-    op: str          # "above" | "below" | "abs_above"
+    op: str  # "above" | "below" | "abs_above"
     level: float
 
     @property
@@ -93,8 +95,7 @@ def parse_config(raw: dict[str, Any]) -> tuple[int, str | None, list[Trigger]]:
                     raise ConfigError(str(e)) from e
             ops = [op for op in ("above", "below", "abs_above") if op in entry]
             if len(ops) != 1:
-                raise ConfigError(
-                    f"[[{kind}]] needs exactly one of above/below/abs_above")
+                raise ConfigError(f"[[{kind}]] needs exactly one of above/below/abs_above")
             op = ops[0]
             if kind == "funding" and op != "abs_above":
                 raise ConfigError("[[funding]] uses abs_above")
@@ -102,8 +103,7 @@ def parse_config(raw: dict[str, Any]) -> tuple[int, str | None, list[Trigger]]:
                 raise ConfigError(f"[[{kind}]] uses above/below")
             if kind == "fear_greed" and op == "abs_above":
                 raise ConfigError("[[fear_greed]] uses above/below")
-            triggers.append(Trigger(kind=kind, symbol=symbol, op=op,
-                                    level=float(entry[op])))
+            triggers.append(Trigger(kind=kind, symbol=symbol, op=op, level=float(entry[op])))
     if not triggers:
         raise ConfigError("no triggers configured")
     return interval, webhook, triggers
@@ -146,8 +146,9 @@ def is_met(t: Trigger, value: float) -> bool:
     return abs(value) > t.level  # abs_above
 
 
-def evaluate(triggers: list[Trigger], state: dict[str, bool],
-             get: Callable[..., Any]) -> tuple[list[tuple[Trigger, float]], dict[str, bool]]:
+def evaluate(
+    triggers: list[Trigger], state: dict[str, bool], get: Callable[..., Any]
+) -> tuple[list[tuple[Trigger, float]], dict[str, bool]]:
     """Un ciclo: devuelve (disparos NUEVOS por cruce, estado nuevo). Fuente caída = se
     conserva el estado previo del trigger (sin disparo fantasma ni re-arme falso)."""
     fired: list[tuple[Trigger, float]] = []
@@ -156,8 +157,11 @@ def evaluate(triggers: list[Trigger], state: dict[str, bool],
         try:
             value = fetch_value(t, get)
         except Exception as e:  # noqa: BLE001 — una fuente caída no tumba el ciclo
-            print(f"[watch] {t.key}: source unavailable ({type(e).__name__})",
-                  file=sys.stderr, flush=True)
+            print(
+                f"[watch] {t.key}: source unavailable ({type(e).__name__})",
+                file=sys.stderr,
+                flush=True,
+            )
             continue
         met = is_met(t, value)
         if met and not state.get(t.key, False):
@@ -166,26 +170,37 @@ def evaluate(triggers: list[Trigger], state: dict[str, bool],
     return fired, new_state
 
 
-def notify(message: str, webhook_url: str | None = None,
-           *, _run: Callable[..., Any] = subprocess.run,
-           _post: Callable[..., Any] | None = None) -> None:
+def notify(
+    message: str,
+    webhook_url: str | None = None,
+    *,
+    _run: Callable[..., Any] = subprocess.run,
+    _post: Callable[..., Any] | None = None,
+) -> None:
     """stdout siempre; notificación de escritorio best-effort; webhook opcional."""
     print(f"{time.strftime('%Y-%m-%d %H:%M:%S')} {message}", flush=True)
     try:
         if sys.platform == "darwin":
             script = f'display notification "{message[:200]}" with title "Binance MCP watch"'
-            _run(["osascript", "-e", script.replace('"', "'").replace("'", '"', 2)],
-                 capture_output=True, timeout=5)
+            _run(
+                ["osascript", "-e", script.replace('"', "'").replace("'", '"', 2)],
+                capture_output=True,
+                timeout=5,
+            )
         elif sys.platform.startswith("linux"):
-            _run(["notify-send", "Binance MCP watch", message[:200]],
-                 capture_output=True, timeout=5)
+            _run(
+                ["notify-send", "Binance MCP watch", message[:200]], capture_output=True, timeout=5
+            )
     except Exception:  # noqa: BLE001 — la notificación de escritorio es best-effort
         pass
     if webhook_url:
         post = _post if _post is not None else requests.post
         try:
-            post(webhook_url, json={"source": "krmaazha-binance-mcp-watch",
-                                    "message": message}, timeout=_TIMEOUT_S)
+            post(
+                webhook_url,
+                json={"source": "krmaazha-binance-mcp-watch", "message": message},
+                timeout=_TIMEOUT_S,
+            )
         except Exception as e:  # noqa: BLE001 — webhook caído no tumba el loop
             print(f"[watch] webhook failed: {type(e).__name__}", file=sys.stderr, flush=True)
 
@@ -206,21 +221,23 @@ def save_state(config_path: Path, state: dict[str, bool]) -> None:
     try:
         _state_path(config_path).write_text(json.dumps(state, indent=1), encoding="utf-8")
     except Exception as e:  # noqa: BLE001 — best-effort (disco RO no tumba el loop)
-        print(f"[watch] could not persist state: {type(e).__name__}",
-              file=sys.stderr, flush=True)
+        print(f"[watch] could not persist state: {type(e).__name__}", file=sys.stderr, flush=True)
 
 
 def main(argv: list[str] | None = None) -> None:  # pragma: no cover — loop real
     parser = argparse.ArgumentParser(
-        description="Trigger watchdog for krmaazha-binance-mcp. Notifies, NEVER executes.")
+        description="Trigger watchdog for krmaazha-binance-mcp. Notifies, NEVER executes."
+    )
     parser.add_argument("--config", type=Path, default=DEFAULT_CONFIG)
-    parser.add_argument("--once", action="store_true",
-                        help="run one evaluation cycle and exit (for smoke tests)")
+    parser.add_argument(
+        "--once", action="store_true", help="run one evaluation cycle and exit (for smoke tests)"
+    )
     args = parser.parse_args(argv)
     interval, webhook, triggers = load_config(args.config)
     state = load_state(args.config)
-    print(f"[watch] {len(triggers)} trigger(s), every {interval}s. No keys, no execution.",
-          flush=True)
+    print(
+        f"[watch] {len(triggers)} trigger(s), every {interval}s. No keys, no execution.", flush=True
+    )
     while True:
         fired, state = evaluate(triggers, state, _get_json)
         for t, value in fired:

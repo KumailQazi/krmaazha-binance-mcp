@@ -1,4 +1,5 @@
 """Wrapper de python-binance (spec §4.5)."""
+
 from __future__ import annotations
 
 import time

@@ -1,4 +1,5 @@
 """MCP server (spec §4.2a). Read key. Propone al confirmador; NUNCA ejecuta."""
+
 from __future__ import annotations
 
 import os
@@ -87,16 +88,18 @@ mcp = MCPServer("binance", instructions=_INSTRUCTIONS)
 
 def bootstrap(env: Mapping[str, str]) -> tuple[Settings, object]:
     """§4.2a: bootstrap compartido (runtime) con read key + guard read-only."""
-    return runtime.bootstrap(env, load_settings=load_server_settings,
-                             assert_key_safe=assert_read_key_safe)
+    return runtime.bootstrap(
+        env, load_settings=load_server_settings, assert_key_safe=assert_read_key_safe
+    )
 
 
 # Alias local para el wiring de tests (la implementación única vive en runtime).
 _make_estimator = runtime.make_estimator
 
 
-def _register_tools(client: object, ipc: IpcClient, market: MarketEstimator,
-                    *, is_testnet: bool) -> None:
+def _register_tools(
+    client: object, ipc: IpcClient, market: MarketEstimator, *, is_testnet: bool
+) -> None:
     """Registra las 25 tools. Cada @mcp.tool() delega en las funciones ya testeadas
     de tools/read.py, tools/write.py, tools/marketdata.py, tools/news.py y tools/signals.py.
     Las read, las de market data (capa 2) y las de señales (capa 4) reciben `client`; las de
@@ -137,14 +140,16 @@ def _register_tools(client: object, ipc: IpcClient, market: MarketEstimator,
 
     # --- 4 tools de capa 2: market data + indicadores (read key, 100% read-only) ---
     @mcp.tool()
-    def binance_get_klines(symbol: str, interval: str, limit: int = 500,
-                           last_n: int | None = None) -> list[Kline]:
+    def binance_get_klines(
+        symbol: str, interval: str, limit: int = 500, last_n: int | None = None
+    ) -> list[Kline]:
         """OHLCV candles for a pair/interval (Decimal values). limit <= 1000.
 
         `last_n` returns only the newest N candles (keeps context small); None = all
         fetched. `limit` still controls how many candles are fetched."""
-        return _g(lambda: marketdata_tools.get_klines(client, symbol, interval, limit,
-                                                      last_n=last_n))
+        return _g(
+            lambda: marketdata_tools.get_klines(client, symbol, interval, limit, last_n=last_n)
+        )
 
     @mcp.tool()
     def binance_get_ticker_24h(symbol: str) -> Ticker24h:
@@ -158,27 +163,33 @@ def _register_tools(client: object, ipc: IpcClient, market: MarketEstimator,
         return _g(lambda: marketdata_tools.get_order_book_liquidity(client, symbol))
 
     @mcp.tool()
-    def binance_compute_indicators(symbol: str, interval: str, indicators: list[str],
-                                   limit: int = 500, last_n: int = 1) -> IndicatorResult:
+    def binance_compute_indicators(
+        symbol: str, interval: str, indicators: list[str], limit: int = 500, last_n: int = 1
+    ) -> IndicatorResult:
         """RSI/MACD/EMA/Bollinger/ATR over the klines (float values, candle-aligned).
 
         Returns only the newest `last_n` values of each series (default 1 = current value
         only) to keep context small; raise `last_n` to see the recent trend. `limit` still
         controls how many candles feed the computation."""
-        return _g(lambda: marketdata_tools.compute_indicators(
-            client, symbol, interval, indicators, limit, last_n=last_n))
+        return _g(
+            lambda: marketdata_tools.compute_indicators(
+                client, symbol, interval, indicators, limit, last_n=last_n
+            )
+        )
 
     @mcp.tool()
-    def binance_backtest(symbol: str, interval: str, strategy: Strategy,
-                         limit: int = 500) -> BacktestResult:
+    def binance_backtest(
+        symbol: str, interval: str, strategy: Strategy, limit: int = 500
+    ) -> BacktestResult:
         """Light NO-LOOKAHEAD backtest of a simple rule (ema_cross/rsi_threshold)."""
         return _g(lambda: marketdata_tools.backtest(client, symbol, interval, strategy, limit))
 
     # --- 2 tools de capa 3: noticias + sentiment (RSS público, 100% read-only) ---
     # No reciben `client`: leen feeds RSS sin API key. Sentiment es señal cruda (disclaimer).
     @mcp.tool()
-    def binance_get_news(asset: str | None = None, sources: list[str] | None = None,
-                         limit: int | None = None) -> list[NewsItem]:
+    def binance_get_news(
+        asset: str | None = None, sources: list[str] | None = None, limit: int | None = None
+    ) -> list[NewsItem]:
         """Crypto news from RSS feeds (CoinDesk, crypto.news), filterable by asset/source."""
         return _g(lambda: news_tools.get_news(asset=asset, sources=sources, limit=limit))
 
@@ -191,14 +202,18 @@ def _register_tools(client: object, ipc: IpcClient, market: MarketEstimator,
     # Combinan indicadores (capa 2) + sentiment (capa 3) + ATR en una señal transparente.
     # PROPONEN; NUNCA colocan órdenes (eso es capa 1 con gate humano).
     @mcp.tool()
-    def binance_generate_signal(symbol: str, interval: str = "1h",
-                                threshold: float = 0.15) -> Signal:
+    def binance_generate_signal(
+        symbol: str, interval: str = "1h", threshold: float = 0.15
+    ) -> Signal:
         """Transparent composite signal for a pair: direction + score + per-factor rationale
         + ATR risk levels. PROPOSES, never executes; every factor exposes its contribution.
         Note: our own out-of-sample walk-forward found NO robust edge (docs/research/) —
         treat signals as context, not as financial advice."""
-        return _g(lambda: signals_tools.generate_signal_tool(client, symbol, interval,
-                                                             threshold=threshold))
+        return _g(
+            lambda: signals_tools.generate_signal_tool(
+                client, symbol, interval, threshold=threshold
+            )
+        )
 
     @mcp.tool()
     def binance_scan_signals(symbols: list[str], interval: str = "1h") -> list[Signal]:
@@ -206,12 +221,16 @@ def _register_tools(client: object, ipc: IpcClient, market: MarketEstimator,
         return _g(lambda: signals_tools.scan_signals(client, symbols, interval))
 
     @mcp.tool()
-    def binance_backtest_signal(symbol: str, interval: str = "1h", limit: int = 500,
-                                threshold: float | None = None) -> BacktestResult:
+    def binance_backtest_signal(
+        symbol: str, interval: str = "1h", limit: int = 500, threshold: float | None = None
+    ) -> BacktestResult:
         """Backtests the layer-4 TECHNICAL composite signal on history (read-only, no
         lookahead, sentiment=0). Compare total_return_pct vs buy_hold_return_pct: any edge?"""
-        return _g(lambda: signals_tools.binance_backtest_signal(
-            client, symbol, interval, limit, threshold=threshold))
+        return _g(
+            lambda: signals_tools.binance_backtest_signal(
+                client, symbol, interval, limit, threshold=threshold
+            )
+        )
 
     # --- 5 analyst tools: capa 5 (datos) + capa 6 (frameworks) — 100% read-only ---
     @mcp.tool()
@@ -238,15 +257,20 @@ def _register_tools(client: object, ipc: IpcClient, market: MarketEstimator,
         return _g(lambda: analytics_tools.analyze_cycle(client, symbol))
 
     @mcp.tool()
-    def binance_analyze_portfolio(cost_basis: dict[str, float] | None = None,
-                                  tax_rate: float = 0.0,
-                                  cashout_spread: float = 0.0) -> PortfolioReport:
+    def binance_analyze_portfolio(
+        cost_basis: dict[str, float] | None = None,
+        tax_rate: float = 0.0,
+        cashout_spread: float = 0.0,
+    ) -> PortfolioReport:
         """Values live balances; concentration; and — if the user provides their cost
         basis per asset (USDT) plus tax_rate/cashout_spread — per-asset PNL and the NET
         break-even (taxes+spread; local-currency effects excluded). No personal data is
         stored: everything is a parameter. Sizing doctrine: kb://discipline."""
-        return _g(lambda: analytics_tools.analyze_portfolio(
-            client, cost_basis=cost_basis, tax_rate=tax_rate, cashout_spread=cashout_spread))
+        return _g(
+            lambda: analytics_tools.analyze_portfolio(
+                client, cost_basis=cost_basis, tax_rate=tax_rate, cashout_spread=cashout_spread
+            )
+        )
 
     @mcp.tool()
     def binance_assess_risk(symbols: list[str] | None = None) -> RiskReport:
@@ -256,19 +280,23 @@ def _register_tools(client: object, ipc: IpcClient, market: MarketEstimator,
         return _g(lambda: analytics_tools.assess_risk(client, symbols))
 
     @mcp.tool()
-    def binance_backtest_dca(symbol: str, monthly_quote: float, months: int,
-                             day_of_month: int = 5, fee: float = 0.001) -> DcaBacktestResult:
+    def binance_backtest_dca(
+        symbol: str, monthly_quote: float, months: int, day_of_month: int = 5, fee: float = 0.001
+    ) -> DcaBacktestResult:
         """Backtests a mechanical DCA plan on real history: invested, accumulated qty,
         avg cost, value now, PNL, honest lump-sum comparison and max drawdown.
         Simulation, NOT prediction — start-date sensitive (try several windows).
         Doctrine: kb://discipline."""
-        return _g(lambda: _backtest_dca(client, symbol, monthly_quote, months,
-                                        day_of_month=day_of_month, fee=fee))
+        return _g(
+            lambda: _backtest_dca(
+                client, symbol, monthly_quote, months, day_of_month=day_of_month, fee=fee
+            )
+        )
 
     @mcp.tool()
-    def binance_backtest_harvest(symbol: str, initial_qty: float,
-                                 grid: list[dict[str, float]],
-                                 start: str | None = None) -> HarvestBacktestResult:
+    def binance_backtest_harvest(
+        symbol: str, initial_qty: float, grid: list[dict[str, float]], start: str | None = None
+    ) -> HarvestBacktestResult:
         """Backtests a pre-committed harvest grid ([{level, sell_pct}], pct of CURRENT
         holding, each level fires once on an upward daily-close crossing) vs pure hold.
         Simulation, NOT prediction. Doctrine: kb://discipline rule 4."""
@@ -278,16 +306,29 @@ def _register_tools(client: object, ipc: IpcClient, market: MarketEstimator,
     # Los Literal (Side/OrderType/Env/TimeInForce) viajan al schema de la tool y los
     # re-valida Pydantic en runtime al construir CanonicalOrder (spec §3.3).
     @mcp.tool()
-    def binance_spot_order_propose(symbol: str, side: Side, type: OrderType, env: Env,
-                                   quantity: Decimal | None = None,
-                                   quote_quantity: Decimal | None = None,
-                                   price: Decimal | None = None,
-                                   time_in_force: TimeInForce | None = None) -> OrderProposal:
+    def binance_spot_order_propose(
+        symbol: str,
+        side: Side,
+        type: OrderType,
+        env: Env,
+        quantity: Decimal | None = None,
+        quote_quantity: Decimal | None = None,
+        price: Decimal | None = None,
+        time_in_force: TimeInForce | None = None,
+    ) -> OrderProposal:
         """Proposes a spot order to the confirmer (does NOT execute). Returns intent_id."""
         return write_tools.spot_order_propose(
-            ipc=ipc, market=market, symbol=symbol, side=side, type=type, env=env,
-            quantity=quantity, quote_quantity=quote_quantity, price=price,
-            time_in_force=time_in_force)
+            ipc=ipc,
+            market=market,
+            symbol=symbol,
+            side=side,
+            type=type,
+            env=env,
+            quantity=quantity,
+            quote_quantity=quote_quantity,
+            price=price,
+            time_in_force=time_in_force,
+        )
 
     @mcp.tool()
     def binance_spot_order_status(intent_id: str) -> OrderStatus:
@@ -298,7 +339,8 @@ def _register_tools(client: object, ipc: IpcClient, market: MarketEstimator,
     def binance_cancel_order_propose(symbol: str, order_id: int, env: Env) -> OrderProposal:
         """Proposes canceling an order (re-checks status; does NOT cancel)."""
         return write_tools.cancel_order_propose(
-            ipc=ipc, client=client, symbol=symbol, order_id=order_id, env=env)
+            ipc=ipc, client=client, symbol=symbol, order_id=order_id, env=env
+        )
 
     @mcp.tool()
     def binance_cancel_order_status(intent_id: str) -> OrderStatus:

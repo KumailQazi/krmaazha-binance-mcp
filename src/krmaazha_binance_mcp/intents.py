@@ -1,4 +1,5 @@
 """Intents y su máquina de estados (spec §4.3b). Estado en memoria del confirmador."""
+
 from __future__ import annotations
 
 import threading
@@ -43,24 +44,32 @@ class IntentStore:
     # B1: el confirmador atiende handlers en HILOS (serve dispara threads) mientras el
     # accept-loop usa el store (register/pending_count). Un RLock serializa el acceso y
     # permite reentrancia (mark_*/pending_count llaman a get() internamente).
-    _lock: threading.RLock = field(default_factory=threading.RLock, init=False,
-                                   repr=False, compare=False)
+    _lock: threading.RLock = field(
+        default_factory=threading.RLock, init=False, repr=False, compare=False
+    )
 
     def register(self, order: CanonicalOrder) -> str:
         iid = uuid.uuid4().hex
         t = self.now()
         with self._lock:
-            self._items[iid] = Intent(intent_id=iid, order=order, created_at=t,
-                                      expires_at=t + self.ttl_seconds)
+            self._items[iid] = Intent(
+                intent_id=iid, order=order, created_at=t, expires_at=t + self.ttl_seconds
+            )
         return iid
 
     def register_cancel(self, symbol: str, order_id: int) -> str:
         iid = uuid.uuid4().hex
         t = self.now()
         with self._lock:
-            self._items[iid] = Intent(intent_id=iid, order=None, created_at=t,
-                                      expires_at=t + self.ttl_seconds, kind="cancel",
-                                      cancel_symbol=symbol, cancel_order_id=order_id)
+            self._items[iid] = Intent(
+                intent_id=iid,
+                order=None,
+                created_at=t,
+                expires_at=t + self.ttl_seconds,
+                kind="cancel",
+                cancel_symbol=symbol,
+                cancel_order_id=order_id,
+            )
         return iid
 
     def pending_count(self) -> int:

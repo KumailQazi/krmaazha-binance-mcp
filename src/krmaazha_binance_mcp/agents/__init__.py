@@ -1,4 +1,5 @@
 """Krmaazha Multi-Agent System Package."""
+
 from __future__ import annotations
 
 from krmaazha_binance_mcp.agents.base import AgentMessage, AgentMetadata, BaseAgent

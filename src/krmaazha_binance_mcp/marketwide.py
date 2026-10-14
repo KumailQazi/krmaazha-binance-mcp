@@ -8,6 +8,7 @@ Presupuesto de latencia: timeout de 5s POR fuente (peor caso ~4 requests ≈ 20s
 timeout típico de tool-call). Cache TTL ≥300s (CoinGecko free tier ratelimitea agresivo).
 Degradación POR FUENTE: un bloque caído → None + nota; la tool nunca se cae entera.
 """
+
 from __future__ import annotations
 
 import time
@@ -42,8 +43,9 @@ _MEMPOOL_HASHRATE_URL = "https://mempool.space/api/v1/mining/hashrate/3d"
 class TtlCache:
     """Cache TTL por clave con clock inyectable (mismo patrón que news.fetch.NewsCache)."""
 
-    def __init__(self, ttl_seconds: float = CACHE_TTL_SECONDS,
-                 clock: Callable[[], float] = time.monotonic) -> None:
+    def __init__(
+        self, ttl_seconds: float = CACHE_TTL_SECONDS, clock: Callable[[], float] = time.monotonic
+    ) -> None:
         self.ttl = ttl_seconds
         self.clock = clock
         self._entries: dict[str, tuple[float, Any]] = {}
@@ -70,9 +72,12 @@ def _get_json(url: str) -> Any:
     return resp.json()
 
 
-def get_market_structure(*, _cache: TtlCache | None = None,
-                         _get: Callable[[str], Any] | None = None,
-                         _now_ms: Callable[[], int] | None = None) -> MarketStructure:
+def get_market_structure(
+    *,
+    _cache: TtlCache | None = None,
+    _get: Callable[[str], Any] | None = None,
+    _now_ms: Callable[[], int] | None = None,
+) -> MarketStructure:
     """Agrega F&G + dominancia/mcap + ATH BTC + fees/hashrate, con degradación por fuente."""
     cache = _cache if _cache is not None else _MODULE_CACHE
     get = _get if _get is not None else _get_json
@@ -130,12 +135,19 @@ def get_market_structure(*, _cache: TtlCache | None = None,
         notes.append(f"mempool_hashrate unavailable: {type(e).__name__}")
 
     result = MarketStructure(
-        fear_greed=fear_greed, fear_greed_label=fear_greed_label,
+        fear_greed=fear_greed,
+        fear_greed_label=fear_greed_label,
         fear_greed_week=fear_greed_week,
-        btc_dominance_pct=dominance, total_market_cap_usd=mcap,
-        btc_ath_usd=ath, btc_ath_date=ath_date, btc_ath_change_pct=ath_change,
-        mempool_fee_fast_sat_vb=fee_fast, hashrate_avg_ehs=hashrate_ehs,
-        notes=notes, as_of=now_ms(), disclaimer=DISCLAIMER,
+        btc_dominance_pct=dominance,
+        total_market_cap_usd=mcap,
+        btc_ath_usd=ath,
+        btc_ath_date=ath_date,
+        btc_ath_change_pct=ath_change,
+        mempool_fee_fast_sat_vb=fee_fast,
+        hashrate_avg_ehs=hashrate_ehs,
+        notes=notes,
+        as_of=now_ms(),
+        disclaimer=DISCLAIMER,
     )
     cache.put("market_structure", result)
     return result

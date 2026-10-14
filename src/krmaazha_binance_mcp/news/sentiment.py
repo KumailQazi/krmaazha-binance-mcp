@@ -8,6 +8,7 @@ predicción. Es puro y sin red (determinista, sin costo, sin API externa).
 El léxico es propio y auditable: ver ``_BULL`` / ``_BEAR`` abajo. Cada término lleva un
 peso > 0 (la mayoría 1.0; los más fuertes/inequívocos pesan más).
 """
+
 from __future__ import annotations
 
 import re

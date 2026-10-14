@@ -7,6 +7,7 @@ agregaría como un adaptador nuevo + su key por env, sin tocar el resto.
 **Robustez (spec N3/N6):** ``fetch()`` nunca propaga una excepción ni tumba la tool —
 feed vacío, error de red o feed malformado → ``[]`` (se loggea). Es 100% read-only.
 """
+
 from __future__ import annotations
 
 import calendar
