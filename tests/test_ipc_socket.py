@@ -154,10 +154,24 @@ def test_anti_spam_rejects_when_too_many_pending(monkeypatch):
                     dialog_lock=lock, estimator=estimator, max_pending=1),
         daemon=True)
     t.start()
+    ready = False
     for _ in range(200):
-        if os.path.exists(sock_path):
+        if os.path.exists(sock_path) and hasattr(socket, "AF_UNIX"):
+            probe = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+            try:
+                probe.connect(sock_path)
+            except OSError:
+                pass
+            else:
+                ready = True
+                break
+            finally:
+                probe.close()
+        elif os.path.exists(sock_path):
+            ready = True
             break
         time.sleep(0.01)
+    assert ready, "el confirmador no aceptó conexiones a tiempo"
 
     cli = IpcClient(sock_path)
     cli.register(_order())  # primero ocupa el único cupo (queda pending, diálogo bloqueado)
