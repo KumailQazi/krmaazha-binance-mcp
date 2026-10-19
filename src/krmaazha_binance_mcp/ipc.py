@@ -18,6 +18,7 @@ import json
 import os
 import socket
 import threading
+import time
 from collections.abc import Callable
 from typing import TYPE_CHECKING, Any, cast
 
@@ -82,11 +83,21 @@ class IpcClient:
                 "confirmer unavailable: start `krmaazha-binance-mcp-confirmer` "
                 f"(socket {self.socket_path} does not exist)"
             )
-        try:
-            conn = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-            conn.connect(self.socket_path)
-        except OSError as e:
-            raise IpcUnavailableError(f"confirmer unavailable: {e}") from e
+        conn: socket.socket | None = None
+        last_err: OSError | None = None
+        for _ in range(5):
+            try:
+                conn = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+                conn.connect(self.socket_path)
+                break
+            except OSError as e:
+                last_err = e
+                if conn is not None:
+                    conn.close()
+                conn = None
+                time.sleep(0.05)
+        if conn is None:
+            raise IpcUnavailableError(f"confirmer unavailable: {last_err}") from last_err
         try:
             conn.sendall(encode_msg(msg).encode("utf-8"))
             resp = _read_line(conn)

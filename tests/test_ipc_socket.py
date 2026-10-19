@@ -172,6 +172,7 @@ def test_anti_spam_rejects_when_too_many_pending(monkeypatch):
             break
         time.sleep(0.01)
     assert ready, "el confirmador no aceptó conexiones a tiempo"
+    time.sleep(0.05)
 
     cli = IpcClient(sock_path)
     cli.register(_order())  # primero ocupa el único cupo (queda pending, diálogo bloqueado)
