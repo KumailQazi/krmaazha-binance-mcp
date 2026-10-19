@@ -39,8 +39,11 @@ class SecurityGuardAgent(BaseAgent):
 
     def evaluate(self, context: dict[str, Any]) -> AgentMessage:
         """Audit the environment and request context for security violations."""
-        has_read_key = bool(os.getenv("BINANCE_READ_API_KEY") or os.getenv("BINANCE_API_KEY"))
-        has_trade_key = bool(os.getenv("BINANCE_TRADE_API_KEY"))
+        has_read_key = bool(os.getenv("BINANCE_READ_API_KEY"))
+        # Defensive isolation audit: Verify no trading keys were injected into this
+        # read-only MCP server process
+        trade_key_vars = [k for k in os.environ if k.startswith("BINANCE_TRADE_")]
+        has_trade_key = len(trade_key_vars) > 0
 
         # Read-only server verification
         is_isolated = not (has_trade_key and "mcp_server" in context.get("process", "mcp_server"))

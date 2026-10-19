@@ -38,6 +38,7 @@ Homepage = "https://github.com/KumailQazi/krmaazha-binance-mcp"
 Repository = "https://github.com/KumailQazi/krmaazha-binance-mcp"
 Issues = "https://github.com/KumailQazi/krmaazha-binance-mcp/issues"
 Security = "https://github.com/KumailQazi/krmaazha-binance-mcp/blob/main/SECURITY.md"
+Privacy = "https://github.com/KumailQazi/krmaazha-binance-mcp/blob/main/PRIVACY.md"
 
 [project.scripts]
 krmaazha-binance-mcp = "krmaazha_binance_mcp.server:main"

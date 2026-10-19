@@ -34,7 +34,7 @@ no network at import time) — see [Futures research](#futures-research).
 It is built around one uncompromising idea: **treat the language model as untrusted.** Even a
 fully prompt-injected or malfunctioning model cannot move your funds, because it has neither
 the credential nor the authority to do so. See [SECURITY.md](SECURITY.md) for the full threat
-model.
+model and [PRIVACY.md](PRIVACY.md) for zero-knowledge data handling policies.
 
 > ⚠️ **Real money.** On `mainnet`, every order moves actual funds. **Always start on
 > [testnet](#testnet-first-recommended)** and switch to mainnet only once everything is
@@ -236,7 +236,10 @@ Go to Binance → **API Management**. The design uses two keys for least privile
 
 ### 3. Add the server to your MCP client
 
-`.mcp.json` (Claude Code style). Only the read key + `BINANCE_ENV`:
+Choose your client configuration below. Only the read-only key and `BINANCE_ENV` are passed:
+
+<details open>
+<summary><b>Claude Code (<code>.mcp.json</code>)</b></summary>
 
 ```json
 {
@@ -253,6 +256,47 @@ Go to Binance → **API Management**. The design uses two keys for least privile
   }
 }
 ```
+</details>
+
+<details>
+<summary><b>Claude Desktop (<code>claude_desktop_config.json</code>)</b></summary>
+
+```json
+{
+  "mcpServers": {
+    "binance": {
+      "command": "uvx",
+      "args": ["krmaazha-binance-mcp"],
+      "env": {
+        "BINANCE_ENV": "testnet",
+        "BINANCE_READ_API_KEY": "YOUR_READ_API_KEY",
+        "BINANCE_READ_API_SECRET": "YOUR_READ_API_SECRET"
+      }
+    }
+  }
+}
+```
+</details>
+
+<details>
+<summary><b>Cursor & Windsurf (<code>.cursor/mcp.json</code> / <code>mcp_config.json</code>)</b></summary>
+
+```json
+{
+  "mcpServers": {
+    "binance": {
+      "command": "uvx",
+      "args": ["krmaazha-binance-mcp"],
+      "env": {
+        "BINANCE_ENV": "testnet",
+        "BINANCE_READ_API_KEY": "YOUR_READ_API_KEY",
+        "BINANCE_READ_API_SECRET": "YOUR_READ_API_SECRET"
+      }
+    }
+  }
+}
+```
+</details>
 
 `${VAR}` placeholders are resolved from your shell. If a variable arrives unexpanded, the
 server aborts with a clear message — export the variables before launching your client.
