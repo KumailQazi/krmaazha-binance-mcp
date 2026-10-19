@@ -1,6 +1,6 @@
 [project]
 name = "krmaazha-binance-mcp"
-version = "1.2.1"
+version = "1.2.2"
 description = "MCP server for Binance: read market data, analyze, and propose real-money spot trades behind a human-gated confirmer — plus an offline USD-M futures research engine. The model never holds a trade key."
 readme = "README.md"
 license = { text = "MIT" }

@@ -302,7 +302,7 @@ Choose your client configuration below. Only the read-only key and `BINANCE_ENV`
 server aborts with a clear message — export the variables before launching your client.
 
 Installing from git instead of PyPI? Use `"args": ["--from",
-"git+https://github.com/KumailQazi/krmaazha-binance-mcp@v1.2.1", "krmaazha-binance-mcp"]`
+"git+https://github.com/KumailQazi/krmaazha-binance-mcp@v1.2.2", "krmaazha-binance-mcp"]`
 (pin a tag; `git+https` works without any GitHub credentials).
 
 ### 4. Run the confirmer (required to execute)
@@ -314,7 +314,7 @@ export BINANCE_ENV=testnet
 export BINANCE_TRADE_API_KEY="...your trade key..."
 export BINANCE_TRADE_API_SECRET="...your trade secret..."
 
-uvx krmaazha-binance-mcp-confirmer  # or: uvx --from "git+https://github.com/KumailQazi/krmaazha-binance-mcp@v1.2.1" krmaazha-binance-mcp-confirmer
+uvx krmaazha-binance-mcp-confirmer  # or: uvx --from "git+https://github.com/KumailQazi/krmaazha-binance-mcp@v1.2.2" krmaazha-binance-mcp-confirmer
 ```
 
 It listens on a local Unix socket. When the AI proposes an order, a **native dialog** appears
