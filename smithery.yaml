@@ -1,0 +1,23 @@
+# Smithery configuration for krmaazha-binance-mcp
+# https://smithery.ai/docs/config
+startCommand:
+  type: stdio
+  config:
+    command: uvx
+    args:
+      - krmaazha-binance-mcp
+    envVariables:
+      BINANCE_ENV:
+        type: string
+        description: "testnet or mainnet (start with testnet)"
+        required: true
+      BINANCE_READ_API_KEY:
+        type: string
+        description: "READ-ONLY Binance API key (the server never holds a trade key)"
+        required: true
+        secret: true
+      BINANCE_READ_API_SECRET:
+        type: string
+        description: "Secret for the read-only key"
+        required: true
+        secret: true

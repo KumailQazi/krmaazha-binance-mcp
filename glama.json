@@ -1,0 +1,16 @@
+{
+  "$schema": "https://glama.ai/mcp/schemas/server.json",
+  "name": "krmaazha-binance-mcp",
+  "description": "Security-first Binance MCP server and multi-agent intelligence platform. Read market data, quant analytics, and propose spot trades behind human confirmation.",
+  "repository": "https://github.com/KumailQazi/krmaazha-binance-mcp",
+  "homepage": "https://github.com/KumailQazi/krmaazha-binance-mcp",
+  "maintainers": [
+    {
+      "name": "Kumail Qazi",
+      "url": "https://github.com/KumailQazi"
+    }
+  ],
+  "transport": {
+    "type": "stdio"
+  }
+}
