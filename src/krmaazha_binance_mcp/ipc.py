@@ -85,9 +85,14 @@ class IpcClient:
             )
         conn: socket.socket | None = None
         last_err: OSError | None = None
+        af = getattr(socket, "AF_UNIX", None)
+        if af is None:
+            raise IpcUnavailableError(
+                "confirmer unavailable: Unix domain sockets are not supported on this platform"
+            )
         for _ in range(5):
             try:
-                conn = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+                conn = socket.socket(af, socket.SOCK_STREAM)
                 conn.connect(self.socket_path)
                 break
             except OSError as e:
@@ -182,7 +187,12 @@ def serve(
     if os.path.exists(socket_path):
         os.unlink(socket_path)
 
-    srv = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+    af = getattr(socket, "AF_UNIX", None)
+    if af is None:
+        raise IpcUnavailableError(
+            "confirmer unavailable: Unix domain sockets are not supported on this platform"
+        )
+    srv = socket.socket(af, socket.SOCK_STREAM)
     srv.bind(socket_path)
     os.chmod(socket_path, 0o600)
     srv.listen(8)

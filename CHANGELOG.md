@@ -79,6 +79,15 @@ engine**, and the doctrine that governs it changed accordingly.
   execution claim (false since v1.2), stale `@v1.0.0` install pins, `CONTRIBUTING`'s ruff
   command that did not match CI, and the `server.json` registry listing.
 
+## [1.2.2] — 2026-10-19
+
+- Official Model Context Protocol Registry publishing under `io.github.KumailQazi/krmaazha-binance-mcp`.
+- Upgraded `mcp[cli]` to 2.3.0 resolving `CVE-2026-59951`.
+- Added M8ven trust verification badges and AST security static analysis hardening.
+- Added comprehensive zero-knowledge privacy policy (`PRIVACY.md`).
+- Multi-registry syndication support (`glama.json`, `smithery.yaml`).
+- Fixed socket reconnection retry handling on POSIX/macOS.
+
 ## [1.2.1] — 2026-08-22
 
 - MCP Registry ownership marker (`mcp-name`) in the README (required by the registry's

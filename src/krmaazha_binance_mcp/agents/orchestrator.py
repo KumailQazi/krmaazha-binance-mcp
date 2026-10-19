@@ -9,9 +9,12 @@ from decimal import Decimal
 from typing import Any
 
 from krmaazha_binance_mcp.agents.base import AgentMessage, AgentMetadata, BaseAgent
+from krmaazha_binance_mcp.agents.compliance import ComplianceAuditAgent
 from krmaazha_binance_mcp.agents.data_engineering import DataEngineeringAgent
+from krmaazha_binance_mcp.agents.execution import ExecutionAlgorithmAgent
 from krmaazha_binance_mcp.agents.protocol import McpProtocolAgent
 from krmaazha_binance_mcp.agents.quantitative import QuantitativeRiskAgent
+from krmaazha_binance_mcp.agents.registry_syndication import RegistrySyndicationAgent
 from krmaazha_binance_mcp.agents.security import SecurityGuardAgent
 from krmaazha_binance_mcp.agents.ux import DashboardUXAgent
 
@@ -25,13 +28,15 @@ class MasterOrchestratorAgent(BaseAgent):
         icon="🧠",
         role_description=(
             "Supreme coordinator enforcing operating doctrines (kb://discipline), "
-            "reproducible signals, and institutional synthesis."
+            "reproducible signals, M8ven trust, registry syndication, and institutional synthesis."
         ),
         governing_skill="orchestrator",
         responsibilities=(
-            "Coordinate all 5 specialized sub-agents across triage and execution pipelines",
+            "Coordinate all 8 specialized sub-agents across research, execution, and syndication",
             "Enforce operating doctrine (kb://discipline Rules 1-6 spot, Rule 7 futures)",
             "Enforce IMPROVEMENTS.MD quality gates: instrument, signals, depth, Net R:R",
+            "Enforce regulatory compliance and zero-knowledge privacy (MiCA/FATF/PRIVACY.md)",
+            "Govern multi-registry syndication (Official MCP Registry, Smithery, Glama, PyPI)",
             "Synthesize multi-agent findings into the standardized single-sentence bottom line",
             "Audit all claims with epistemic tags ([VERIFIED FACT], [ESTIMATE], [OPINION])",
         ),
@@ -39,9 +44,11 @@ class MasterOrchestratorAgent(BaseAgent):
             "Never bypass the Security Guard's confirmation gate for trade execution",
             "Never output recommendations without entry trigger, invalidation, and Net R:R",
             "Always conclude analysis with the mandated standardized bottom-line template",
+            "Never permit execution sizing to exceed depth limits without algorithm warning",
         ),
         tools_used=(
             "orchestrate_deliberation",
+            "orchestrate_deep_audit",
             "synthesize_bottom_line",
             "audit_epistemic_tags",
             "query_subagents",
@@ -56,6 +63,9 @@ class MasterOrchestratorAgent(BaseAgent):
         self.quant_agent = QuantitativeRiskAgent()
         self.protocol_agent = McpProtocolAgent()
         self.ux_agent = DashboardUXAgent()
+        self.registry_agent = RegistrySyndicationAgent()
+        self.compliance_agent = ComplianceAuditAgent()
+        self.execution_agent = ExecutionAlgorithmAgent()
 
         self.subagents: dict[str, BaseAgent] = {
             self.data_eng_agent.metadata.agent_id: self.data_eng_agent,
@@ -63,6 +73,9 @@ class MasterOrchestratorAgent(BaseAgent):
             self.quant_agent.metadata.agent_id: self.quant_agent,
             self.protocol_agent.metadata.agent_id: self.protocol_agent,
             self.ux_agent.metadata.agent_id: self.ux_agent,
+            self.registry_agent.metadata.agent_id: self.registry_agent,
+            self.compliance_agent.metadata.agent_id: self.compliance_agent,
+            self.execution_agent.metadata.agent_id: self.execution_agent,
         }
 
     def get_agent_directory(self) -> list[dict[str, Any]]:
@@ -158,8 +171,9 @@ class MasterOrchestratorAgent(BaseAgent):
         symbol: str = "BTCUSDT",
         action: str = "market_analysis",
         extra_context: dict[str, Any] | None = None,
+        include_deep_subagents: bool = False,
     ) -> dict[str, Any]:
-        """Execute the coordinated 5-step multi-agent deliberation pipeline."""
+        """Execute the coordinated multi-agent deliberation pipeline."""
         now_utc = datetime.now(UTC).strftime("%Y-%m-%d %H:%M:%S UTC")
         symbol = symbol.upper()
 
@@ -193,7 +207,76 @@ class MasterOrchestratorAgent(BaseAgent):
         # Step 5: UX Formatting & Epistemic Labeling
         ux_msg = self.ux_agent.evaluate(base_ctx)
 
-        # Step 5: Synthesize Institutional Bottom Line
+        deliberation_log = [
+            {
+                "agent": data_msg.sender_name,
+                "icon": self.data_eng_agent.metadata.icon,
+                "tag": data_msg.epistemic_tag,
+                "summary": data_msg.summary,
+                "details": data_msg.details,
+            },
+            {
+                "agent": sec_msg.sender_name,
+                "icon": self.security_agent.metadata.icon,
+                "tag": sec_msg.epistemic_tag,
+                "summary": sec_msg.summary,
+                "details": sec_msg.details,
+            },
+            {
+                "agent": proto_msg.sender_name,
+                "icon": self.protocol_agent.metadata.icon,
+                "tag": proto_msg.epistemic_tag,
+                "summary": proto_msg.summary,
+                "details": proto_msg.details,
+            },
+            {
+                "agent": quant_msg.sender_name,
+                "icon": self.quant_agent.metadata.icon,
+                "tag": quant_msg.epistemic_tag,
+                "summary": quant_msg.summary,
+                "details": quant_msg.details,
+            },
+            {
+                "agent": ux_msg.sender_name,
+                "icon": self.ux_agent.metadata.icon,
+                "tag": ux_msg.epistemic_tag,
+                "summary": ux_msg.summary,
+                "details": ux_msg.details,
+            },
+        ]
+
+        # Optional deep deliberation steps (Execution Algorithms, Compliance, Registry)
+        execution_plan = None
+        if include_deep_subagents or action in ("trade", "order_proposal", "deep_audit"):
+            exec_msg = self.execution_agent.evaluate(base_ctx)
+            deliberation_log.append({
+                "agent": exec_msg.sender_name,
+                "icon": self.execution_agent.metadata.icon,
+                "tag": exec_msg.epistemic_tag,
+                "summary": exec_msg.summary,
+                "details": exec_msg.details,
+            })
+            execution_plan = exec_msg.details.get("execution_plan")
+
+            comp_msg = self.compliance_agent.evaluate(base_ctx)
+            deliberation_log.append({
+                "agent": comp_msg.sender_name,
+                "icon": self.compliance_agent.metadata.icon,
+                "tag": comp_msg.epistemic_tag,
+                "summary": comp_msg.summary,
+                "details": comp_msg.details,
+            })
+
+            reg_msg = self.registry_agent.evaluate(base_ctx)
+            deliberation_log.append({
+                "agent": reg_msg.sender_name,
+                "icon": self.registry_agent.metadata.icon,
+                "tag": reg_msg.epistemic_tag,
+                "summary": reg_msg.summary,
+                "details": reg_msg.details,
+            })
+
+        # Synthesize Institutional Bottom Line
         trade_setup = quant_msg.details.get("trade_setup", {})
         direction = trade_setup.get("direction", "NEUTRAL")
         formatted_price = ux_msg.details.get("formatted_price", f"${base_ctx['price']}")
@@ -239,7 +322,7 @@ class MasterOrchestratorAgent(BaseAgent):
                 f"Costs/risks are {costs_risks}. Otherwise, no trade."
             )
 
-        return {
+        response: dict[str, Any] = {
             "timestamp_utc": now_utc,
             "instrument": {
                 "symbol": symbol,
@@ -251,43 +334,7 @@ class MasterOrchestratorAgent(BaseAgent):
                     "[VERIFIED FACT] Quotes, depth, and volume represent Binance Spot specifically."
                 ),
             },
-            "deliberation_log": [
-                {
-                    "agent": data_msg.sender_name,
-                    "icon": self.data_eng_agent.metadata.icon,
-                    "tag": data_msg.epistemic_tag,
-                    "summary": data_msg.summary,
-                    "details": data_msg.details,
-                },
-                {
-                    "agent": sec_msg.sender_name,
-                    "icon": self.security_agent.metadata.icon,
-                    "tag": sec_msg.epistemic_tag,
-                    "summary": sec_msg.summary,
-                    "details": sec_msg.details,
-                },
-                {
-                    "agent": proto_msg.sender_name,
-                    "icon": self.protocol_agent.metadata.icon,
-                    "tag": proto_msg.epistemic_tag,
-                    "summary": proto_msg.summary,
-                    "details": proto_msg.details,
-                },
-                {
-                    "agent": quant_msg.sender_name,
-                    "icon": self.quant_agent.metadata.icon,
-                    "tag": quant_msg.epistemic_tag,
-                    "summary": quant_msg.summary,
-                    "details": quant_msg.details,
-                },
-                {
-                    "agent": ux_msg.sender_name,
-                    "icon": self.ux_agent.metadata.icon,
-                    "tag": ux_msg.epistemic_tag,
-                    "summary": ux_msg.summary,
-                    "details": ux_msg.details,
-                },
-            ],
+            "deliberation_log": deliberation_log,
             "liquidity_audit": {
                 "touch_spread_bps": f"{market_data['spread_bps']} bps",
                 "depth_1pct_usdt": f"${float(market_data['depth_1pct_usdt']):,.2f} USDT",
@@ -296,3 +343,6 @@ class MasterOrchestratorAgent(BaseAgent):
             "trade_setup": trade_setup,
             "standardized_bottom_line": bottom_line,
         }
+        if execution_plan:
+            response["execution_plan"] = execution_plan
+        return response
