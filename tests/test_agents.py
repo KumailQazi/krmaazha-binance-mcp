@@ -4,6 +4,7 @@ from __future__ import annotations
 from decimal import Decimal
 
 from krmaazha_binance_mcp.agents import (
+    CommercialGatewayAgent,
     ComplianceAuditAgent,
     DashboardUXAgent,
     DataEngineeringAgent,
@@ -19,7 +20,7 @@ from krmaazha_binance_mcp.agents import (
 def test_agent_directory_contains_all_agents():
     orch = MasterOrchestratorAgent()
     directory = orch.get_agent_directory()
-    assert len(directory) == 9
+    assert len(directory) == 10
     agent_ids = {a["agent_id"] for a in directory}
     assert agent_ids == {
         "master_orchestrator",
@@ -31,6 +32,7 @@ def test_agent_directory_contains_all_agents():
         "registry_syndication",
         "compliance_audit",
         "execution_algorithms",
+        "commercial_gateway",
     }
 
 
@@ -233,3 +235,50 @@ def test_master_orchestrator_synthesis(monkeypatch):
     eval_msg = orch.evaluate({"symbol": "SOLUSDT"})
     assert eval_msg.sender_id == "master_orchestrator"
     assert "Otherwise, no trade." in eval_msg.summary
+
+
+def test_commercial_gateway_agent():
+    agent = CommercialGatewayAgent()
+    assert agent.metadata.agent_id == "commercial_gateway"
+    assert agent.metadata.governing_skill == "mcprush-gateway-deployment"
+
+    # Test token verification (constant time)
+    assert agent.verify_gateway_token("secret123", "secret123") is True
+    assert agent.verify_gateway_token("wrong", "secret123") is False
+    assert agent.verify_gateway_token(None, "secret123") is False
+    assert agent.verify_gateway_token("secret123", None) is False
+
+    # Test tenant credentials extraction from X-Env headers
+    headers = {
+        "x-env-binance-env": "mainnet",
+        "X-Env-BINANCE-READ-API-KEY": "key_abc",
+        "x-env-binance-read-api-secret": "secret_xyz",
+    }
+    extracted = agent.extract_tenant_credentials(headers)
+    assert extracted["env"] == "mainnet"
+    assert extracted["api_key"] == "key_abc"
+    assert extracted["api_secret"] == "secret_xyz"
+
+    # Test pricing tier margin evaluation
+    starter_margin = agent.evaluate_pricing_tier_margin(
+        plan_name="Starter", price_monthly_usd=19.0, call_quota=10000
+    )
+    assert starter_margin["status"] == "HEALTHY"
+    assert starter_margin["net_profit_at_1_subscriber"] == 14.0
+    assert starter_margin["margin_at_1_subscriber_pct"] == 73.7
+
+    # Test cloud deployment readiness check
+    readiness = agent.check_railway_readiness(
+        has_dockerfile=True,
+        has_port_env=True,
+        has_sse_transport=True,
+        has_token_auth=True,
+    )
+    assert readiness["containerization"] == "READY"
+    assert readiness["gateway_auth"] == "READY"
+
+    # Test evaluate method
+    eval_msg = agent.evaluate({"plan_name": "Pro", "price": 49.0, "quota": 50000})
+    assert eval_msg.sender_id == "commercial_gateway"
+    assert "[QUANTITATIVE ESTIMATE]" in eval_msg.summary
+

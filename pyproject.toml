@@ -44,6 +44,7 @@ Privacy = "https://github.com/KumailQazi/krmaazha-binance-mcp/blob/main/PRIVACY.
 krmaazha-binance-mcp = "krmaazha_binance_mcp.server:main"
 krmaazha-binance-mcp-confirmer = "krmaazha_binance_mcp_confirmer.__main__:main"
 krmaazha-binance-mcp-watch = "krmaazha_binance_mcp.watch:main"
+krmaazha-binance-mcp-gateway = "krmaazha_binance_mcp.gateway_server:main"
 
 [build-system]
 requires = ["hatchling"]

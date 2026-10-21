@@ -6,28 +6,28 @@ This document registers the newly installed Data & AI Engineering skills, analyz
 
 ## 1. Installed Skills Inventory (`skills.sh`)
 
-Installed into [`.agents/skills/`](file:///c:/Users/Raza/Downloads/konnextBinMcp/.agents/skills) via `npx skills add` and mapped into [`AGENTS.md`](file:///c:/Users/Raza/Downloads/konnextBinMcp/AGENTS.md):
+Installed into [`.agents/skills/`](file:///c:/Users/Raza/Downloads/krmaazhaBinMcp/.agents/skills) via `npx skills add` and mapped into [`AGENTS.md`](file:///c:/Users/Raza/Downloads/krmaazhaBinMcp/AGENTS.md):
 
 | Category | Skill Name | Source Path | Governing Purpose |
 |---|---|---|---|
-| **Data Eng** | `data-quality-frameworks` | [`.agents/skills/data-quality-frameworks`](file:///c:/Users/Raza/Downloads/konnextBinMcp/.agents/skills/data-quality-frameworks/SKILL.md) | Data validation, Great Expectations, dbt tests, schema contracts. |
-| **Data Eng** | `dbt-transformation-patterns` | [`.agents/skills/dbt-transformation-patterns`](file:///c:/Users/Raza/Downloads/konnextBinMcp/.agents/skills/dbt-transformation-patterns/SKILL.md) | Analytics engineering, incremental data modeling, modular DAGs. |
-| **Data Eng** | `airflow-dag-patterns` | [`.agents/skills/airflow-dag-patterns`](file:///c:/Users/Raza/Downloads/konnextBinMcp/.agents/skills/airflow-dag-patterns/SKILL.md) | Production DAG design, sensor patterns, pipeline orchestration. |
-| **Data Eng** | `spark-optimization` | [`.agents/skills/spark-optimization`](file:///c:/Users/Raza/Downloads/konnextBinMcp/.agents/skills/spark-optimization/SKILL.md) | PySpark partition tuning, shuffle minimization, memory caching. |
-| **Data Eng** | `sql-optimization-patterns` | [`.agents/skills/sql-optimization-patterns`](file:///c:/Users/Raza/Downloads/konnextBinMcp/.agents/skills/sql-optimization-patterns/SKILL.md) | EXPLAIN query plans, composite indexes, CTE optimization. |
-| **Data Eng** | `postgresql-table-design` | [`.agents/skills/postgresql-table-design`](file:///c:/Users/Raza/Downloads/konnextBinMcp/.agents/skills/postgresql-table-design/SKILL.md) | Declarative partitioning, constraint rules, high-throughput ingestion. |
-| **Data Eng** | `backtesting-frameworks` | [`.agents/skills/backtesting-frameworks`](file:///c:/Users/Raza/Downloads/konnextBinMcp/.agents/skills/backtesting-frameworks/SKILL.md) | Zero-lookahead historical bar replay, slippage & fee modeling. |
-| **Data Eng** | `risk-metrics-calculation` | [`.agents/skills/risk-metrics-calculation`](file:///c:/Users/Raza/Downloads/konnextBinMcp/.agents/skills/risk-metrics-calculation/SKILL.md) | Value-at-Risk (VaR), Sharpe, Sortino, max drawdown, Kelly sizing. |
-| **AI Eng** | `rag-implementation` | [`.agents/skills/rag-implementation`](file:///c:/Users/Raza/Downloads/konnextBinMcp/.agents/skills/rag-implementation/SKILL.md) | Retrieval-augmented generation, chunking, embeddings, reranking. |
-| **AI Eng** | `llm-evaluation` | [`.agents/skills/llm-evaluation`](file:///c:/Users/Raza/Downloads/konnextBinMcp/.agents/skills/llm-evaluation/SKILL.md) | Benchmark evaluation harnesses, scoring rubrics, regression suites. |
-| **AI Eng** | `eval-harness-first` | [`.agents/skills/eval-harness-first`](file:///c:/Users/Raza/Downloads/konnextBinMcp/.agents/skills/eval-harness-first/SKILL.md) | Test-driven development for AI agents with golden sets & graders. |
-| **AI Eng** | `prompt-engineering-patterns`| [`.agents/skills/prompt-engineering-patterns`](file:///c:/Users/Raza/Downloads/konnextBinMcp/.agents/skills/prompt-engineering-patterns/SKILL.md) | Chain-of-thought, structured JSON schema outputs, few-shot prompts. |
-| **AI Eng** | `hybrid-search-implementation`| [`.agents/skills/hybrid-search-implementation`](file:///c:/Users/Raza/Downloads/konnextBinMcp/.agents/skills/hybrid-search-implementation/SKILL.md)| Reciprocal Rank Fusion (RRF) combining dense vectors and BM25. |
-| **AI Eng** | `embedding-strategies` | [`.agents/skills/embedding-strategies`](file:///c:/Users/Raza/Downloads/konnextBinMcp/.agents/skills/embedding-strategies/SKILL.md) | Vector embedding models, caching layers, dimensionality reduction. |
-| **AI Eng** | `vector-index-tuning` | [`.agents/skills/vector-index-tuning`](file:///c:/Users/Raza/Downloads/konnextBinMcp/.agents/skills/vector-index-tuning/SKILL.md) | HNSW and IVF-Flat indexing tradeoffs (recall vs latency). |
-| **AI Eng** | `dataset-curation` | [`.agents/skills/dataset-curation`](file:///c:/Users/Raza/Downloads/konnextBinMcp/.agents/skills/dataset-curation/SKILL.md) | Data deduplication, synthetic pair generation, fine-tuning prep. |
-| **AI Eng** | `ml-pipeline-workflow` | [`.agents/skills/ml-pipeline-workflow`](file:///c:/Users/Raza/Downloads/konnextBinMcp/.agents/skills/ml-pipeline-workflow/SKILL.md) | End-to-end MLOps from feature ingestion to model drift detection. |
-| **AI Eng** | `ai-debt-detector` | [`.agents/skills/ai-debt-detector`](file:///c:/Users/Raza/Downloads/konnextBinMcp/.agents/skills/ai-debt-detector/SKILL.md) | Catches brittle agent logic, prompt drift, and silent failure modes. |
+| **Data Eng** | `data-quality-frameworks` | [`.agents/skills/data-quality-frameworks`](file:///c:/Users/Raza/Downloads/krmaazhaBinMcp/.agents/skills/data-quality-frameworks/SKILL.md) | Data validation, Great Expectations, dbt tests, schema contracts. |
+| **Data Eng** | `dbt-transformation-patterns` | [`.agents/skills/dbt-transformation-patterns`](file:///c:/Users/Raza/Downloads/krmaazhaBinMcp/.agents/skills/dbt-transformation-patterns/SKILL.md) | Analytics engineering, incremental data modeling, modular DAGs. |
+| **Data Eng** | `airflow-dag-patterns` | [`.agents/skills/airflow-dag-patterns`](file:///c:/Users/Raza/Downloads/krmaazhaBinMcp/.agents/skills/airflow-dag-patterns/SKILL.md) | Production DAG design, sensor patterns, pipeline orchestration. |
+| **Data Eng** | `spark-optimization` | [`.agents/skills/spark-optimization`](file:///c:/Users/Raza/Downloads/krmaazhaBinMcp/.agents/skills/spark-optimization/SKILL.md) | PySpark partition tuning, shuffle minimization, memory caching. |
+| **Data Eng** | `sql-optimization-patterns` | [`.agents/skills/sql-optimization-patterns`](file:///c:/Users/Raza/Downloads/krmaazhaBinMcp/.agents/skills/sql-optimization-patterns/SKILL.md) | EXPLAIN query plans, composite indexes, CTE optimization. |
+| **Data Eng** | `postgresql-table-design` | [`.agents/skills/postgresql-table-design`](file:///c:/Users/Raza/Downloads/krmaazhaBinMcp/.agents/skills/postgresql-table-design/SKILL.md) | Declarative partitioning, constraint rules, high-throughput ingestion. |
+| **Data Eng** | `backtesting-frameworks` | [`.agents/skills/backtesting-frameworks`](file:///c:/Users/Raza/Downloads/krmaazhaBinMcp/.agents/skills/backtesting-frameworks/SKILL.md) | Zero-lookahead historical bar replay, slippage & fee modeling. |
+| **Data Eng** | `risk-metrics-calculation` | [`.agents/skills/risk-metrics-calculation`](file:///c:/Users/Raza/Downloads/krmaazhaBinMcp/.agents/skills/risk-metrics-calculation/SKILL.md) | Value-at-Risk (VaR), Sharpe, Sortino, max drawdown, Kelly sizing. |
+| **AI Eng** | `rag-implementation` | [`.agents/skills/rag-implementation`](file:///c:/Users/Raza/Downloads/krmaazhaBinMcp/.agents/skills/rag-implementation/SKILL.md) | Retrieval-augmented generation, chunking, embeddings, reranking. |
+| **AI Eng** | `llm-evaluation` | [`.agents/skills/llm-evaluation`](file:///c:/Users/Raza/Downloads/krmaazhaBinMcp/.agents/skills/llm-evaluation/SKILL.md) | Benchmark evaluation harnesses, scoring rubrics, regression suites. |
+| **AI Eng** | `eval-harness-first` | [`.agents/skills/eval-harness-first`](file:///c:/Users/Raza/Downloads/krmaazhaBinMcp/.agents/skills/eval-harness-first/SKILL.md) | Test-driven development for AI agents with golden sets & graders. |
+| **AI Eng** | `prompt-engineering-patterns`| [`.agents/skills/prompt-engineering-patterns`](file:///c:/Users/Raza/Downloads/krmaazhaBinMcp/.agents/skills/prompt-engineering-patterns/SKILL.md) | Chain-of-thought, structured JSON schema outputs, few-shot prompts. |
+| **AI Eng** | `hybrid-search-implementation`| [`.agents/skills/hybrid-search-implementation`](file:///c:/Users/Raza/Downloads/krmaazhaBinMcp/.agents/skills/hybrid-search-implementation/SKILL.md)| Reciprocal Rank Fusion (RRF) combining dense vectors and BM25. |
+| **AI Eng** | `embedding-strategies` | [`.agents/skills/embedding-strategies`](file:///c:/Users/Raza/Downloads/krmaazhaBinMcp/.agents/skills/embedding-strategies/SKILL.md) | Vector embedding models, caching layers, dimensionality reduction. |
+| **AI Eng** | `vector-index-tuning` | [`.agents/skills/vector-index-tuning`](file:///c:/Users/Raza/Downloads/krmaazhaBinMcp/.agents/skills/vector-index-tuning/SKILL.md) | HNSW and IVF-Flat indexing tradeoffs (recall vs latency). |
+| **AI Eng** | `dataset-curation` | [`.agents/skills/dataset-curation`](file:///c:/Users/Raza/Downloads/krmaazhaBinMcp/.agents/skills/dataset-curation/SKILL.md) | Data deduplication, synthetic pair generation, fine-tuning prep. |
+| **AI Eng** | `ml-pipeline-workflow` | [`.agents/skills/ml-pipeline-workflow`](file:///c:/Users/Raza/Downloads/krmaazhaBinMcp/.agents/skills/ml-pipeline-workflow/SKILL.md) | End-to-end MLOps from feature ingestion to model drift detection. |
+| **AI Eng** | `ai-debt-detector` | [`.agents/skills/ai-debt-detector`](file:///c:/Users/Raza/Downloads/krmaazhaBinMcp/.agents/skills/ai-debt-detector/SKILL.md) | Catches brittle agent logic, prompt drift, and silent failure modes. |
 
 ---
 

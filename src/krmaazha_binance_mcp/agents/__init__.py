@@ -6,6 +6,7 @@ from krmaazha_binance_mcp.agents.base import AgentMessage, AgentMetadata, BaseAg
 from krmaazha_binance_mcp.agents.compliance import ComplianceAuditAgent
 from krmaazha_binance_mcp.agents.data_engineering import DataEngineeringAgent
 from krmaazha_binance_mcp.agents.execution import ExecutionAlgorithmAgent
+from krmaazha_binance_mcp.agents.gateway import CommercialGatewayAgent
 from krmaazha_binance_mcp.agents.orchestrator import MasterOrchestratorAgent
 from krmaazha_binance_mcp.agents.protocol import McpProtocolAgent
 from krmaazha_binance_mcp.agents.quantitative import QuantitativeRiskAgent
@@ -26,4 +27,5 @@ __all__ = [
     "RegistrySyndicationAgent",
     "ComplianceAuditAgent",
     "ExecutionAlgorithmAgent",
+    "CommercialGatewayAgent",
 ]

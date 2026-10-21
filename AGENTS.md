@@ -14,6 +14,7 @@ flowchart TD
     Orch <--> Reg["🌐 Registry Syndication Agent\n• Official MCP Registry (io.github.*)\n• PyPI Provenance Attestation\n• Smithery & Glama Multi-Directory Sync"]
     Orch <--> Comp["⚖️ Compliance & Trust Audit Agent\n• MiCA / FATF Non-Custodial Boundaries\n• M8ven 23/23 Audit Labels & Disputes\n• Dynamic AST Secret Sanitization"]
     Orch <--> Exec["🎯 Execution Algorithm Agent\n• TWAP / VWAP / Iceberg Slicing\n• Liquidity Band Friction Modeling\n• Slippage-Minimizing Routing"]
+    Orch <--> Gate["🚀 Commercial Gateway Agent\n• MCPRush x-mcprush-token Validation\n• Dynamic Tenant Context (X-Env Headers)\n• Railway Cloud Hosting & Margin Audit"]
 ```
 
 ---
@@ -21,7 +22,7 @@ flowchart TD
 ## 1. The Master Orchestrator Agent (`@orchestrator`)
 
 ### Core Responsibility
-The Master Orchestrator is the apex decision and coordination agent. It holds deep operational knowledge of all eight sub-agents, their exact tool dependencies, permission boundaries, and governing skills. It is responsible for:
+The Master Orchestrator is the apex decision and coordination agent. It holds deep operational knowledge of all nine sub-agents, their exact tool dependencies, permission boundaries, and governing skills. It is responsible for:
 1. **Request Triage & Sub-Agent Routing**: Dispatches tasks to the right specialist(s) and coordinates sequential or deep parallel execution.
 2. **Doctrine Enforcement**: Guarantees all outputs adhere to `kb://discipline` (Rules 1–6 spot portfolio, Rule 7 systematic futures research).
 3. **Institutional Standards (`IMPROVEMENTS.MD`)**:
@@ -107,6 +108,15 @@ The Master Orchestrator is the apex decision and coordination agent. It holds de
   - Calculates comprehensive Net Friction (exchange fee 20 bps + half spread + market impact slippage).
   - Mandates human confirmation gate approval before any sliced order tranche can be signed or submitted.
 
+### 2.9 🚀 Commercial Gateway & Cloud Deployment Agent (`@commercial_gateway`)
+* **Role**: Commercial marketplace monetization, gateway token verification, and cloud hosting orchestration.
+* **Governing Skill**: `mcprush-gateway-deployment`
+* **Boundaries**:
+  - Verifies incoming `x-mcprush-token` headers with constant-time comparison against `MCPRUSH_VERIFICATION_TOKEN`.
+  - Injects per-buyer dynamic Binance credentials from `X-Env-...` request headers into request-scoped async context (`ContextVar`).
+  - Audits Railway deployment readiness (persistent SSE transport, zero cold starts, automatic HTTPS).
+  - Defends unit economics and upstream IP rate limits across commercial tiers (Starter $19/mo, Pro $49/mo, Free Trial).
+
 ---
 
 ## 3. Orchestration Workflow Matrix
@@ -121,3 +131,4 @@ When a user request arrives, the Master Orchestrator coordinates the agents acco
 | **Registry Publishing / Release** | Registry Syndication Agent | MCP Protocol Agent, Compliance Agent | Enforces version lockstep, validates `server.json` schema, verifies PyPI ownership marker, generates release assets. |
 | **Trust & Security Audit** | Compliance Audit Agent | Security Agent, Data Engineering | Audits M8ven 23/23 labels, checks non-custodial boundaries, scans `pip-audit` CVEs, verifies zero-telemetry policy. |
 | **Dashboard Enhancement** | UX Agent | Quantitative Agent, Data Engineering | Ensures high-density layout, reactive timestamp sync, verified SSE data stream, and responsive SVG/Canvas charting. |
+| **Commercial Marketplace / Cloud Deploy** | Commercial Gateway Agent | MCP Protocol Agent, Security Agent | Verifies `x-mcprush-token` check, scopes per-buyer `X-Env` credentials, audits Railway Docker/SSE readiness, models margin defense. |

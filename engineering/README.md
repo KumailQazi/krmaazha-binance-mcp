@@ -6,7 +6,7 @@ Welcome to the **Engineering Documentation Hub** for the `krmaazha-binance-mcp` 
 
 ## 📚 Engineering Documentation Index
 
-### 1. [Tech Stack & Architecture (`tech_stack_and_architecture.md`)](file:///c:/Users/Raza/Downloads/konnextBinMcp/engineering/tech_stack_and_architecture.md)
+### 1. [Tech Stack & Architecture (`tech_stack_and_architecture.md`)](file:///c:/Users/Raza/Downloads/krmaazhaBinMcp/engineering/tech_stack_and_architecture.md)
 * **Zero-Trust Intelligence Paradigm**: Dual-process isolation (`krmaazha-binance-mcp` server vs `krmaazha-binance-mcp-confirmer` gate).
 * **Architecture Flowchart**: End-to-end Mermaid diagram illustrating the untrusted LLM client, read-only MCP server, local IPC socket, and physical confirmation dialog.
 * **Technology Identification Table**: Detailed matrix of runtime (Python 3.12+, `uv`), MCP protocol (FastMCP 2.0.0), data pipelines (Binance REST, Vision archives, RSS), and typing/testing suites (`mypy strict`, `pytest-cov >= 90%`).
@@ -15,7 +15,7 @@ Welcome to the **Engineering Documentation Hub** for the `krmaazha-binance-mcp` 
 
 ---
 
-### 2. [Dashboard Data Processing & API Specs (`dashboard_data_processing_and_apis.md`)](file:///c:/Users/Raza/Downloads/konnextBinMcp/engineering/dashboard_data_processing_and_apis.md)
+### 2. [Dashboard Data Processing & API Specs (`dashboard_data_processing_and_apis.md`)](file:///c:/Users/Raza/Downloads/krmaazhaBinMcp/engineering/dashboard_data_processing_and_apis.md)
 * **Continuous Polling & Bandwidth Metrics**:
   * **Tickers Ribbon** (`/api/tickers`): Polls every 5s (~3.2 KB ingress / ~700 B egress).
   * **Candles & Indicators** (`/api/klines`, `/api/indicators`): Polls every 15s (~6.0 KB ingress / ~7.7 KB egress).
@@ -33,14 +33,14 @@ Welcome to the **Engineering Documentation Hub** for the `krmaazha-binance-mcp` 
 
 ---
 
-### 3. [Data & AI Skills Inventory (`skills_and_data_pipelines.md`)](file:///c:/Users/Raza/Downloads/konnextBinMcp/engineering/skills_and_data_pipelines.md)
-* **Installed Skills Registry**: 18 specialized skills installed from `skills.sh` via `npx skills add` into [`.agents/skills/`](file:///c:/Users/Raza/Downloads/konnextBinMcp/.agents/skills).
+### 3. [Data & AI Skills Inventory (`skills_and_data_pipelines.md`)](file:///c:/Users/Raza/Downloads/krmaazhaBinMcp/engineering/skills_and_data_pipelines.md)
+* **Installed Skills Registry**: 18 specialized skills installed from `skills.sh` via `npx skills add` into [`.agents/skills/`](file:///c:/Users/Raza/Downloads/krmaazhaBinMcp/.agents/skills).
   * **Data Engineering**: `data-quality-frameworks`, `dbt-transformation-patterns`, `airflow-dag-patterns`, `spark-optimization`, `sql-optimization-patterns`, `postgresql-table-design`, `backtesting-frameworks`, `risk-metrics-calculation`.
   * **AI Engineering**: `rag-implementation`, `llm-evaluation`, `eval-harness-first`, `prompt-engineering-patterns`, `hybrid-search-implementation`, `embedding-strategies`, `vector-index-tuning`, `dataset-curation`, `ml-pipeline-workflow`, `ai-debt-detector`.
-* **Agent Skills Binding**: Direct alignment with sub-agent responsibilities in [`AGENTS.md`](file:///c:/Users/Raza/Downloads/konnextBinMcp/AGENTS.md).
+* **Agent Skills Binding**: Direct alignment with sub-agent responsibilities in [`AGENTS.md`](file:///c:/Users/Raza/Downloads/krmaazhaBinMcp/AGENTS.md).
 
 ---
 
-### 4. [MCP Server Manifest Spec (`server.json`)](file:///c:/Users/Raza/Downloads/konnextBinMcp/engineering/server.json)
+### 4. [MCP Server Manifest Spec (`server.json`)](file:///c:/Users/Raza/Downloads/krmaazhaBinMcp/engineering/server.json)
 * **Official Registry Descriptor**: Formal MCP server registry schema configuration, package identifier (`krmaazha-binance-mcp`), stdio transport, and required environment variable definitions.
 

@@ -19,6 +19,7 @@ document.addEventListener("DOMContentLoaded", () => {
   initNews();
   initKnowledge();
   initModal();
+  initCustomPairPlanModal();
   initOrchestratorAgents();
   setupAutoPolling();
   setupBarCloseTimer();
@@ -459,6 +460,56 @@ function calculateEMA(closes, period) {
   return ema;
 }
 
+
+const CURATED_BENCHMARK_PAIRS = [
+  "BTCUSDT", "ETHUSDT", "SOLUSDT", "BNBUSDT", "DOGEUSDT", "NOMUSDT", "RESOLVUSDT", "XVGUSDT"
+];
+
+function handleCustomPairSubmission(rawInput) {
+  if (!rawInput) return;
+  const cleaned = rawInput.replace(/[\/\s\-_]/g, "").toUpperCase();
+  let symbolWithQuote = cleaned;
+  if (!cleaned.endsWith("USDT") && !cleaned.endsWith("BUSD") && !cleaned.endsWith("FDUSD")) {
+    symbolWithQuote = cleaned + "USDT";
+  }
+
+  if (CURATED_BENCHMARK_PAIRS.includes(symbolWithQuote)) {
+    selectSymbol(symbolWithQuote);
+    const customInput = document.getElementById("customPairInput");
+    if (customInput) customInput.value = "";
+    return;
+  }
+
+  const baseAsset = symbolWithQuote.replace(/USDT$/, "");
+  const displayPair = `${baseAsset}/USDT`;
+  showCustomPairPlanModal(displayPair);
+}
+
+function showCustomPairPlanModal(pairDisplay) {
+  const modal = document.getElementById("customPairPlanModal");
+  const targetEl = document.getElementById("customPairTargetName");
+  if (targetEl) targetEl.innerText = pairDisplay;
+  if (modal) modal.classList.add("active");
+}
+
+function initCustomPairPlanModal() {
+  const modal = document.getElementById("customPairPlanModal");
+  const dismissBtn = document.getElementById("customPairModalDismissBtn");
+  if (!modal) return;
+
+  if (dismissBtn) {
+    dismissBtn.addEventListener("click", () => {
+      modal.classList.remove("active");
+    });
+  }
+
+  modal.addEventListener("click", (e) => {
+    if (e.target === modal) {
+      modal.classList.remove("active");
+    }
+  });
+}
+
 // 5. ABOVE-THE-FOLD DECISION TERMINAL & CANONICAL HERO ENGINE
 function initDecisionTerminal() {
   const customInput = document.getElementById("customPairInput");
@@ -468,11 +519,10 @@ function initDecisionTerminal() {
 
   if (customBtn && customInput) {
     customBtn.addEventListener("click", () => {
-      const sym = customInput.value.trim().toUpperCase();
-      if (sym) selectSymbol(sym);
+      handleCustomPairSubmission(customInput.value);
     });
     customInput.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") customBtn.click();
+      if (e.key === "Enter") handleCustomPairSubmission(customInput.value);
     });
   }
 

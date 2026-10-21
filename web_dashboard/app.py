@@ -54,7 +54,7 @@ async def api_ticker_summary(request):
 
 async def api_klines(request):
     try:
-        symbol = request.query_params.get("symbol", "BTCUSDT")
+        symbol = request.query_params.get("symbol", "BTCUSDT").upper().replace("/", "").strip().replace("/", "").strip()
         interval = request.query_params.get("interval", "1h")
         limit = min(int(request.query_params.get("limit", 60)), 200)
         df = fetch_klines(client, symbol, interval, limit)
@@ -78,7 +78,7 @@ async def api_klines(request):
 
 async def api_indicators(request):
     try:
-        symbol = request.query_params.get("symbol", "BTCUSDT")
+        symbol = request.query_params.get("symbol", "BTCUSDT").upper().replace("/", "").strip().replace("/", "").strip()
         interval = request.query_params.get("interval", "1d")
         res = md_tools.compute_indicators(
             client, symbol, interval, ["rsi", "ema", "macd", "bollinger", "atr"], last_n=30
@@ -105,7 +105,7 @@ async def api_signals_scan(request):
 
 async def api_cycle(request):
     try:
-        symbol = request.query_params.get("symbol", "BTCUSDT")
+        symbol = request.query_params.get("symbol", "BTCUSDT").upper().replace("/", "").strip().replace("/", "").strip()
         cycle = an_tools.analyze_cycle(client, symbol=symbol)
         return JSONResponse(cycle.model_dump())
     except Exception as e:
@@ -113,7 +113,7 @@ async def api_cycle(request):
 
 async def api_backtest_dca(request):
     try:
-        symbol = request.query_params.get("symbol", "BTCUSDT")
+        symbol = request.query_params.get("symbol", "BTCUSDT").upper().replace("/", "").strip().replace("/", "").strip()
         monthly = float(request.query_params.get("monthly", 500))
         months = int(request.query_params.get("months", 12))
         res = backtest_dca(client, symbol, monthly_quote=monthly, months=months)
@@ -176,7 +176,7 @@ async def api_knowledge(request):
 
 async def api_thesis(request):
     try:
-        symbol = request.query_params.get("symbol", "SOLUSDT").upper().strip()
+        symbol = request.query_params.get("symbol", "SOLUSDT").upper().replace("/", "").strip()
         base = symbol.replace("USDT", "").replace("FDUSD", "").replace("BTC", "")
         if not base:
             base = symbol
@@ -435,7 +435,7 @@ async def api_thesis(request):
 async def api_liquidity(request):
     """Return live executable order-book liquidity audit (IMPROVEMENTS.MD §4)."""
     try:
-        symbol = request.query_params.get("symbol", "BTCUSDT").upper().strip()
+        symbol = request.query_params.get("symbol", "BTCUSDT").upper().replace("/", "").strip().replace("/", "").strip().upper().strip()
         liq = md_tools.get_order_book_liquidity(client, symbol)
         return JSONResponse(liq.model_dump())
     except Exception as e:
@@ -454,7 +454,7 @@ async def api_orchestrator_agents(request):
 async def api_orchestrator_deliberate(request):
     """Execute multi-agent deliberation for a symbol and return institutional dossier."""
     try:
-        symbol = request.query_params.get("symbol", "BTCUSDT").upper()
+        symbol = request.query_params.get("symbol", "BTCUSDT").upper().replace("/", "").strip().replace("/", "").strip().upper()
         # Fetch canonical signal for this exact symbol so orchestrator and scanner share ONE TRUTH
         sig_dict = {}
         try:

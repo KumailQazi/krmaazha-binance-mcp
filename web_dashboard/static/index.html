@@ -24,6 +24,7 @@
         <button class="btn-chip" id="manualRefreshBtn" title="Refresh all market data now" style="display: flex; align-items: center; gap: 5px;">
           <span id="refreshIcon">🔄</span> Refresh
         </button>
+        <span class="env-tag" style="border-color: rgba(14,203,129,0.4); color: #0ecb81; background: rgba(14,203,129,0.08); font-weight: 700;">🎁 3-DAY FREE TRIAL</span>
         <span class="env-tag">MAINNET (READ-ONLY)</span>
         <button class="btn-chip" id="openTestOrderBtn" style="border-color: var(--accent-gold); color: var(--accent-gold);">
           ⚡ Test Order Gate
@@ -623,6 +624,39 @@ Validation: LOT_SIZE, MIN_NOTIONAL passed
       <div class="modal-actions">
         <button class="btn-cancel" id="modalCancelBtn" autofocus>Cancel (Default)</button>
         <button class="btn-confirm" id="modalConfirmBtn">Approve Order</button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Custom Pair Plan Gating Modal -->
+  <div class="modal-overlay" id="customPairPlanModal">
+    <div class="modal-content" style="max-width: 520px; border-color: rgba(240, 185, 11, 0.4); background: #0c101c;">
+      <div class="modal-banner" style="background: rgba(240, 185, 11, 0.15); color: #f0b90b; border-bottom: 1px solid rgba(240, 185, 11, 0.3); font-weight: 700;">
+        🔒 STARTER & PRO PLAN FEATURE
+      </div>
+      <div style="padding: 20px;">
+        <h3 style="color: #f8fafc; font-size: 16px; margin: 0 0 10px 0; font-weight: 700;">
+          Custom Asset Requested: <span id="customPairTargetName" style="color: #f0b90b;">NEAR/USDT</span>
+        </h3>
+        <p style="font-size: 13px; color: #94a3b8; line-height: 1.6; margin-bottom: 16px;">
+          Custom pair scanning, order-book depth audits, and indicator synthesis for arbitrary pairs are available on the <strong>Starter ($19/mo)</strong> and <strong>Pro ($49/mo)</strong> plans.
+        </p>
+        <div style="background: #07090e; border: 1px solid #1e293b; border-radius: 8px; padding: 14px; margin-bottom: 20px; font-size: 12px; color: #cbd5e1; line-height: 1.5;">
+          <div style="color: #0ecb81; font-weight: 700; margin-bottom: 6px;">
+            🎁 3-Day Free Trial Active
+          </div>
+          <div>Your 3-day free trial gives full institutional analytics on our 8 curated benchmark pairs:</div>
+          <div style="margin-top: 8px; color: #f0b90b; font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.5px;">
+            BTC • ETH • SOL • BNB • DOGE • NOM • RESOLV • XVG
+          </div>
+        </div>
+        <div class="modal-actions" style="display: flex; gap: 10px; justify-content: flex-end;">
+          <button class="btn-cancel" id="customPairModalDismissBtn" style="padding: 9px 18px; border-radius: 6px; cursor: pointer;">Stay on 3-Day Trial</button>
+          <a href="https://mcprush.com" target="_blank" class="btn-confirm" style="padding: 9px 20px; border-radius: 6px; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; font-weight: 700; background: #f0b90b; color: #000;">
+            Upgrade on MCPRush →
+          </a>
+        </div>
       </div>
     </div>
   </div>

@@ -1,16 +1,58 @@
+# Python & Bytecode
 __pycache__/
-*.pyc
+*.py[cod]
+*$py.class
+
+# Virtual environments
 .venv/
+env/
+venv/
+ENV/
+
+# Testing & Type checking caches
 .pytest_cache/
 .mypy_cache/
+.ruff_cache/
 .coverage
+htmlcov/
+.hypothesis/
+
+# Distribution & Build artifacts
 dist/
+build/
+*.egg-info/
+*.egg
+
+# Lockfiles not used by CI (CI installs directly via pyproject.toml)
+uv.lock
+
+# macOS system files
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Editor & IDE configurations
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs, Sockets & PID files
+*.log
+*.sock
+*.pid
+
+# Local configuration & Secrets
 # Hardening: jamás versionar secretos ni config con secretos.
 # `.mcp.json` SÍ se versiona: solo declara MCPs remotos con OAuth, sin bloques `env`.
 # El que lo mantiene honesto no es este archivo — es `tests/test_consistency.py`, que
 # rompe el build si aparece cualquier cosa que parezca una credencial.
 .env
 *.local
+
+# Project-specific local snapshots & interview prep
 snapshot/
 data_and_ai_interview/
 linkedinPost/

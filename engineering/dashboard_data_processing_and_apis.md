@@ -6,7 +6,7 @@ This document provides a complete Data Engineering audit of the **Krmaazha Binan
 
 ## 1. Data Volume & Throughput Analysis
 
-When the dashboard runs continuously, the frontend engine ([`static/dashboard.js`](file:///c:/Users/Raza/Downloads/konnextBinMcp/web_dashboard/static/dashboard.js#L102)) executes background polling loops across 5 distinct cycles.
+When the dashboard runs continuously, the frontend engine ([`static/dashboard.js`](file:///c:/Users/Raza/Downloads/krmaazhaBinMcp/web_dashboard/static/dashboard.js#L102)) executes background polling loops across 5 distinct cycles.
 
 ### ⏱️ Polling Frequencies & Per-Cycle Payload Breakdown
 
@@ -42,16 +42,16 @@ When the dashboard runs continuously, the frontend engine ([`static/dashboard.js
 
 ## 2. Internal Tools & Service Engine Stack
 
-The dashboard server ([`web_dashboard/app.py`](file:///c:/Users/Raza/Downloads/konnextBinMcp/web_dashboard/app.py)) imports and executes these internal tools:
+The dashboard server ([`web_dashboard/app.py`](file:///c:/Users/Raza/Downloads/krmaazhaBinMcp/web_dashboard/app.py)) imports and executes these internal tools:
 
 1. **`binance.client.Client`**: Official Python-Binance wrapper for raw REST communication (`get_ticker`, `get_historical_klines`, `get_order_book`).
-2. [**`krmaazha_binance_mcp.klines.fetch_klines`**](file:///c:/Users/Raza/Downloads/konnextBinMcp/src/krmaazha_binance_mcp/klines.py): Ingestion gate that slices closed candles (`[:-1]`), preventing lookahead bias and casting to typed Pandas DataFrames.
-3. [**`krmaazha_binance_mcp.tools.marketdata.compute_indicators`**](file:///c:/Users/Raza/Downloads/konnextBinMcp/src/krmaazha_binance_mcp/tools/marketdata.py): Closed-bar math for RSI (14), EMA (9/21/50/200), MACD (12/26/9), Bollinger Bands (20, 2), and ATR (14).
-4. [**`krmaazha_binance_mcp.tools.signals.generate_signal_tool`**](file:///c:/Users/Raza/Downloads/konnextBinMcp/src/krmaazha_binance_mcp/tools/signals.py): Evaluates the 4-factor quantitative weighting engine (trend, momentum, volume, volatility).
-5. [**`krmaazha_binance_mcp.tools.marketdata.get_order_book_liquidity`**](file:///c:/Users/Raza/Downloads/konnextBinMcp/src/krmaazha_binance_mcp/tools/marketdata.py): Audits depth 100, computes touch spread in bps, calculates ±1% and ±2% dollar depth, and flags thin books.
-6. [**`krmaazha_binance_mcp.tools.news.get_news` & `get_sentiment`**](file:///c:/Users/Raza/Downloads/konnextBinMcp/src/krmaazha_binance_mcp/tools/news.py): RSS feed ingest with lexicon-based polarity sentiment scoring.
-7. [**`krmaazha_binance_mcp.marketwide.get_market_structure`**](file:///c:/Users/Raza/Downloads/konnextBinMcp/src/krmaazha_binance_mcp/marketwide.py): Cross-market aggregator with per-source graceful degradation and 300s TTL cache.
-8. [**`krmaazha_binance_mcp.agents.MasterOrchestratorAgent`**](file:///c:/Users/Raza/Downloads/konnextBinMcp/src/krmaazha_binance_mcp/agents/orchestrator.py): Synthesizes multi-agent deliberation, doctrine compliance (`kb://discipline`), and the standardized single-sentence bottom line.
+2. [**`krmaazha_binance_mcp.klines.fetch_klines`**](file:///c:/Users/Raza/Downloads/krmaazhaBinMcp/src/krmaazha_binance_mcp/klines.py): Ingestion gate that slices closed candles (`[:-1]`), preventing lookahead bias and casting to typed Pandas DataFrames.
+3. [**`krmaazha_binance_mcp.tools.marketdata.compute_indicators`**](file:///c:/Users/Raza/Downloads/krmaazhaBinMcp/src/krmaazha_binance_mcp/tools/marketdata.py): Closed-bar math for RSI (14), EMA (9/21/50/200), MACD (12/26/9), Bollinger Bands (20, 2), and ATR (14).
+4. [**`krmaazha_binance_mcp.tools.signals.generate_signal_tool`**](file:///c:/Users/Raza/Downloads/krmaazhaBinMcp/src/krmaazha_binance_mcp/tools/signals.py): Evaluates the 4-factor quantitative weighting engine (trend, momentum, volume, volatility).
+5. [**`krmaazha_binance_mcp.tools.marketdata.get_order_book_liquidity`**](file:///c:/Users/Raza/Downloads/krmaazhaBinMcp/src/krmaazha_binance_mcp/tools/marketdata.py): Audits depth 100, computes touch spread in bps, calculates ±1% and ±2% dollar depth, and flags thin books.
+6. [**`krmaazha_binance_mcp.tools.news.get_news` & `get_sentiment`**](file:///c:/Users/Raza/Downloads/krmaazhaBinMcp/src/krmaazha_binance_mcp/tools/news.py): RSS feed ingest with lexicon-based polarity sentiment scoring.
+7. [**`krmaazha_binance_mcp.marketwide.get_market_structure`**](file:///c:/Users/Raza/Downloads/krmaazhaBinMcp/src/krmaazha_binance_mcp/marketwide.py): Cross-market aggregator with per-source graceful degradation and 300s TTL cache.
+8. [**`krmaazha_binance_mcp.agents.MasterOrchestratorAgent`**](file:///c:/Users/Raza/Downloads/krmaazhaBinMcp/src/krmaazha_binance_mcp/agents/orchestrator.py): Synthesizes multi-agent deliberation, doctrine compliance (`kb://discipline`), and the standardized single-sentence bottom line.
 
 ---
 
@@ -76,7 +76,7 @@ The dashboard server ([`web_dashboard/app.py`](file:///c:/Users/Raza/Downloads/k
 ### A. Market Structure (`GET /api/market-structure`)
 
 #### Schema
-Defined in [`models.py`](file:///c:/Users/Raza/Downloads/konnextBinMcp/src/krmaazha_binance_mcp/models.py) as `MarketStructure`:
+Defined in [`models.py`](file:///c:/Users/Raza/Downloads/krmaazhaBinMcp/src/krmaazha_binance_mcp/models.py) as `MarketStructure`:
 ```python
 class MarketStructure(BaseModel):
     fear_greed: int | None
@@ -193,7 +193,7 @@ class MarketStructure(BaseModel):
 ### E. Order-Book Liquidity Audit (`GET /api/liquidity?symbol=BTCUSDT`)
 
 #### Schema
-Defined in [`models.py`](file:///c:/Users/Raza/Downloads/konnextBinMcp/src/krmaazha_binance_mcp/models.py) as `OrderBookLiquidity`:
+Defined in [`models.py`](file:///c:/Users/Raza/Downloads/krmaazhaBinMcp/src/krmaazha_binance_mcp/models.py) as `OrderBookLiquidity`:
 ```python
 class OrderBookLiquidity(BaseModel):
     symbol: str

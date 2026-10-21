@@ -12,6 +12,7 @@ from krmaazha_binance_mcp.agents.base import AgentMessage, AgentMetadata, BaseAg
 from krmaazha_binance_mcp.agents.compliance import ComplianceAuditAgent
 from krmaazha_binance_mcp.agents.data_engineering import DataEngineeringAgent
 from krmaazha_binance_mcp.agents.execution import ExecutionAlgorithmAgent
+from krmaazha_binance_mcp.agents.gateway import CommercialGatewayAgent
 from krmaazha_binance_mcp.agents.protocol import McpProtocolAgent
 from krmaazha_binance_mcp.agents.quantitative import QuantitativeRiskAgent
 from krmaazha_binance_mcp.agents.registry_syndication import RegistrySyndicationAgent
@@ -66,6 +67,7 @@ class MasterOrchestratorAgent(BaseAgent):
         self.registry_agent = RegistrySyndicationAgent()
         self.compliance_agent = ComplianceAuditAgent()
         self.execution_agent = ExecutionAlgorithmAgent()
+        self.gateway_agent = CommercialGatewayAgent()
 
         self.subagents: dict[str, BaseAgent] = {
             self.data_eng_agent.metadata.agent_id: self.data_eng_agent,
@@ -76,6 +78,7 @@ class MasterOrchestratorAgent(BaseAgent):
             self.registry_agent.metadata.agent_id: self.registry_agent,
             self.compliance_agent.metadata.agent_id: self.compliance_agent,
             self.execution_agent.metadata.agent_id: self.execution_agent,
+            self.gateway_agent.metadata.agent_id: self.gateway_agent,
         }
 
     def get_agent_directory(self) -> list[dict[str, Any]]:
