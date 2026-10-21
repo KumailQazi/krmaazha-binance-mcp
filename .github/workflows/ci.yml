@@ -31,14 +31,14 @@ jobs:
           uv pip install -e ".[dev,research]"
 
       - name: Ruff (src + tests + examples — gate de release)
-        run: uv run ruff check src/ tests/ examples/
+        run: uv run --no-sync ruff check src/ tests/ examples/
 
       - name: Mypy (strict sobre los paquetes fuente)
-        run: uv run mypy
+        run: uv run --no-sync mypy
 
       - name: Pytest (unit; integración se skipea sin secrets/red)
         # --cov-fail-under=90 vive en pyproject (addopts): gate duro de merge.
-        run: uv run pytest -q
+        run: uv run --no-sync pytest -v --tb=short
 
   audit:
     name: pip-audit (CVEs de los pins exactos)
@@ -51,4 +51,4 @@ jobs:
           uv venv --python 3.12
           uv pip install -e ".[research]" pip-audit
       - name: pip-audit
-        run: uv run pip-audit --skip-editable
+        run: uv run --no-sync pip-audit --skip-editable
