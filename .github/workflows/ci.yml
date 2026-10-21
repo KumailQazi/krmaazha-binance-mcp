@@ -38,7 +38,24 @@ jobs:
 
       - name: Pytest (unit; integración se skipea sin secrets/red)
         # --cov-fail-under=90 vive en pyproject (addopts): gate duro de merge.
-        run: uv run --no-sync pytest -v --tb=short
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          uv run --no-sync pytest -v --tb=short 2>&1 | tee /tmp/pytest.log
+          echo "PYTEST_EXIT=${PIPESTATUS[0]}" >> $GITHUB_ENV
+
+      - name: Pytest Report
+        if: always()
+        run: |
+          echo "## Pytest Output" >> $GITHUB_STEP_SUMMARY
+          echo "```" >> $GITHUB_STEP_SUMMARY
+          tail -n 120 /tmp/pytest.log >> $GITHUB_STEP_SUMMARY || true
+          echo "```" >> $GITHUB_STEP_SUMMARY
+          exit_code="${PYTEST_EXIT:-0}"
+          if [ "$exit_code" -ne 0 ]; then
+            echo "Pytest failed with exit code $exit_code"
+            exit $exit_code
+          fi
 
   audit:
     name: pip-audit (CVEs de los pins exactos)
