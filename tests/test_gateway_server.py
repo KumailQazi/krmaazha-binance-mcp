@@ -2,9 +2,11 @@
 
 from __future__ import annotations
 
-import os
+from starlette.applications import Starlette
+from starlette.middleware import Middleware
 from starlette.requests import Request
 from starlette.responses import PlainTextResponse
+from starlette.routing import Route
 from starlette.testclient import TestClient
 
 from krmaazha_binance_mcp.gateway_server import (
@@ -13,9 +15,6 @@ from krmaazha_binance_mcp.gateway_server import (
     create_gateway_app,
     get_current_client,
 )
-from starlette.applications import Starlette
-from starlette.middleware import Middleware
-from starlette.routing import Route
 
 
 def test_gateway_healthcheck():

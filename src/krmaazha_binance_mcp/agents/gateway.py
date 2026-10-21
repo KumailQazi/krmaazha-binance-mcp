@@ -9,29 +9,30 @@ from krmaazha_binance_mcp.agents.base import AgentMessage, AgentMetadata, BaseAg
 
 
 class CommercialGatewayAgent(BaseAgent):
-    """Specialized agent governing commercial gateway authentication (MCPRush) and cloud hosting (Railway)."""
+    """Specialized agent governing commercial gateway authentication and cloud hosting."""
 
     METADATA = AgentMetadata(
         agent_id="commercial_gateway",
         name="Commercial Gateway & Cloud Deployment Agent",
         icon="🚀",
         role_description=(
-            "Governs commercial MCP marketplace syndication, gateway token verification (x-mcprush-token), "
-            "per-request tenant credential isolation (X-Env headers), Railway cloud hosting, and unit economics."
+            "Governs commercial MCP marketplace syndication, gateway token verification "
+            "(x-mcprush-token), per-request tenant credential isolation (X-Env headers), "
+            "Railway cloud hosting, and unit economics."
         ),
         governing_skill="mcprush-gateway-deployment",
         responsibilities=(
-            "Validate incoming MCPRush gateway tokens (x-mcprush-token) via constant-time comparison",
-            "Extract and isolate per-buyer credentials from X-Env headers into request-scoped context",
-            "Audit Railway deployment readiness (persistent SSE/HTTP transport, zero cold starts, health checks)",
+            "Validate incoming MCPRush gateway tokens (x-mcprush-token) via constant-time check",
+            "Extract and isolate per-buyer credentials from X-Env headers into request context",
+            "Audit Railway deployment readiness (persistent SSE, zero cold starts, health checks)",
             "Enforce tenant rate limits and defend upstream Binance IP weight budget (1200 wt/min)",
             "Model subscription plan margins (Starter $19/mo, Pro $49/mo) and free trial quotas",
             "Prevent cross-tenant credential leakage across concurrent asynchronous requests",
         ),
         hard_boundaries=(
-            "Never execute a tool call without a verified x-mcprush-token when running in gateway mode",
+            "Never execute a tool call without a verified x-mcprush-token in gateway mode",
             "Never leak tenant API keys or secrets in error traces, logs, or responses",
-            "Never allow one tenant to consume more than 20% of the upstream IP rate limit budget in a single minute",
+            "Never allow one tenant to consume > 20% of upstream IP rate limit budget in 1 minute",
             "Always maintain fallback to local/self-hosted stdio mode for open-source users",
         ),
         tools_used=(
@@ -47,14 +48,14 @@ class CommercialGatewayAgent(BaseAgent):
 
     @staticmethod
     def verify_gateway_token(provided_token: str | None, expected_token: str | None) -> bool:
-        """Verify the x-mcprush-token using constant-time digest comparison to prevent timing attacks."""
+        """Verify x-mcprush-token using constant-time comparison to prevent timing attacks."""
         if not provided_token or not expected_token:
             return False
         return secrets.compare_digest(provided_token.strip(), expected_token.strip())
 
     @staticmethod
     def extract_tenant_credentials(headers: dict[str, str]) -> dict[str, str | None]:
-        """Extract buyer-specific credentials passed via X-Env headers behind the MCPRush gateway."""
+        """Extract buyer-specific credentials passed via X-Env headers behind MCPRush gateway."""
         norm_headers = {k.lower(): v for k, v in headers.items()}
         return {
             "env": norm_headers.get("x-env-binance-env", "testnet"),
@@ -69,15 +70,18 @@ class CommercialGatewayAgent(BaseAgent):
         call_quota: int,
         railway_monthly_base_usd: float = 5.0,
     ) -> dict[str, Any]:
-        """Audit unit economics, upstream rate limit impact, and gross margins for a subscription plan."""
+        """Audit unit economics, rate limit impact, and gross margins for a subscription plan."""
         avg_weight_per_call = 1.0
         total_monthly_weight = call_quota * avg_weight_per_call
         avg_weight_per_minute = total_monthly_weight / 43200.0
         pct_of_binance_limit = (avg_weight_per_minute / 1200.0) * 100.0
 
         net_profit_single_user = price_monthly_usd - railway_monthly_base_usd
-        margin_single_user_pct = (net_profit_single_user / price_monthly_usd) * 100.0 if price_monthly_usd > 0 else 0.0
+        margin_single_user_pct = (
+            (net_profit_single_user / price_monthly_usd) * 100.0 if price_monthly_usd > 0 else 0.0
+        )
 
+        is_healthy = pct_of_binance_limit < 5.0 and margin_single_user_pct > 50.0
         return {
             "plan_name": plan_name,
             "monthly_price": price_monthly_usd,
@@ -87,7 +91,7 @@ class CommercialGatewayAgent(BaseAgent):
             "railway_base_cost": railway_monthly_base_usd,
             "net_profit_at_1_subscriber": round(net_profit_single_user, 2),
             "margin_at_1_subscriber_pct": round(margin_single_user_pct, 1),
-            "status": "HEALTHY" if pct_of_binance_limit < 5.0 and margin_single_user_pct > 50.0 else "REVIEW",
+            "status": "HEALTHY" if is_healthy else "REVIEW",
         }
 
     @staticmethod
@@ -119,10 +123,12 @@ class CommercialGatewayAgent(BaseAgent):
             has_token_auth=context.get("has_token_auth", True),
         )
 
+        margin_pct = margin_info["margin_at_1_subscriber_pct"]
+        status = margin_info["status"]
         summary = (
-            f"[QUANTITATIVE ESTIMATE] Commercial Gateway: Ready for Railway deployment under {plan_name} plan "
-            f"(${price}/mo, {quota:,} calls). Net margin: {margin_info["margin_at_1_subscriber_pct"]}%. "
-            f"Status: {margin_info["status"]}."
+            f"[QUANTITATIVE ESTIMATE] Commercial Gateway: Ready for Railway deployment under "
+            f"{plan_name} plan (${price}/mo, {quota:,} calls). Net margin: {margin_pct}%. "
+            f"Status: {status}."
         )
 
         return AgentMessage(

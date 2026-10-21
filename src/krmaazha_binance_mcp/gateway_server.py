@@ -22,6 +22,7 @@ from krmaazha_binance_mcp.server import mcp
 @dataclass(frozen=True)
 class TenantContext:
     """Request-scoped tenant credentials extracted from X-Env headers."""
+
     env: str
     api_key: str | None
     api_secret: str | None
@@ -61,11 +62,19 @@ class McprushAuthMiddleware(BaseHTTPMiddleware):
         token = request.headers.get("x-mcprush-token")
 
         # Constant-time comparison defends against timing attacks
-        if not self.expected_token or not token or not secrets.compare_digest(token.strip(), self.expected_token.strip()):
+        valid = (
+            bool(self.expected_token)
+            and bool(token)
+            and secrets.compare_digest(token.strip(), self.expected_token.strip())  # type: ignore[union-attr]
+        )
+        if not valid:
             return JSONResponse(
                 {
                     "error": "Unauthorized",
-                    "message": "Missing or invalid x-mcprush-token header. Reinstall/reconnect through the MCPRush gateway.",
+                    "message": (
+                        "Missing or invalid x-mcprush-token header. "
+                        "Reinstall/reconnect through the MCPRush gateway."
+                    ),
                 },
                 status_code=401,
             )
@@ -91,18 +100,19 @@ class TenantContextMiddleware(BaseHTTPMiddleware):
 
 async def healthcheck(request: Request) -> JSONResponse:
     """Healthcheck endpoint for Railway and uptime monitors."""
+    auth_enabled = bool(os.environ.get("MCPRUSH_VERIFICATION_TOKEN"))
     return JSONResponse(
         {
             "status": "ok",
             "service": "krmaazha-binance-mcp",
             "transport": "sse",
-            "gateway_auth": "enabled" if bool(os.environ.get("MCPRUSH_VERIFICATION_TOKEN")) else "unconfigured",
+            "gateway_auth": "enabled" if auth_enabled else "unconfigured",
         }
     )
 
 
 def create_gateway_app() -> Starlette:
-    """Build the production Starlette application with authentication, SSE transport, and tenant isolation."""
+    """Build production Starlette app with authentication, SSE transport, and tenant isolation."""
     # 1. Obtain native FastMCP SSE application
     app = mcp.sse_app()
 
@@ -111,9 +121,10 @@ def create_gateway_app() -> Starlette:
     app.routes.insert(0, Route("/ping", healthcheck, methods=["GET"]))
 
     # 3. Alias /mcp to /sse so both https://domain/mcp and https://domain/sse work
-    sse_route = next((r for r in app.routes if getattr(r, "path", None) == "/sse"), None)
-    if sse_route:
-        app.routes.insert(0, Route("/mcp", sse_route.endpoint, methods=["GET"]))
+    for r in app.routes:
+        if getattr(r, "path", None) == "/sse" and isinstance(r, Route):
+            app.routes.insert(0, Route("/mcp", r.endpoint, methods=["GET"]))
+            break
 
     # 4. Attach gateway verification and tenant isolation middlewares
     app.add_middleware(TenantContextMiddleware)
@@ -124,7 +135,7 @@ def create_gateway_app() -> Starlette:
 
 def main() -> None:
     """Run the production gateway server on host and port specified by Railway."""
-    port = int(os.environ.get("PORT", "8000"))
+    port = int(os.environ.get("PORT", "8080"))
     host = os.environ.get("HOST", "0.0.0.0")
     app = create_gateway_app()
     uvicorn.run(app, host=host, port=port)
