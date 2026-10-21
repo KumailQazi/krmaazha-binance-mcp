@@ -114,7 +114,9 @@ The Master Orchestrator is the apex decision and coordination agent. It holds de
 * **Boundaries**:
   - Verifies incoming `x-mcprush-token` headers with constant-time comparison against `MCPRUSH_VERIFICATION_TOKEN`.
   - Injects per-buyer dynamic Binance credentials from `X-Env-...` request headers into request-scoped async context (`ContextVar`).
-  - Audits Railway deployment readiness (persistent SSE transport, zero cold starts, automatic HTTPS).
+  - Audits Railway deployment readiness (Docker builder, zero cold starts, health checks, trial status).
+  - Enforces strict Dockerfile builder selection over deprecated Nixpacks or stale config-as-code files.
+  - Automatically identifies pending staged changes (`Apply changes | Deploy`) and trial expiration blockers.
   - Defends unit economics and upstream IP rate limits across commercial tiers (Starter $19/mo, Pro $49/mo, Free Trial).
 
 ---

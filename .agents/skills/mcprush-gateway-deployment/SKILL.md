@@ -162,3 +162,30 @@ CMD ["python", "-m", "krmaazha_binance_mcp.server", "--transport", "sse", "--hos
 ### Safeguards:
 1. **IP Weight Consumption**: 10,000 calls/mo averages only **0.23 wt/min** out of Binance's 1,200 wt/min IP rate limit. Upstream Binance API cost is $0.
 2. **Abuse Protection**: Implement a per-token burst throttle (e.g. max 10 requests/sec) to prevent a rogue buyer from exhausting the container or IP rate limit in a single burst.
+
+---
+
+## 6. Railway Cloud Operations & Deployment Troubleshooting
+
+When deploying commercial MCP servers to Railway, common deployment blockers must be automatically audited and resolved:
+
+### 6.1 Builder Misconfiguration (Nixpacks vs Dockerfile)
+* **Symptom**: Railway Settings shows `Builder: The value is set in /railway.toml Nixpacks (Deprecated)` or links to an outdated repository.
+* **Root Cause**: The service was cloned or configured with legacy Config-as-Code pointing to an old repository.
+* **Resolution**:
+  1. In Railway Service -> **Settings** -> **Build** -> **Builder**, change from `Nixpacks` to **`Dockerfile`**.
+  2. In Railway Service -> **Settings** -> **Config-as-code**, clear any path referencing `/railway.toml` from old repos.
+  3. Ensure root `Dockerfile` and `railway.toml` specify `builder = "dockerfile"`.
+
+### 6.2 Pending Staged Changes
+* **Symptom**: Railway top bar displays `Apply N changes | Deploy ⇧+Enter`.
+* **Root Cause**: Variables, domain ports, or build settings were modified in the web UI but not committed to a deployment.
+* **Resolution**: Click **Deploy** (or press `Shift + Enter`) to apply staged environment variables and triggers.
+
+### 6.3 Account Trial Status & Billing Gates
+* **Symptom**: Top bar displays `Trial expired` and deployment fails to start or remains paused.
+* **Root Cause**: Railway provides a one-time $5 trial credit. Once expired, container provisioning and scaling are halted.
+* **Resolution**:
+  1. Navigate to Railway Workspace -> **Upgrade**.
+  2. Select the **Hobby Plan** ($5/mo with $5 included usage) or link a verified credit card.
+  3. Once active, deployments immediately resume container builds.

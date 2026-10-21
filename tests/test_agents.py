@@ -277,8 +277,42 @@ def test_commercial_gateway_agent():
     assert readiness["containerization"] == "READY"
     assert readiness["gateway_auth"] == "READY"
 
-    # Test evaluate method
+    # Test Railway specific settings audit (builder, pending changes, trial status)
+    audit_ok = agent.audit_railway_settings(
+        builder="dockerfile", has_pending_changes=False, account_status="active"
+    )
+    assert audit_ok["builder_status"] == "READY"
+    assert audit_ok["deployment_status"] == "READY"
+    assert audit_ok["account_status"] == "HEALTHY"
+    assert audit_ok["can_deploy"] is True
+    assert len(audit_ok["issues"]) == 0
+
+    audit_bad = agent.audit_railway_settings(
+        builder="nixpacks",
+        has_pending_changes=True,
+        account_status="trial_expired",
+        config_path="https://github.com/KumailQazi/pulse-revenue-engine/blob/xyz/railway.toml",
+    )
+    assert audit_bad["builder_status"] == "MISCONFIGURED_BUILDER"
+    assert audit_bad["deployment_status"] == "NEEDS_DEPLOY"
+    assert audit_bad["account_status"] == "TRIAL_EXPIRED"
+    assert audit_bad["can_deploy"] is False
+    assert len(audit_bad["issues"]) == 3
+
+    # Test evaluate method (healthy)
     eval_msg = agent.evaluate({"plan_name": "Pro", "price": 49.0, "quota": 50000})
     assert eval_msg.sender_id == "commercial_gateway"
     assert "[QUANTITATIVE ESTIMATE]" in eval_msg.summary
+    assert "Ready for Railway deployment" in eval_msg.summary
+
+    # Test evaluate method with Railway issues
+    eval_msg_issues = agent.evaluate({
+        "plan_name": "Starter",
+        "builder": "nixpacks",
+        "has_pending_changes": True,
+        "account_status": "trial_expired",
+        "config_path": "pulse-revenue-engine",
+    })
+    assert "Action Required before deployment" in eval_msg_issues.summary
+    assert len(eval_msg_issues.details["railway_audit"]["issues"]) == 3
 

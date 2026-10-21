@@ -95,6 +95,42 @@ class CommercialGatewayAgent(BaseAgent):
         }
 
     @staticmethod
+    def audit_railway_settings(
+        builder: str = "dockerfile",
+        has_pending_changes: bool = False,
+        account_status: str = "active",
+        config_path: str | None = None,
+    ) -> dict[str, Any]:
+        """Audit specific Railway settings: builder type, pending changes, and billing status."""
+        is_dockerfile = builder.lower() == "dockerfile"
+        has_stale_config = bool(config_path and "pulse-revenue" in config_path)
+        builder_ready = is_dockerfile and not has_stale_config
+
+        is_paid_or_active = account_status.lower() in ("active", "paid", "hobby", "pro")
+
+        issues: list[str] = []
+        if not builder_ready:
+            issues.append(
+                "Builder misconfigured: switch from Nixpacks/stale config to Dockerfile"
+            )
+        if has_pending_changes:
+            issues.append(
+                "Pending staged changes detected: click Deploy (Shift+Enter) to apply"
+            )
+        if not is_paid_or_active:
+            issues.append(
+                "Railway trial expired: add payment card or upgrade to $5/mo Hobby plan"
+            )
+
+        return {
+            "builder_status": "READY" if builder_ready else "MISCONFIGURED_BUILDER",
+            "deployment_status": "READY" if not has_pending_changes else "NEEDS_DEPLOY",
+            "account_status": "HEALTHY" if is_paid_or_active else "TRIAL_EXPIRED",
+            "issues": issues,
+            "can_deploy": builder_ready and not has_pending_changes and is_paid_or_active,
+        }
+
+    @staticmethod
     def check_railway_readiness(
         has_dockerfile: bool,
         has_port_env: bool,
@@ -122,14 +158,27 @@ class CommercialGatewayAgent(BaseAgent):
             has_sse_transport=context.get("has_sse_transport", True),
             has_token_auth=context.get("has_token_auth", True),
         )
+        railway_audit = self.audit_railway_settings(
+            builder=str(context.get("builder", "dockerfile")),
+            has_pending_changes=bool(context.get("has_pending_changes", False)),
+            account_status=str(context.get("account_status", "active")),
+            config_path=context.get("config_path"),
+        )
 
         margin_pct = margin_info["margin_at_1_subscriber_pct"]
         status = margin_info["status"]
-        summary = (
-            f"[QUANTITATIVE ESTIMATE] Commercial Gateway: Ready for Railway deployment under "
-            f"{plan_name} plan (${price}/mo, {quota:,} calls). Net margin: {margin_pct}%. "
-            f"Status: {status}."
-        )
+        if railway_audit["issues"]:
+            issue_str = "; ".join(railway_audit["issues"])
+            summary = (
+                f"[QUANTITATIVE ESTIMATE] Commercial Gateway: Action Required before deployment. "
+                f"Issues: {issue_str}."
+            )
+        else:
+            summary = (
+                f"[QUANTITATIVE ESTIMATE] Commercial Gateway: Ready for Railway deployment under "
+                f"{plan_name} plan (${price}/mo, {quota:,} calls). Net margin: {margin_pct}%. "
+                f"Status: {status}."
+            )
 
         return AgentMessage(
             sender_id=self.metadata.agent_id,
@@ -138,6 +187,7 @@ class CommercialGatewayAgent(BaseAgent):
             summary=summary,
             details={
                 "readiness": readiness,
+                "railway_audit": railway_audit,
                 "margin_analysis": margin_info,
                 "tier": plan_name,
                 "quota": quota,
