@@ -9,7 +9,19 @@ from __future__ import annotations
 from decimal import Decimal
 from unittest.mock import MagicMock
 
+import pytest
+
 from krmaazha_binance_mcp import server as srv
+
+
+@pytest.fixture(autouse=True)
+def _preserve_srv_mcp():
+    orig = srv.mcp
+    try:
+        yield
+    finally:
+        srv.mcp = orig
+
 
 
 def _register(client, ipc, market, *, is_testnet=True):
