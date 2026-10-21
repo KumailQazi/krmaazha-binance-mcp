@@ -20,10 +20,10 @@ RUN pip install --no-cache-dir .
 COPY . .
 
 ENV PYTHONUNBUFFERED=1 \
-    PORT=8000 \
+    PORT=8080 \
     HOST=0.0.0.0
 
-EXPOSE 8000
+EXPOSE 8080
 
 # Start gateway server with healthcheck and SSE support
 CMD ["python", "-m", "krmaazha_binance_mcp.gateway_server"]
