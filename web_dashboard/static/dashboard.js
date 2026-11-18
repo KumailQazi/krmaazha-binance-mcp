@@ -462,7 +462,7 @@ function calculateEMA(closes, period) {
 
 
 const CURATED_BENCHMARK_PAIRS = [
-  "BTCUSDT", "ETHUSDT", "SOLUSDT", "BNBUSDT", "DOGEUSDT", "NOMUSDT", "RESOLVUSDT", "XVGUSDT"
+  "BTCUSDT", "ETHUSDT", "SOLUSDT", "BNBUSDT", "DOGEUSDT", "NEARUSDT", "NOMUSDT", "RESOLVUSDT", "XVGUSDT"
 ];
 
 function handleCustomPairSubmission(rawInput) {

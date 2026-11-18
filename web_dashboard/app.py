@@ -36,7 +36,7 @@ async def api_market_structure(request):
 
 async def api_ticker_summary(request):
     try:
-        symbols = ["BTCUSDT", "ETHUSDT", "SOLUSDT", "BNBUSDT", "DOGEUSDT", "NOMUSDT", "RESOLVUSDT", "XVGUSDT"]
+        symbols = ["BTCUSDT", "ETHUSDT", "SOLUSDT", "BNBUSDT", "DOGEUSDT", "NEARUSDT", "NOMUSDT", "RESOLVUSDT", "XVGUSDT"]
         results = []
         for sym in symbols:
             stats = client.get_ticker(symbol=sym)
@@ -89,7 +89,7 @@ async def api_indicators(request):
 
 async def api_signals_scan(request):
     try:
-        watchlist = ["BTCUSDT", "ETHUSDT", "SOLUSDT", "BNBUSDT", "DOGEUSDT", "NOMUSDT", "RESOLVUSDT", "XVGUSDT"]
+        watchlist = ["BTCUSDT", "ETHUSDT", "SOLUSDT", "BNBUSDT", "DOGEUSDT", "NEARUSDT", "NOMUSDT", "RESOLVUSDT", "XVGUSDT"]
         signals_list = []
         for sym in watchlist:
             try:

@@ -25,6 +25,20 @@ engine**, and the doctrine that governs it changed accordingly.
     recoverable. Denomination-multiplier symbols (`1000PEPE` and 12 others) are never
     chained to their predecessor: a relisting would show as a +99,900% return and dominate
     any momentum ranking.
+  - `costs.py` — explicit commission parameters (no zero-fee silent defaults), real funding
+    cash-flow accrual directly from archive timestamps, and adverse slippage modeling (fixed bps
+    and volume impact). 24 tests, 99% coverage.
+  - `portfolio.py` — multi-symbol long/short portfolio simulator with volatility targeting,
+    leverage caps, maintenance margin tiers, and dual liquidation assertions (end-of-bar equity
+    check and intra-bar high/low wick breaches). 19 tests, 98% coverage.
+  - `stats.py` — institutional statistics: sample moments, Sharpe, Sortino, Calmar, Deflated
+    Sharpe Ratio (DSR), and CSCV Probability of Backtest Overfitting (PBO). Pure `math.erf`
+    implementation without SciPy dependency. 14 tests, 99% coverage.
+  - `research.py` — typed rolling and anchored walk-forward engine with triple anti-lookahead
+    and pre-registered 6-point institutional gate. 12 tests, 98% coverage.
+  - `db/` — PostgreSQL on Railway persistence: advisory lock (`14022026`), SHA-256 migration
+    tamper detection, high-throughput `COPY` streaming, and `live_vs_model` friction auditor.
+    14 tests, 93% coverage.
 - **`tests/test_consistency.py`** — anti-drift gate. Fails the build when the docs stop
   describing the product: version lockstep across `pyproject`/`server.json`/`CHANGELOG`,
   README tool counts (total **and** per section), declared scope, and credentials in

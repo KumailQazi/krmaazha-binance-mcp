@@ -4,7 +4,7 @@ version = "1.2.2"
 description = "MCP server for Binance: read market data, analyze, and propose real-money spot trades behind a human-gated confirmer — plus an offline USD-M futures research engine. The model never holds a trade key."
 readme = "README.md"
 license = { text = "MIT" }
-authors = [{ name = "Alejandro Exequiel Hernández Lara" }]
+authors = [{ name = "Kumail Qazi", email = "tag.kumail@gmail.com" }]
 keywords = ["mcp", "binance", "trading", "crypto", "spot", "futures", "backtesting", "quant", "model-context-protocol", "llm", "ai-agent"]
 classifiers = [
     "Development Status :: 4 - Beta",

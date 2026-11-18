@@ -18,7 +18,7 @@ through this roadmap. What follows is the futures research programme.
 
 ---
 
-## Phase 0 — the engine that kills strategies · **2 of 8 modules**
+## Phase 0 — the engine that kills strategies · **7 of 8 modules**
 
 Phase 0 produces no revenue by itself, and that is the point: it is the machine that tells
 you, honestly, whether a strategy has an edge **before** real capital is committed. If the
@@ -28,12 +28,20 @@ first hypothesis dies in walk-forward, the phase saved money rather than losing 
 |---|---|---|
 | `futures/data.py` | ✅ **done** | Historical panel from Binance's public archives. 15 tests, verified end-to-end against the real archive |
 | `futures/universe.py` | ✅ **done** | Point-in-time universe, survivorship-bias free. 14 tests; reproduces 986 symbols / 527 live / 306 delisted / 13 multiplier-renamed exactly |
-| `futures/costs.py` | ⬜ **pending** | Commission as a **required** parameter with no silent default, real funding accrual, slippage that is never zero |
-| `futures/portfolio.py` | ⬜ **pending** | Multi-symbol long/short, notional vs margin, volatility targeting, funding accrual, liquidation proximity assertion |
-| `futures/stats.py` | ⬜ **pending** | Sharpe, Sortino, max drawdown, turnover + **Deflated Sharpe Ratio** + **PBO (CSCV)**. `math.erf` only — no `scipy` |
-| `futures/research.py` | ⬜ **pending** | The walk-forward, typed and tested (not in `examples/`, which mypy does not check) |
-| `futures/db/` | ⬜ **pending** | Postgres on Railway: schema, migrations with advisory lock + checksum, `COPY` writes |
+| `futures/costs.py` | ✅ **done** | Commission as a **required** parameter with no silent default, real funding accrual, slippage that is never zero. 24 tests, 99% coverage |
+| `futures/portfolio.py` | ✅ **done** | Multi-symbol long/short, notional vs margin, volatility targeting, funding accrual, liquidation proximity assertion. 19 tests, 98% coverage |
+| `futures/stats.py` | ✅ **done** | Sharpe, Sortino, max drawdown, turnover + **Deflated Sharpe Ratio** + **PBO (CSCV)**. `math.erf` only — no `scipy`. 14 tests, 99% coverage |
+| `futures/research.py` | ✅ **done** | The walk-forward, typed and tested (triple anti-lookahead, CostModel friction, DSR + CSCV PBO, 6-point institutional gate). 12 tests, 98% coverage |
+| `futures/db/` | ✅ **done** | Postgres on Railway: schema, migrations with advisory lock (`14022026`) + SHA-256 checksum, `COPY` streaming, `live_vs_model` auditor. 14 tests, 93% coverage |
 | `futures/strategies/` | ⬜ **pending** | The hypothesis implementations |
+
+### Verified Implementation Overview
+
+![Futures Research Engine Implementation Overview](docs/assets/futures-phase0-overview.png)
+
+### Automated Test Suite & Coverage Verification
+
+![Futures Research Test Suite Coverage](docs/assets/futures-test-suite-coverage.png)
 
 **Two things cannot be verified until a futures API key exists** (Phase 2), and every
 Phase 0 result is provisional until then: the account's **real commission** and the
@@ -94,6 +102,18 @@ not an oversight:
   survives if the futures key is confirmer-isolated too.
 - **Liquidation is an irreversible, funds-moving event with no human in the loop, by
   construction.** No confirmer design restores that guarantee.
+
+---
+
+## Done and shipped (`17-11-2026`)
+
+Completed 7 of 8 modules in Phase 0 (USD-M Futures Research Engine) with 97 dedicated unit tests (100% pass rate) and 96.8% subpackage coverage (repository overall 95.53% across 524 passing tests):
+- **`futures/universe.py`**: Point-in-time universe, 986 symbols total (527 live, 306 delisted, 13 denomination multipliers isolated). 14 tests, 92% coverage.
+- **`futures/costs.py`**: Explicit commission model (zero-fee prohibited), real funding cash-flow accrual from Binance archive intervals, non-zero adverse slippage (fixed bps & volume impact). 24 tests, 99% coverage.
+- **`futures/portfolio.py`**: Multi-symbol long/short simulator, volatility targeting, margin tier modeling, dual liquidation assertions (end-of-bar equity check & intra-bar high/low wick liquidation). 19 tests, 98% coverage.
+- **`futures/stats.py`**: Higher moments (skewness, kurtosis), Sharpe, Sortino, Probabilistic Sharpe Ratio, Deflated Sharpe Ratio (DSR), Combinatorially Symmetric Cross-Validation (CSCV) Probability of Backtest Overfitting (PBO). Pure `math.erf` implementation without SciPy dependency. 14 tests, 99% coverage.
+- **`futures/research.py`**: Typed rolling and anchored walk-forward engine, triple anti-lookahead protection, 6-point institutional gate (OOS return > 0, Sharpe > 1.0, DSR > 0, PBO < 0.5, beats buy-and-hold in > 50% of windows, trades ≥ 50). 12 tests, 98% coverage.
+- **`futures/db/`**: PostgreSQL on Railway with `pg_advisory_lock(14022026)`, deterministic SHA-256 migration checksums (`MigrationTamperedError`), high-throughput `COPY ... FROM STDIN WITH (FORMAT csv)` streaming for trial return matrices, and `live_vs_model` friction auditor. 14 tests, 93% coverage.
 
 ---
 

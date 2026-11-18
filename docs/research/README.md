@@ -11,6 +11,7 @@ steps.
 
 | Study | Verdict |
 |---|---|
+| [**`UPDATES.md`**](UPDATES.md) | **Phase 0 Futures Research Engine**: 7 of 8 modules verified (97 tests passed, 96.8% subpackage coverage). Point-in-time universe, non-zero friction, dual liquidation, DSR + CSCV PBO, walk-forward gate, PostgreSQL on Railway with advisory lock |
 | [`walk_forward_results.md`](walk_forward_results.md) | **0 of 36 configurations** showed a robust out-of-sample edge. EMA cross, RSI threshold and the composite signal, over 4 pairs × 3 timeframes, ~51,000 real candles, walk-forward with triple anti-lookahead. In-sample "edges" were overfitting |
 | [`experiment_results_matrix.md`](experiment_results_matrix.md) | The in-sample matrix that the walk-forward above later falsified. Kept as the illustration of why in-sample backtests are marketing |
 

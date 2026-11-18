@@ -117,8 +117,10 @@ def test_signal_generation(client: Client, symbol: str = "BTCUSDT"):
     print(f"Direction: {sig.direction.upper()} | Composite Score: {sig.score:+.3f}")
     print(f"Current Price: ${float(sig.price):,.2f}")
     print(f"ATR Volatility: ${sig.atr:,.2f}")
-    print(f"Suggested Stop-Loss: ${float(sig.suggested_stop):,.2f}")
-    print(f"Suggested Target: ${float(sig.suggested_target):,.2f}")
+    stop_str = f"${float(sig.suggested_stop):,.2f}" if sig.suggested_stop is not None else "N/A (HOLD / Neutral)"
+    target_str = f"${float(sig.suggested_target):,.2f}" if sig.suggested_target is not None else "N/A (HOLD / Neutral)"
+    print(f"Suggested Stop-Loss: {stop_str}")
+    print(f"Suggested Target: {target_str}")
     print("Factor Contributions:")
     for f in sig.factors:
         print(f"  • {f.name:<10} [weight={f.weight:.2f}, val={f.value:+.2f}]: {f.note}")

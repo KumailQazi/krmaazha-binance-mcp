@@ -59,7 +59,7 @@ without surrendering custody or control.
 Two processes, least privilege, human-in-the-loop:
 
 | Process | Launched by | Key | Role |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | **MCP server** `krmaazha-binance-mcp` | your MCP client (stdio) | **read-only** (`BINANCE_READ_*`) | reads, pre-validates, and **proposes** orders. **Never executes, holds no trade key.** |
 | **Confirmer** `krmaazha-binance-mcp-confirmer` | **you**, in a separate terminal | **trade** (`BINANCE_TRADE_*`) | the **sole authority**: receives canonical fields, renders the dialog, re-validates, and **executes only on your click**. |
 
@@ -104,7 +104,7 @@ physical click. The model has neither. Defense in depth on top of that:
 ### Read (5 · read key · no gate)
 
 | Tool | What it does | Params |
-|---|---|---|
+| --- | --- | --- |
 | `binance_get_balance` | Spot balances (free/locked), non-zero only | — |
 | `binance_get_price` | Current price/ticker for a symbol | `symbol` |
 | `binance_get_open_orders` | Open spot orders + status | `symbol?` |
@@ -114,7 +114,7 @@ physical click. The model has neither. Defense in depth on top of that:
 ### Market data — layer 2 (5 · read key · 100% read-only)
 
 | Tool | What it does | Params |
-|---|---|---|
+| --- | --- | --- |
 | `binance_get_klines` | OHLCV candles (Decimal). `last_n` returns only the newest N to keep responses small | `symbol`, `interval`, `limit?` (≤1000), `last_n?` |
 | `binance_get_ticker_24h` | Rolling 24h stats (% change, high/low, volume) | `symbol` |
 | `binance_get_order_book_depth` | Order-book bid/ask depth, ±1% & ±2% liquidity, touch spread in bps | `symbol`, `limit?` |
@@ -124,14 +124,14 @@ physical click. The model has neither. Defense in depth on top of that:
 ### News & sentiment — layer 3 (2 · public RSS · no API key · 100% read-only)
 
 | Tool | What it does | Params |
-|---|---|---|
+| --- | --- | --- |
 | `binance_get_news` | Crypto headlines from RSS (CoinDesk, crypto.news) | `asset?`, `sources?`, `limit?` |
 | `binance_get_sentiment` | Aggregated **raw** sentiment (lexicon, not a prediction) | `asset`, `window_hours?` |
 
 ### Signals — layer 4 (3 · read key · *propose*, never execute)
 
 | Tool | What it does | Params |
-|---|---|---|
+| --- | --- | --- |
 | `binance_generate_signal` | Composite, transparent signal: direction + score + per-factor rationale + ATR risk levels | `symbol`, `interval?`, `threshold?` |
 | `binance_scan_signals` | Signals for a watchlist, ranked by score | `symbols`, `interval?` |
 | `binance_backtest_signal` | Backtest the composite technical signal (no lookahead, sentiment=0) | `symbol`, `interval?`, `limit?`, `threshold?` |
@@ -139,7 +139,7 @@ physical click. The model has neither. Defense in depth on top of that:
 ### Analyst — layers 5/6 (7 · read key + free public APIs · 100% read-only)
 
 | Tool | What it does | Params |
-|---|---|---|
+| --- | --- | --- |
 | `binance_get_derivatives` | Funding rate (+ short history), mark/index price, open interest — the leverage thermometer. Public futures endpoints, no extra permissions | `symbol`, `funding_limit?` |
 | `binance_get_market_structure` | Fear & Greed (+week), BTC dominance, total mcap, BTC ATH/drawdown, on-chain fees & hashrate. Free sources, per-source degradation | — |
 | `binance_analyze_cycle` | Mayer Multiple (price/200d MA), drawdown from ATH, distance to next halving — objective cycle inputs | `symbol?` |
@@ -151,7 +151,7 @@ physical click. The model has neither. Defense in depth on top of that:
 ### Write — two-phase (4 · **execution is spot-only** · the server never executes)
 
 | Tool | What it does | Params |
-|---|---|---|
+| --- | --- | --- |
 | `binance_spot_order_propose` | Proposes an order; **does not execute**. Returns `intent_id` | `symbol`, `side`, `type`, `env`, `quantity?`, `quote_quantity?`, `price?`, `time_in_force?` |
 | `binance_spot_order_status` | Polls the outcome of a proposal | `intent_id` |
 | `binance_cancel_order_propose` | Proposes a cancellation (re-checks state); **does not cancel** | `symbol`, `order_id`, `env` |
@@ -170,7 +170,7 @@ its methodology through the two MCP surfaces most servers ignore:
 **Resources** (`kb://…`) — read them from any MCP client:
 
 | Resource | What it teaches |
-|---|---|
+| --- | --- |
 | `kb://discipline` | The operating doctrine in two regimes that never mix: rules 1-6 govern the long-term spot portfolio (DCA > timing, position sizing, no leverage); rule 7 governs systematic research, where leverage is admissible only after clearing every condition |
 | `kb://research/no-edge` | Our own walk-forward research: 0/36 configurations with a robust edge — why signals are context, not alpha |
 | `kb://sources` | Curated source registry **with each source's bias annotated**, including where to read ETF flows |
@@ -226,7 +226,7 @@ Go to Binance → **API Management**. The design uses two keys for least privile
 ### 2. Set environment variables
 
 | Variable | Process | Where it goes |
-|---|---|---|
+| --- | --- | --- |
 | `BINANCE_ENV` | both | `testnet` or `mainnet` (no default → aborts if missing/invalid) |
 | `BINANCE_READ_API_KEY` / `BINANCE_READ_API_SECRET` | server | `.mcp.json` (via `${VAR}`) or the server's shell |
 | `BINANCE_TRADE_API_KEY` / `BINANCE_TRADE_API_SECRET` | confirmer | **only** the shell where you launch the confirmer |
@@ -256,6 +256,7 @@ Choose your client configuration below. Only the read-only key and `BINANCE_ENV`
   }
 }
 ```
+
 </details>
 
 <details>
@@ -276,6 +277,7 @@ Choose your client configuration below. Only the read-only key and `BINANCE_ENV`
   }
 }
 ```
+
 </details>
 
 <details>
@@ -296,6 +298,7 @@ Choose your client configuration below. Only the read-only key and `BINANCE_ENV`
   }
 }
 ```
+
 </details>
 
 `${VAR}` placeholders are resolved from your shell. If a variable arrives unexpanded, the
@@ -327,7 +330,7 @@ order executes only when you click **Confirm**.
 The confirmer decides how the human approves, via `BINANCE_CONFIRM_MODE`:
 
 | Mode | What happens | Platform |
-|---|---|---|
+| --- | --- | --- |
 | `auto` *(default)* | native dialog on macOS, web page elsewhere | all |
 | `macos` | the native dialog (screenshot above) | macOS |
 | `web` | an ephemeral page on `127.0.0.1` (one-shot token, POST-only answers, Host-validated, Cancel focused) opens in your browser | all |
@@ -424,12 +427,12 @@ responsible for every order you confirm — that is exactly why the human gate e
 
 ## Author
 
-Built by **[Alejandro Exequiel Hernández Lara](https://github.com/Alejandrehl)** — founder of
-[Krmaazha](https://www.krmaazha.cl). Part of Krmaazha's MCP product line.
+Built by **[Kumail Qazi](https://github.com/KumailQazi)** — founder of
+[Krmaazha](https://www.krmaazha.com). Part of Krmaazha's MCP product line.
 
 ## License
 
-[MIT](LICENSE) © 2026 Alejandro Exequiel Hernández Lara (Krmaazha)
+[MIT](LICENSE) © 2026 Kumail Qazi (Krmaazha)
 
 ---
 

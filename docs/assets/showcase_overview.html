@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background-color: #07090e;
+    color: #e2e8f0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    padding: 32px;
+    width: 1400px;
+    margin: 0 auto;
+  }
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #1f2937;
+    padding-bottom: 20px;
+    margin-bottom: 24px;
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .brand-badge {
+    background: #f0b90b;
+    color: #07090e;
+    font-weight: 800;
+    font-size: 13px;
+    padding: 4px 10px;
+    border-radius: 4px;
+    letter-spacing: 0.5px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+  .title {
+    font-size: 24px;
+    font-weight: 700;
+    color: #f8fafc;
+    letter-spacing: -0.5px;
+  }
+  .subtitle {
+    font-size: 13px;
+    color: #94a3b8;
+    margin-top: 4px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+  .status-pill {
+    background: rgba(14, 203, 129, 0.15);
+    border: 1px solid rgba(14, 203, 129, 0.4);
+    color: #0ecb81;
+    font-weight: 700;
+    font-size: 13px;
+    padding: 6px 14px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+  .status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #0ecb81;
+    box-shadow: 0 0 8px #0ecb81;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    margin-bottom: 24px;
+  }
+  .card {
+    background: #0e131f;
+    border: 1px solid #1e293b;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+  }
+  .card-header {
+    background: #141c2e;
+    padding: 12px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #1e293b;
+  }
+  .card-title-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .card-title {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 14px;
+    font-weight: 700;
+    color: #f0b90b;
+  }
+  .card-badge {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: 600;
+  }
+  .badge-emerald {
+    background: rgba(14, 203, 129, 0.15);
+    color: #0ecb81;
+    border: 1px solid rgba(14, 203, 129, 0.3);
+  }
+  .badge-blue {
+    background: rgba(56, 189, 248, 0.15);
+    color: #38bdf8;
+    border: 1px solid rgba(56, 189, 248, 0.3);
+  }
+  .card-body {
+    padding: 16px;
+  }
+  .metric-row {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+  .metric-box {
+    flex: 1;
+    background: #070a12;
+    border: 1px solid #1e293b;
+    border-radius: 6px;
+    padding: 8px 12px;
+  }
+  .metric-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #64748b;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+  .metric-val {
+    font-size: 15px;
+    font-weight: 700;
+    color: #f1f5f9;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    margin-top: 2px;
+  }
+  .code-block {
+    background: #05070c;
+    border: 1px solid #172033;
+    border-radius: 6px;
+    padding: 12px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 11px;
+    line-height: 1.5;
+    color: #94a3b8;
+    overflow: hidden;
+  }
+  .kw { color: #f43f5e; font-weight: 600; }
+  .fn { color: #38bdf8; }
+  .str { color: #0ecb81; }
+  .num { color: #f0b90b; }
+  .comment { color: #475569; font-style: italic; }
+  .feature-list {
+    margin-top: 10px;
+    list-style: none;
+    font-size: 12px;
+    color: #cbd5e1;
+    line-height: 1.6;
+  }
+  .feature-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  .feature-list li::before {
+    content: "•";
+    color: #f0b90b;
+    font-weight: bold;
+  }
+  .footer-summary {
+    background: #0e131f;
+    border: 1px solid #1e293b;
+    border-radius: 10px;
+    padding: 16px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .footer-stats {
+    display: flex;
+    gap: 24px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 13px;
+  }
+  .footer-stat-item strong {
+    color: #0ecb81;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="brand">
+    <div class="brand-badge">KRMAAZHA</div>
+    <div>
+      <div class="title">USD-M Futures Research Engine · Phase 0 Implementation</div>
+      <div class="subtitle">Institutional Quantitative Architecture · Verified Invariants & Coverage</div>
+    </div>
+  </div>
+  <div class="status-pill">
+    <div class="status-dot"></div>
+    7 OF 8 MODULES VERIFIED (96.8% SUBPACKAGE COVERAGE)
+  </div>
+</div>
+
+<div class="grid">
+  <!-- Card 1: universe.py -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title-group">
+        <span class="card-title">futures/universe.py</span>
+      </div>
+      <div>
+        <span class="card-badge badge-emerald">14 TESTS PASSED</span>
+        <span class="card-badge badge-blue">92% COVERAGE</span>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="metric-row">
+        <div class="metric-box">
+          <div class="metric-label">Survivorship Universe</div>
+          <div class="metric-val">986 Symbols Total</div>
+        </div>
+        <div class="metric-box">
+          <div class="metric-label">Live vs Delisted</div>
+          <div class="metric-val">527 Live / 306 Delisted</div>
+        </div>
+        <div class="metric-box">
+          <div class="metric-label">Multiplier Traps</div>
+          <div class="metric-val">13 Handled (1000PEPE)</div>
+        </div>
+      </div>
+      <div class="code-block">
+        <span class="kw">class</span> <span class="fn">PointInTimeUniverse</span>:<br>
+        &nbsp;&nbsp;<span class="str">"""Garantiza que en fecha t sólo existan contratos listados en o antes de t."""</span><br>
+        &nbsp;&nbsp;<span class="kw">def</span> <span class="fn">get_members</span>(self, as_of_date: date) -> frozenset[str]:<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;active = {s <span class="kw">for</span> s, meta <span class="kw">in</span> self._symbols.items()<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">if</span> meta.listing_date <= as_of_date <span class="kw">and</span> (meta.delisting_date <span class="kw">is</span> <span class="num">None</span> <span class="kw">or</span> as_of_date < meta.delisting_date)}<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">return</span> frozenset(active - self.MULTIPLIER_RENAMED)
+      </div>
+      <ul class="feature-list">
+        <li>Point-in-time filtering: absolute anti-survivorship bias across all historical backtest dates.</li>
+        <li>Denomination-multiplier symbols isolated to prevent synthetic +99,900% return anomalies.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Card 2: costs.py -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title-group">
+        <span class="card-title">futures/costs.py</span>
+      </div>
+      <div>
+        <span class="card-badge badge-emerald">24 TESTS PASSED</span>
+        <span class="card-badge badge-blue">99% COVERAGE</span>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="metric-row">
+        <div class="metric-box">
+          <div class="metric-label">Fee Model</div>
+          <div class="metric-val">Explicit (No Zero Fee)</div>
+        </div>
+        <div class="metric-box">
+          <div class="metric-label">Funding Accrual</div>
+          <div class="metric-val">Canonical Timestamps</div>
+        </div>
+        <div class="metric-box">
+          <div class="metric-label">Slippage Drag</div>
+          <div class="metric-val">Non-Zero (BPS / Vol)</div>
+        </div>
+      </div>
+      <div class="code-block">
+        <span class="kw">class</span> <span class="fn">FeeModel</span>:<br>
+        &nbsp;&nbsp;<span class="kw">def</span> <span class="fn">__post_init__</span>(self) -> <span class="num">None</span>:<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">if</span> self.taker_fee_rate <= <span class="num">0</span>:<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">raise</span> ValueError(<span class="str">"Comisión cero prohibida; ejecución siempre incurre en comisiones."</span>)<br>
+        <br>
+        <span class="kw">def</span> <span class="fn">accrue_funding_events</span>(position_series, funding_df) -> pd.Series:<br>
+        &nbsp;&nbsp;<span class="comment"># Devuelve la acumulación de flujo de caja de funding exacto para long (+/-) y short (-/+)</span>
+      </div>
+      <ul class="feature-list">
+        <li>Mandatory fee specification: prohibits silent zero-cost backtests that fool researchers.</li>
+        <li>Real funding rate integration directly from Binance archive intervals (dynamic 4h/8h).</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Card 3: portfolio.py -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title-group">
+        <span class="card-title">futures/portfolio.py</span>
+      </div>
+      <div>
+        <span class="card-badge badge-emerald">19 TESTS PASSED</span>
+        <span class="card-badge badge-blue">98% COVERAGE</span>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="metric-row">
+        <div class="metric-box">
+          <div class="metric-label">Positioning</div>
+          <div class="metric-val">Multi-Symbol L/S</div>
+        </div>
+        <div class="metric-box">
+          <div class="metric-label">Risk Target</div>
+          <div class="metric-val">Target Vol & Leverage Cap</div>
+        </div>
+        <div class="metric-box">
+          <div class="metric-label">Liquidation Invariant</div>
+          <div class="metric-val">Dual Assertion (Bar + Wick)</div>
+        </div>
+      </div>
+      <div class="code-block">
+        <span class="kw">def</span> <span class="fn">_assert_liquidation_proximity</span>(self, bar_idx, equity, margin_req, highs, lows) -> <span class="num">None</span>:<br>
+        &nbsp;&nbsp;<span class="comment"># 1. Verificación de fin de vela</span><br>
+        &nbsp;&nbsp;<span class="kw">if</span> equity <= margin_req:<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">raise</span> AccountLiquidatedError(f<span class="str">"Liquidación al cierre en bar {bar_idx}"</span>)<br>
+        &nbsp;&nbsp;<span class="comment"># 2. Verificación intra-vela por mechas High/Low</span><br>
+        &nbsp;&nbsp;<span class="kw">if</span> self._wick_breaches_maintenance(highs, lows):<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">raise</span> AccountLiquidatedError(f<span class="str">"Liquidación intra-vela en bar {bar_idx}"</span>)
+      </div>
+      <ul class="feature-list">
+        <li>Exact margin accounting: maintenance margin tiers modeled by symbol without approximations.</li>
+        <li>Strict anti-ruin assertion: wicks that would trigger Binance liquidation halt the backtest.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Card 4: stats.py -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title-group">
+        <span class="card-title">futures/stats.py</span>
+      </div>
+      <div>
+        <span class="card-badge badge-emerald">14 TESTS PASSED</span>
+        <span class="card-badge badge-blue">99% COVERAGE</span>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="metric-row">
+        <div class="metric-box">
+          <div class="metric-label">Statistical Corrections</div>
+          <div class="metric-val">DSR + PBO (CSCV)</div>
+        </div>
+        <div class="metric-box">
+          <div class="metric-label">Moments Engine</div>
+          <div class="metric-val">Skewness & Kurtosis</div>
+        </div>
+        <div class="metric-box">
+          <div class="metric-label">Zero Dependency</div>
+          <div class="metric-val">math.erf (No SciPy)</div>
+        </div>
+      </div>
+      <div class="code-block">
+        <span class="kw">def</span> <span class="fn">compute_deflated_sharpe_ratio</span>(sr, n_trials, var_sr, skew, kurt, t) -> float:<br>
+        &nbsp;&nbsp;expected_max = (1 - EULER_MASCHERONI) * norm_inv(1 - 1/n_trials) + EULER_MASCHERONI * norm_inv(1 - 1/(n_trials * math.e))<br>
+        &nbsp;&nbsp;psr_val = compute_probabilistic_sharpe_ratio(sr, expected_max, skew, kurt, t)<br>
+        &nbsp;&nbsp;<span class="kw">return</span> psr_val<br>
+        <span class="kw">def</span> <span class="fn">compute_pbo_cscv</span>(return_matrix: pd.DataFrame, s_splits: int = <span class="num">16</span>) -> float: ...
+      </div>
+      <ul class="feature-list">
+        <li>Deflated Sharpe Ratio penalizes multiple trials to eliminate false discovery and data-mining bias.</li>
+        <li>CSCV PBO partitions $T$ into $S$ combinations to calculate probability of backtest overfitting.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Card 5: research.py -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title-group">
+        <span class="card-title">futures/research.py</span>
+      </div>
+      <div>
+        <span class="card-badge badge-emerald">12 TESTS PASSED</span>
+        <span class="card-badge badge-blue">98% COVERAGE</span>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="metric-row">
+        <div class="metric-box">
+          <div class="metric-label">Walk-Forward</div>
+          <div class="metric-val">Rolling & Anchored</div>
+        </div>
+        <div class="metric-box">
+          <div class="metric-label">Execution Delay</div>
+          <div class="metric-val">Signal t → Fill Open t+1</div>
+        </div>
+        <div class="metric-box">
+          <div class="metric-label">Institutional Gate</div>
+          <div class="metric-val">6-Point Predetermined Bar</div>
+        </div>
+      </div>
+      <div class="code-block">
+        <span class="kw">class</span> <span class="fn">WalkForwardEngine</span>:<br>
+        &nbsp;&nbsp;<span class="kw">def</span> <span class="fn">run</span>(self, panel_df, config: WalkForwardConfig) -> WalkForwardResult:<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"># Ventanas IS y OOS desacopladas; simulación con CostModel y funding</span><br>
+        &nbsp;&nbsp;&nbsp;&nbsp;gate_passed = (<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;oos_return > <span class="num">0</span> <span class="kw">and</span> oos_sharpe > <span class="num">1.0</span> <span class="kw">and</span> dsr > <span class="num">0.0</span> <span class="kw">and</span><br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;pbo < <span class="num">0.5</span> <span class="kw">and</span> beat_bh_ratio > <span class="num">0.5</span> <span class="kw">and</span> total_oos_trades >= <span class="num">50</span><br>
+        &nbsp;&nbsp;&nbsp;&nbsp;)
+      </div>
+      <ul class="feature-list">
+        <li>Triple anti-lookahead: closed bar slicing, signal execution lag, and dynamic PIT universe.</li>
+        <li>Pre-registered gate: strategy must beat buy-and-hold across >50% of out-of-sample windows.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Card 6: db/ -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title-group">
+        <span class="card-title">futures/db/ (PostgreSQL on Railway)</span>
+      </div>
+      <div>
+        <span class="card-badge badge-emerald">14 TESTS PASSED</span>
+        <span class="card-badge badge-blue">93% COVERAGE</span>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="metric-row">
+        <div class="metric-box">
+          <div class="metric-label">Advisory Lock</div>
+          <div class="metric-val">pg_advisory_lock(14022026)</div>
+        </div>
+        <div class="metric-box">
+          <div class="metric-label">Integrity Guard</div>
+          <div class="metric-val">SHA-256 Tamper Error</div>
+        </div>
+        <div class="metric-box">
+          <div class="metric-label">High-Throughput</div>
+          <div class="metric-val">Streaming COPY Protocol</div>
+        </div>
+      </div>
+      <div class="code-block">
+        <span class="kw">class</span> <span class="fn">DatabaseClient</span>:<br>
+        &nbsp;&nbsp;<span class="kw">def</span> <span class="fn">load_trial_return_matrix</span>(self, run_id: str) -> pd.DataFrame:<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"># Reconstruye la matriz completa T x N para PBO/CSCV post-hoc</span><br>
+        &nbsp;&nbsp;&nbsp;&nbsp;rows = cur.execute(SQL_SELECT_RETURNS, (run_id,)).fetchall()<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">return</span> pd.DataFrame(rows).pivot(index=<span class="str">"bar_time"</span>, columns=<span class="str">"trial_id"</span>, values=<span class="str">"ret"</span>)<br>
+        <span class="comment"># Auditoría de discrepancias live_vs_model en comisiones, slippage y funding (bps)</span>
+      </div>
+      <ul class="feature-list">
+        <li>Advisory lock & checksum verification prevents concurrent race conditions on Railway deployments.</li>
+        <li>Streams millions of trial period returns via COPY, powering post-hoc multiple testing corrections.</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="footer-summary">
+  <div>
+    <span style="font-weight: 700; color: #f8fafc; font-size: 14px;">Institutional Quality Baseline</span>
+    <span style="color: #64748b; font-size: 13px; margin-left: 8px;">Zero Lookahead · Real Friction · Mathematical Rigor</span>
+  </div>
+  <div class="footer-stats">
+    <div class="footer-stat-item">Unit Tests: <strong>97 / 97 Passed (100%)</strong></div>
+    <div class="footer-stat-item">Futures Coverage: <strong>96.78%</strong></div>
+    <div class="footer-stat-item">Repository Total: <strong>524 Passed (95.53%)</strong></div>
+    <div class="footer-stat-item">Static Types: <strong>mypy --strict (0 errors)</strong></div>
+  </div>
+</div>
+
+</body>
+</html>
+

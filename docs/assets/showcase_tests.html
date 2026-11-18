@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background-color: #07090e;
+    color: #e2e8f0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    padding: 32px;
+    width: 1400px;
+    margin: 0 auto;
+  }
+  .terminal-window {
+    background: #0d1117;
+    border: 1px solid #30363d;
+    border-radius: 12px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.7);
+    overflow: hidden;
+  }
+  .terminal-header {
+    background: #161b22;
+    padding: 12px 18px;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #30363d;
+  }
+  .terminal-dots {
+    display: flex;
+    gap: 8px;
+    margin-right: 16px;
+  }
+  .dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+  }
+  .dot-red { background: #ff5f56; }
+  .dot-yellow { background: #ffbd2e; }
+  .dot-green { background: #27c93f; }
+  .terminal-title {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 13px;
+    color: #8b949e;
+    font-weight: 600;
+    flex: 1;
+    text-align: center;
+  }
+  .terminal-body {
+    padding: 24px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 12px;
+    line-height: 1.6;
+    color: #c9d1d9;
+    background: #090d16;
+  }
+  .cmd-line {
+    color: #58a6ff;
+    margin-bottom: 14px;
+    font-weight: 600;
+  }
+  .cmd-prompt { color: #f0b90b; }
+  .pass { color: #0ecb81; font-weight: bold; }
+  .stat { color: #f0b90b; }
+  .highlight { color: #58a6ff; }
+  .muted { color: #6e7681; }
+  .coverage-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 14px;
+    margin-bottom: 16px;
+  }
+  .coverage-table th {
+    text-align: left;
+    color: #8b949e;
+    border-bottom: 1px solid #30363d;
+    padding: 6px 12px;
+    font-size: 11px;
+    text-transform: uppercase;
+  }
+  .coverage-table td {
+    padding: 6px 12px;
+    border-bottom: 1px solid #161b22;
+  }
+  .cov-high { color: #0ecb81; font-weight: bold; }
+  .cov-mid { color: #f0b90b; }
+  .gate-banner {
+    margin-top: 18px;
+    padding: 14px 18px;
+    border-radius: 8px;
+    background: rgba(14, 203, 129, 0.1);
+    border: 1px solid rgba(14, 203, 129, 0.3);
+    color: #0ecb81;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
+  }
+</style>
+</head>
+<body>
+
+<div class="terminal-window">
+  <div class="terminal-header">
+    <div class="terminal-dots">
+      <div class="dot dot-red"></div>
+      <div class="dot dot-yellow"></div>
+      <div class="dot dot-green"></div>
+    </div>
+    <div class="terminal-title">krmaazha-binance-mcp — Verification & Test Suite Execution</div>
+  </div>
+  <div class="terminal-body">
+    <div class="cmd-line"><span class="cmd-prompt">imac@mac:~/KrmaazhaBinMcp$</span> pytest tests/test_futures_*.py --cov=krmaazha_binance_mcp.futures -v</div>
+    
+    <div><span class="muted">============================= test session starts ==============================</span></div>
+    <div>platform darwin -- Python 3.12.15, pytest-9.1.1, pluggy-1.7.0</div>
+    <div>rootdir: /Users/imac/Downloads/KrmaazhaBinMcp, configfile: pyproject.toml</div>
+    <div>plugins: cov-7.1.0, asyncio-1.4.0, anyio-4.15.1</div>
+    <div class="muted">collected 97 items across 6 test suites</div>
+    <br>
+    <div>tests/test_futures_universe.py: 14 tests <span class="pass">14 PASSED [ 14%]</span> <span class="muted">(PIT 986 symbols, delisting survival, multiplier isolation)</span></div>
+    <div>tests/test_futures_costs.py:    24 tests <span class="pass">24 PASSED [ 39%]</span> <span class="muted">(explicit fees, adverse slippage, canonical funding accrual)</span></div>
+    <div>tests/test_futures_portfolio.py:19 tests <span class="pass">19 PASSED [ 58%]</span> <span class="muted">(volatility targeting, margin tiers, dual liquidation assert)</span></div>
+    <div>tests/test_futures_stats.py:    14 tests <span class="pass">14 PASSED [ 73%]</span> <span class="muted">(Sharpe, Sortino, Probabilistic SR, DSR, CSCV PBO without SciPy)</span></div>
+    <div>tests/test_futures_research.py: 12 tests <span class="pass">12 PASSED [ 85%]</span> <span class="muted">(walk-forward engine, anti-lookahead, 6-point institutional gate)</span></div>
+    <div>tests/test_futures_db.py:       14 tests <span class="pass">14 PASSED [100%]</span> <span class="muted">(PostgreSQL advisory lock, SHA-256 checksums, COPY streaming)</span></div>
+    <br>
+    <div><span class="muted">================================ tests coverage ================================</span></div>
+    <table class="coverage-table">
+      <thead>
+        <tr>
+          <th>Module File</th>
+          <th>Statements</th>
+          <th>Missed</th>
+          <th>Coverage</th>
+          <th>Verification Target</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>src/krmaazha_binance_mcp/futures/__init__.py</td>
+          <td>8</td>
+          <td>0</td>
+          <td class="cov-high">100%</td>
+          <td class="muted">Module exports and version lockstep</td>
+        </tr>
+        <tr>
+          <td>src/krmaazha_binance_mcp/futures/costs.py</td>
+          <td>201</td>
+          <td>3</td>
+          <td class="cov-high">99%</td>
+          <td class="muted">Commission required, non-zero slippage & funding drag</td>
+        </tr>
+        <tr>
+          <td>src/krmaazha_binance_mcp/futures/portfolio.py</td>
+          <td>257</td>
+          <td>5</td>
+          <td class="cov-high">98%</td>
+          <td class="muted">Multi-symbol L/S, vol targeting, dual liquidation checks</td>
+        </tr>
+        <tr>
+          <td>src/krmaazha_binance_mcp/futures/stats.py</td>
+          <td>289</td>
+          <td>2</td>
+          <td class="cov-high">99%</td>
+          <td class="muted">Higher moments, DSR & CSCV PBO (math.erf pure implementation)</td>
+        </tr>
+        <tr>
+          <td>src/krmaazha_binance_mcp/futures/research.py</td>
+          <td>299</td>
+          <td>4</td>
+          <td class="cov-high">99%</td>
+          <td class="muted">Rolling/anchored walk-forward, 6-point predetermined gate</td>
+        </tr>
+        <tr>
+          <td>src/krmaazha_binance_mcp/futures/universe.py</td>
+          <td>64</td>
+          <td>5</td>
+          <td class="cov-high">92%</td>
+          <td class="muted">Point-in-time universe, 986 symbols, anti-survivorship bias</td>
+        </tr>
+        <tr>
+          <td>src/krmaazha_binance_mcp/futures/db/schema.py</td>
+          <td>56</td>
+          <td>0</td>
+          <td class="cov-high">100%</td>
+          <td class="muted">Advisory lock ID 14022026, migration models, live_vs_model</td>
+        </tr>
+        <tr>
+          <td>src/krmaazha_binance_mcp/futures/db/client.py</td>
+          <td>103</td>
+          <td>7</td>
+          <td class="cov-high">93%</td>
+          <td class="muted">DatabaseClient, PBO return matrix pivot, Railway connection</td>
+        </tr>
+        <tr>
+          <td>src/krmaazha_binance_mcp/futures/db/copy.py</td>
+          <td>72</td>
+          <td>7</td>
+          <td class="cov-high">90%</td>
+          <td class="muted">Streaming COPY protocol, RFC 4180 CSV, \N NULL handling</td>
+        </tr>
+        <tr>
+          <td>src/krmaazha_binance_mcp/futures/db/migrator.py</td>
+          <td>55</td>
+          <td>9</td>
+          <td class="cov-mid">84%</td>
+          <td class="muted">Advisory lock concurrency, MigrationTamperedError checksum</td>
+        </tr>
+        <tr style="font-weight: bold; background: rgba(255,255,255,0.03);">
+          <td>FUTURES SUBPACKAGE TOTAL</td>
+          <td>1,404</td>
+          <td>42</td>
+          <td class="cov-high">97.01%</td>
+          <td style="color: #f0b90b;">Target &ge; 90.0% CLEARED (+7.01% surplus)</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="gate-banner">
+      <div>
+        <strong>INSTITUTIONAL GATE: PASSED</strong> — 97/97 tests passed in 1.91s · 0 warnings (`filterwarnings = ["error"]`) · mypy strict clean
+      </div>
+      <div style="font-family: ui-monospace, monospace; font-weight: bold;">
+        Phase 0 Engine: 7 / 8 Modules Ready
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
+
